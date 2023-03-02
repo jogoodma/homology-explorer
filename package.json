@@ -1,0 +1,24 @@
+{
+  "name": "homology-explorer",
+  "version": "0.1.0",
+  "description": "A network visualization tool for exploring homology.",
+  "contributors": [
+    {
+      "name": "Josh Goodman",
+      "email": "jogoodma@iu.edu"
+    },
+    {
+      "name": "Mark Green"
+    }
+  ],
+  "scripts": {
+    "pandoc:proposal": "pandoc --pdf-engine=pdflatex --toc -N -o docs/proposal.pdf docs/proposal.md --filter mermaid-filter",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "mermaid-filter": "^1.4.6"
+  }
+}

@@ -10,11 +10,11 @@ toc: true
 
 # Abstract
 
-Genetic homology between species is an important tool that researchers rely on to study human disease models in other species, functional groups, the impact of genetic variants, and many other aspects. Existing tools to predict and model these relationships do not provide researchers a wholistic view of genetic homology. The Gene Homology Explorer project aims to remedy this by creating, visualizing, and analyzing the network of homological gene relationships between species with a web application. Network analysis methods like community detection, path lengths, and centrality metrics are proposed to uncover the underlying structure of the gene homology network. The domain background, technical project approach, schedule, and related work are also discussed. 
+Genetic homology between species is an important tool that researchers rely on to study human disease models in other species, gene function, metabolic pathways, the impact of genetic variants, and more. Existing tools to predict and model these relationships do not provide researchers a wholistic view of genetic homology. The Gene Homology Explorer project aims to remedy this by creating, visualizing, and analyzing the network of homological gene relationships between species with a web application. Network analysis methods like community detection, path lengths, and centrality metrics are proposed to uncover the underlying structure of the gene homology network. The domain background, technical project approach, schedule, and related work are also discussed. 
 
 # Introduction
 
-In the field of human genetic research, model organisms play a crucial role in helping to decipher functional mechanisms, disease mechanisms, variant impact, and many other aspects of genes^[needs citation]. Researchers in this field of study rely on previously published data in their organism of interest and also related organisms to discover as much information as possible. A geneticist studying the KRAS gene in humans might look for studies on related genes in mice or rats before designing experiments or looking for drug targets. These related genes are called *orthologs*. Orthologs are homologous genes that are the result of a speciation event^[Koonin EV. Orthologs, paralogs, and evolutionary genomics. Annu Rev Genet. 2005;39:309-38. doi: 10.1146/annurev.genet.39.073003.114725. PMID: 16285863.]. In other words, a gene in one species that is directly, but possibly distantly, related to a gene in another species over an evolutionary time period. *Paralogs*, genes that are the result of a duplication event within a species, can also be used for this same purpose (Figure 1).
+In the field of human genetic research, model organisms play a crucial role in helping to decipher functional mechanisms, disease mechanisms, variant impact, and many other aspects of genes^[Millburn GH, Crosby MA, Gramates LS, Tweedie S; FlyBase Consortium. FlyBase portals to human disease research using Drosophila models. Dis Model Mech. 2016 Mar;9(3):245-52. doi: 10.1242/dmm.023317. PMID: 26935103; PMCID: PMC4826978.]. Researchers in this field of study rely on previously published data in their organism of interest and also related organisms to discover as much information as possible. For example, a geneticist studying the KRAS gene in humans might look for studies on related genes in mice or rats before designing experiments or looking for drug targets. These related genes are called *orthologs*. Orthologs are homologous genes that are the result of a speciation event^[Koonin EV. Orthologs, paralogs, and evolutionary genomics. Annu Rev Genet. 2005;39:309-38. doi: 10.1146/annurev.genet.39.073003.114725. PMID: 16285863.]. In other words, a gene in one species that is directly, but possibly distantly, related to a gene in another species over an evolutionary time period. *Paralogs*, genes that are the result of a duplication event within a species, can also be used for this same purpose (Figure 1).
 
 ```mermaid
 flowchart LR
@@ -35,17 +35,17 @@ flowchart LR
 
 ## Motivation
 
-The exact definition of what constitutes an ortholgous or paralogous pair of genes has been an active area of study for decades^[needs citation]. Over this time, many orthology prediction algorithms have been developed, making it difficult for researchers to select one over the other. To address this issue a meta-orthology tool called [DIOPT](https://www.flyrnai.org/diopt)^[Hu Y, Flockhart I, Vinayagam A, Bergwitz C, Berger B, Perrimon N, Mohr SE. An integrative approach to ortholog prediction for disease-focused and other functional studies. BMC Bioinformatics. 2011 Aug 31;12:357. doi: 10.1186/1471-2105-12-357. PMID: 21880147; PMCID: PMC3179972.] was developed by the Perrimon lab at Harvard Medical School. DIOPT takes the approach of aggregating as many orthology and paralogy algorithm prediction results as possible and presenting all to the end user when a search for one or more genes is conducted. Each homologous pair of genes is scored according to the number of algorithms that have predicted their evolutionary relationship. The tool allows users to enter one or more genes and view results in a tabular format.
+The exact definition of what constitutes an ortholgous or paralogous pair of genes has been an active area of study for decades^[Koonin EV. Orthologs, paralogs, and evolutionary genomics. Annu Rev Genet. 2005;39:309-38. doi: 10.1146/annurev.genet.39.073003.114725. PMID: 16285863.]. Over this time, many orthology prediction algorithms have been developed, making it difficult for researchers to select one over the other. To address this issue a meta-orthology tool called [DIOPT](https://www.flyrnai.org/diopt)^[Hu Y, Flockhart I, Vinayagam A, Bergwitz C, Berger B, Perrimon N, Mohr SE. An integrative approach to ortholog prediction for disease-focused and other functional studies. BMC Bioinformatics. 2011 Aug 31;12:357. doi: 10.1186/1471-2105-12-357. PMID: 21880147; PMCID: PMC3179972.] was developed by the Perrimon lab at Harvard Medical School. DIOPT takes the approach of aggregating as many orthology and paralogy algorithm prediction results as possible and presenting all to the end user when a search for one or more genes is conducted. Each homologous pair of genes is scored according to the number of algorithms that have predicted their evolutionary relationship. The DIOPT tool allows users to enter one or more genes and view results in a tabular format.
 
 While useful, this functionality fails to convey the relationships between the genes being queried within a species, relationships to orthologous genes in other species, and paralogous genes in a visual manner. Herein, we propose the development of a network visualization tool that will allow researchers to explore these relationships, filter based on species, algorithm scores, or other attributes, and easily link out to primary source databases for additional information.
 
 ### Related Work
 
-To date, the presentation of results from DIOPT have been limited to tabular HTML results or downloadable tab separated files^[Alliance of Genome Resources Consortium. Harmonizing model organism data in the Alliance of Genome Resources. Genetics. 2022 Apr 4;220(4):iyac022. doi: 10.1093/genetics/iyac022. PMID: 35380658; PMCID: PMC8982023.] ^[Gramates LS, Agapite J, Attrill H, Calvi BR, Crosby MA, Dos Santos G, Goodman JL, Goutte-Gattat D, Jenkins VK, Kaufman T, Larkin A, Matthews BB, Millburn G, Strelets VB; the FlyBase Consortium. FlyBase: a guided tour of highlighted features. Genetics. 2022 Apr 4;220(4):iyac035. doi: 10.1093/genetics/iyac035. PMID: 35266522; PMCID: PMC8982030.]. Other resources that do offer a more visual presentation of homology data don't offer the meta analysis that DIOPT 
+To date, the presentation of results from DIOPT have been limited to tabular HTML results or downloadable tab separated files^[Alliance of Genome Resources Consortium. Harmonizing model organism data in the Alliance of Genome Resources. Genetics. 2022 Apr 4;220(4):iyac022. doi: 10.1093/genetics/iyac022. PMID: 35380658; PMCID: PMC8982023.] ^[Gramates LS, Agapite J, Attrill H, Calvi BR, Crosby MA, Dos Santos G, Goodman JL, Goutte-Gattat D, Jenkins VK, Kaufman T, Larkin A, Matthews BB, Millburn G, Strelets VB; the FlyBase Consortium. FlyBase: a guided tour of highlighted features. Genetics. 2022 Apr 4;220(4):iyac035. doi: 10.1093/genetics/iyac035. PMID: 35266522; PMCID: PMC8982030.]. Other resources that do offer a more visual presentation of homology data only display the results of a single prediction algorithm and don't offer the meta analysis that DIOPT does.
 
 # Project Proposal
 
-Herein, we propose the development of a network visualization tool that will allow researchers to explore these relationships, filter based on species, algorithm scores, or other attributes, and easily link out to primary source databases for additional information. Below are discussed details of the technical approach to accomplish this task and a project Road Map to outline key milestones and goals throughout the project duration. 
+Herein, we propose the development of a network visualization tool that will allow researchers to explore these relationships, filter based on species, algorithm scores, or other attributes, and easily link out to primary source databases for additional information. Below are details of the technical approach to accomplish this task and a project Road Map to outline key milestones and goals throughout the project duration. 
 
 ## Technical Approach
 
@@ -61,7 +61,7 @@ Some potential tools are discussed, though exactly what is used will be subject 
 
 ### Mockup Design and Stakeholder Feedback
 
-The initial phase of this project will involve creating mockups of the planned user interface. This will help to solidify technical decisions for important aspects such as choice of a visualization tool, the underlying data system (JSON/TSV, SQL, NoSQL, or graph database). It may also help to identify additional data sources and network analysis algorithms that should be included. The mockups will then be shown to colleaugues or other domain experts to gather feedback on the intial designs. Given the tight timeline of the semester deadline there will likely only be time for 1 or 2 iterations with stakeholders.
+The initial phase of this project will involve creating mockups of the planned user interface. This will help to solidify technical decisions for important aspects such as choice of a visualization tool, the underlying data system (JSON/TSV, SQL, NoSQL, or graph database). It may also help to identify additional data sources and network analysis algorithms that should be included. The mockups will then be shown to colleaugues or other domain experts to gather feedback on the intial designs. Given the tight semester timeline there will likely only be time for 1 or 2 iterations with stakeholders.
 
 ### Data Source Acquisition and Processing
 
@@ -78,12 +78,10 @@ The following model organism species will be included in the Homology Explorer t
 
 **Model Organism Species**
   
-- Escherichia coli (E. coli)
 - Arabidopsis thaliana (Thale cress)
 - Schizosaccharomyces pombe (Fission yeast)
 - Saccharomyces cerevisiae (Yeast)
 - Caenorhabditis elegans (Worm)
-- Anopheles gambiae (Mosquito)
 - Drosophila melanogaster (Fly)
 - Danio rerio (Zebrafish)
 - Xenopus tropicalis (Western clawed frog)
@@ -113,7 +111,7 @@ The Homology Explorer tool will utilize 3 possible existing web based network vi
   - [Sigma](https://sigmajs.org)
   - [Vega](https://vega.github.io/vega/)
 
-Web based network tools have limitations on the number of nodes and edges they can support before the tool becomes unusable. These limitations are mostly determined by the underlying technology used for painting the networks (SVG, Canvas, or WebGL). With these limitations in mind, each of these tools will need to be evaluated in the context of the finalized mockup and scale of the datasets before one is selected.
+Web based network tools have limitations on the number of nodes and edges they can support before degradation of performance impacts usability. These limitations are mostly determined by the underlying technology used for painting the networks (SVG, Canvas, or WebGL). With these limitations in mind, each of these tools will need to be evaluated in the context of the finalized mockup and scale of the datasets before one is selected.
 
 ### Network Analysis Implementation
 
@@ -166,7 +164,7 @@ gantt
 
 # Acknowledgments
 
-
+The authors would like to thank all of the open source developers and researchers for their efforts. We also wish to thank the National Institutes of Health (NIH) for supporting the biological data resources that will be used for this project.
 
 # References
 
@@ -179,5 +177,7 @@ Alliance of Genome Resources Consortium. Harmonizing model organism data in the 
 Koonin EV. Orthologs, paralogs, and evolutionary genomics. Annu Rev Genet. 2005;39:309-38. doi: 10.1146/annurev.genet.39.073003.114725. PMID: 16285863.
 
 Gramates LS, Agapite J, Attrill H, Calvi BR, Crosby MA, Dos Santos G, Goodman JL, Goutte-Gattat D, Jenkins VK, Kaufman T, Larkin A, Matthews BB, Millburn G, Strelets VB; the FlyBase Consortium. FlyBase: a guided tour of highlighted features. Genetics. 2022 Apr 4;220(4):iyac035. doi: 10.1093/genetics/iyac035. PMID: 35266522; PMCID: PMC8982030.
+
+Millburn GH, Crosby MA, Gramates LS, Tweedie S; FlyBase Consortium. FlyBase portals to human disease research using Drosophila models. Dis Model Mech. 2016 Mar;9(3):245-52. doi: 10.1242/dmm.023317. PMID: 26935103; PMCID: PMC4826978.
 
 ---

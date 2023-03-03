@@ -10,7 +10,7 @@ toc: true
 
 # Abstract
 
-Genetic homology between species can allow researchers to better understand the relationships of cross-special diseases, functional groups, and gene ontology. Existing tools to predict and model these relationships do not provide researchers a wholistic view of genetic ontology. The Gene Homology Explorer project aims to remedy this by creating, visualizing, and analyzing the network of homological gene relationships between species with a web application. Network analysis methods like community detection, path lengths, and centrality metrics are proposed to uncover the underlying structure of the gene homology network. The domain background, technical project approach, schedule, and related work are also discussed. 
+Genetic homology between species is an important tool that researchers rely on to study human disease models in other species, functional groups, the impact of genetic variants, and many other aspects. Existing tools to predict and model these relationships do not provide researchers a wholistic view of genetic homology. The Gene Homology Explorer project aims to remedy this by creating, visualizing, and analyzing the network of homological gene relationships between species with a web application. Network analysis methods like community detection, path lengths, and centrality metrics are proposed to uncover the underlying structure of the gene homology network. The domain background, technical project approach, schedule, and related work are also discussed. 
 
 # Introduction
 

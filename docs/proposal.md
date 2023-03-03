@@ -59,6 +59,8 @@ The overall technical approach for this project will be divided into 5 phases. P
   4. Build network visualization
   5. Network analysis implementation
 
+Some potential tools are discussed, though exactly what is used will be subject to change depending on the needs dictated by the project requirements and/or stakeholder input. 
+
 ### Mockup Design and Stakeholder Feedback
 
 The initial phase of this project will involve creating mockups of the planned user interface. This will help to solidify technical decisions for important aspects such as choice of a visualization tool, the underlying data system (JSON/TSV, SQL, NoSQL, or graph database). It may also help to identify additional data sources and network analysis algorithms that should be included. The mockups will then be shown to colleaugues or other domain experts to gather feedback on the intial designs. Given the tight timeline of the semester deadline there will likely only be time for 1 or 2 iterations with stakeholders.
@@ -68,9 +70,11 @@ The initial phase of this project will involve creating mockups of the planned u
 Concurrently with mockups and stakeholder feedback, we will start the process of gathering the primary orthology and paralogy DIOPT data and performing initial processing and statistical analysis to assess any scaling issues that may arise later on. This will likely be done with Python scripts and automated as much as possible.
 
 **Data sources**
-  - [DIOPT](https://www.flyrnai.org/cgi-bin/DRSC_orthologs.pl) - Primary source of meta orthology and paralogy predictions.
-  - [Alliance of Genome Resources](https://www.alliancegenome.org) - Secondary source of gene functional and disease associations for all major model organisms.
-  - [Timetree of Life](https://timetree.org/) - Secondary source for evolutionary distance estimates between species.
+
+- [DIOPT](https://www.flyrnai.org/cgi-bin/DRSC_orthologs.pl) - Primary source of meta orthology and paralogy predictions.
+  - Associated [API](https://www.flyrnai.org/tools/diopt/web/api)
+- [Alliance of Genome Resources](https://www.alliancegenome.org) - Secondary source of gene functional and disease associations for all major model organisms.
+- [Timetree of Life](https://timetree.org/) - Secondary source for evolutionary distance estimates between species.
 
 The following model organism species will be included in the Homology Explorer tool.
 
@@ -88,12 +92,18 @@ The following model organism species will be included in the Homology Explorer t
   - Mus musculus (Mouse)
   - Homo sapiens (Human)
 
-
 The DIOPT dataset will give us our primary data for the Homology Explorer. Each gene in the dataset will represent a node in the network. The ortholog and paralog predictions will define the edges, with the DIOPT scores acting as weights on each edge. Additional information that may be added as attributes of the nodes and edges include functional gene ontology terms (GO), evolutionary distance estimates between species, and disease ontology (DO) associations.
+
+Ortholog and Paralog relationships must be queried from the DIOPT resources for each individual species. These data will need to be aggregated prior to warehousing. Subsetting data by species, or a subset of genes may also be necessary given the potential volume of data. This will be evaluated more during application testing so transformation techniques applied to the DIOPT data will be made with reproducibility in mind. The Alliance of Genome Resources data will have to be joined to the DIOPT data on a unique identifier for each gene. `Python` will likely be the tool of choice for this task.
 
 ### Data Warehouse Creation
 
-In order to power the network visualization a data system will need to be devised to support the final design features of the tool. The system will need to be able to serve data quickly and efficiently to the frontend, support basic search services, and possibly implement basic network analysis algorithms for performance reasons. We will evaluate the needs of the project and determine whether a NoSQL, SQL, or graph database is the best technology for the job.
+In order to power the network visualization a data system will need to be devised to support the final design features of the tool. The system will need to be able to serve data quickly and efficiently to the frontend, support basic search services, and possibly implement basic network analysis algorithms for performance reasons. 
+
+SQL and NoSQL solutions are under consideration. With smaller volumes of data, a SQL database will be a better choice for performance. However, this project is very young so the schema may at some point be subject to change and the scale of the data may grow very large one day (IE if all genes of all species were to be networked together). Given this and the inherent network structure of the project, NoSQL alternatives are also under strong consideration. Platforms under consideration include: 
+
+- **SQL**: DuckDB, SQLite, PostgreSQL
+- **NoSQL**: MongoDB, Neo4J, Dgraph, JanusGraph
 
 ### Build Network Visualization
 
@@ -108,11 +118,11 @@ Web based network tools have limitations on the number of nodes and edges they c
 
 ### Network Analysis Implementation
 
-*Any thoughts here*
+As of yet, it is unknown what the underlying network structure of gene homology will look like. Analysing the network to uncover these underlying structural characteristics could add tremendous value to the field of genetic research. Some possible network analyses and their motivations are listed below: 
 
-**Random thoughts**
-- Shortest path between two genes utilizing the evolutionary distance estimates?
-- Centraility measures?
+- The **Shortest Path** between two genes could be an estimator evolutionary distance. 
+- **Centraility Measures** could be used to determine the most popular gene homologs, or species which hold the most paralogous or orthologous gene relationships. 
+- **Detecting Communities** of gene homologs between species could be insightful, and perhaps provide a mechanism to predict homologous genes between species. 
 
 ## Project Execution Roadmap
 
@@ -123,33 +133,33 @@ gantt
     title       Gene Homology Explorer - Project Execution Road Map
 
     section Proposal
-    Charter Team              :done, p1, 2023-02-24, 2023-02-25
-    Write Proposal            :crit, active, p2, after p1, 6d
-    Research Topic and Tools  :active, p3, after p1, 6d
-    Team Contract             :active, p4, 2023-03-02, 1d
-    Proposal Complete         :milestone, p5, 2023-03-03, 0d
+    Charter Team                     :done, p1, 2023-02-24, 2023-02-25
+    Write Proposal                   :crit, active, p2, after p1, 6d
+    Research Topic and Tools         :active, p3, after p1, 6d
+    Team Contract                    :active, p4, 2023-03-02, 1d
+    Proposal Complete                :milestone, p5, 2023-03-03, 0d
 
     section Web App Development
-    Create mockups and gather feedback  :a1, after p5, 7d
-    Source and Process Data             :a2, after p5, 7d
-    Create Datawarehouse                :a3, after a2, 7d
-    Create Visualizations               :crit, a4, after a3, 21d
-    Build Web Things                    :a5, after a3, 21d
-    Testing                             :a6, after a4, 7d
-    Web App Complete                    :milestone, a7, after a6, 0d
+    Mockup and Gather Feedback       :a1, after p5, 7d
+    Source and Process Data          :a2, after p5, 7d
+    Create Data Warehouse            :a3, after a2, 7d
+    Create Visualizations            :crit, a4, after a3, 21d
+    Build Web Things                 :a5, after a3, 21d
+    Testing                          :a6, after a4, 7d
+    Web App Complete                 :milestone, a7, after a6, 0d
 
     section Final Report
-    Introduction              :f1, 2023-03-26, 7d
-    Methods                   :f2, after f1, 14d
-    Results                   :f3, after a4, 14d
-    Discussion                :crit, f4, after a4, 14d
-    Review                    :crit, f5, after f4, 14d
-    Final Report Complete     :milestone, f6, after f5, 0d
+    Introduction                     :f1, 2023-03-26, 7d
+    Methods                          :f2, after f1, 14d
+    Results                          :f3, after a4, 14d
+    Discussion                       :crit, f4, after a4, 14d
+    Review                           :crit, f5, after f4, 14d
+    Final Report Complete            :milestone, f6, after f5, 0d
 
     section Project Presentation
-    Video Materials Prep      :v1, 2023-04-14, 7d
-    Video Production          :crit, v2, 2023-04-21, 14d
-    Presentation Complete     :milestone, 2023-05-05, 0d
+    Video Materials Prep             :v1, 2023-04-14, 7d
+    Video Production                 :crit, v2, 2023-04-21, 14d
+    Presentation Complete            :milestone, v3, 2023-05-05, 0d
 
 ```
 

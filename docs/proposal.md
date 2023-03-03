@@ -8,11 +8,9 @@ output: pdf_document
 toc: true
 ---
 
-${toc}
-
 # Abstract
 
-
+Genetic homology between species can allow researchers to better understand the relationships of cross-special diseases, functional groups, and gene ontology. Existing tools to predict and model these relationships do not provide researchers a wholistic view of genetic ontology. The Gene Homology Explorer project aims to remedy this by creating, visualizing, and analyzing the network of homological gene relationships between species with a web application. Network analysis methods like community detection, path lengths, and centrality metrics are proposed to uncover the underlying structure of the gene homology network. The domain background, technical project approach, schedule, and related work are also discussed. 
 
 # Introduction
 
@@ -79,18 +77,19 @@ Concurrently with mockups and stakeholder feedback, we will start the process of
 The following model organism species will be included in the Homology Explorer tool.
 
 **Model Organism Species**
-  - Escherichia coli (E. coli)
-  - Arabidopsis thaliana (Thale cress)
-  - Schizosaccharomyces pombe (Fission yeast)
-  - Saccharomyces cerevisiae (Yeast)
-  - Caenorhabditis elegans (Worm)
-  - Anopheles gambiae (Mosquito)
-  - Drosophila melanogaster (Fly)
-  - Danio rerio (Zebrafish)
-  - Xenopus tropicalis (Western clawed frog)
-  - Rattus norvegicus (Rat)
-  - Mus musculus (Mouse)
-  - Homo sapiens (Human)
+  
+- Escherichia coli (E. coli)
+- Arabidopsis thaliana (Thale cress)
+- Schizosaccharomyces pombe (Fission yeast)
+- Saccharomyces cerevisiae (Yeast)
+- Caenorhabditis elegans (Worm)
+- Anopheles gambiae (Mosquito)
+- Drosophila melanogaster (Fly)
+- Danio rerio (Zebrafish)
+- Xenopus tropicalis (Western clawed frog)
+- Rattus norvegicus (Rat)
+- Mus musculus (Mouse)
+- Homo sapiens (Human)
 
 The DIOPT dataset will give us our primary data for the Homology Explorer. Each gene in the dataset will represent a node in the network. The ortholog and paralog predictions will define the edges, with the DIOPT scores acting as weights on each edge. Additional information that may be added as attributes of the nodes and edges include functional gene ontology terms (GO), evolutionary distance estimates between species, and disease ontology (DO) associations.
 
@@ -162,6 +161,8 @@ gantt
     Presentation Complete            :milestone, v3, 2023-05-05, 0d
 
 ```
+
+![Gantt chart outlining the proposed schedule "Road Map" to complete the project.](docs/images/blank.png)
 
 # Acknowledgments
 

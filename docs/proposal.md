@@ -43,7 +43,7 @@ While useful, this functionality fails to convey the relationships between the g
 
 ### Related Work
 
-To date, the presentation of results from DIOPT have been limited to tabular HTML results or downloadable tab separated files^[Alliance of Genome Resources Consortium. Harmonizing model organism data in the Alliance of Genome Resources. Genetics. 2022 Apr 4;220(4):iyac022. doi: 10.1093/genetics/iyac022. PMID: 35380658; PMCID: PMC8982023.] ^[Gramates LS, Agapite J, Attrill H, Calvi BR, Crosby MA, Dos Santos G, Goodman JL, Goutte-Gattat D, Jenkins VK, Kaufman T, Larkin A, Matthews BB, Millburn G, Strelets VB; the FlyBase Consortium. FlyBase: a guided tour of highlighted features. Genetics. 2022 Apr 4;220(4):iyac035. doi: 10.1093/genetics/iyac035. PMID: 35266522; PMCID: PMC8982030.].
+To date, the presentation of results from DIOPT have been limited to tabular HTML results or downloadable tab separated files^[Alliance of Genome Resources Consortium. Harmonizing model organism data in the Alliance of Genome Resources. Genetics. 2022 Apr 4;220(4):iyac022. doi: 10.1093/genetics/iyac022. PMID: 35380658; PMCID: PMC8982023.] ^[Gramates LS, Agapite J, Attrill H, Calvi BR, Crosby MA, Dos Santos G, Goodman JL, Goutte-Gattat D, Jenkins VK, Kaufman T, Larkin A, Matthews BB, Millburn G, Strelets VB; the FlyBase Consortium. FlyBase: a guided tour of highlighted features. Genetics. 2022 Apr 4;220(4):iyac035. doi: 10.1093/genetics/iyac035. PMID: 35266522; PMCID: PMC8982030.]. Other resources that do offer a more visual presentation of homology data don't offer the meta analysis that DIOPT 
 
 # Project Proposal
 
@@ -51,42 +51,68 @@ Herein, we propose the development of a network visualization tool that will all
 
 ## Technical Approach
 
-**TODO: Temporary notes on ideas for this section**
+The overall technical approach for this project will be divided into 5 phases. Please refer to the [Project Execution Roadmap](#project-execution-roadmap) for a more detailed breakdown with planned timelines.
 
-- Data acquisition, processing, and analysis
-  - Python 
-- Creation of a data warehouse for storing graph information
-  - NoSQL: DuckDB, SQLite, MongoDB, JSON 
-  - SQL: PostgreSQL 
-  - GraphDB: Dgraph, JanusGraph, or Neo4J
-- Possible network analysis to add value to homology data
-- Web application that is either pregenerated or fetches data from a "live" API to provide data exploration, filtering, and basic analysis
-  - Web frameworks
-    - [Astro](https://astro.build)
-    - [Remix](https://remix.run)
-  - Network visualization
-    - [Cytoscape.js](https://js.cytoscape.org/)
-    - [Sigma](https://sigmajs.org)
-    - [Vega](https://vega.github.io/vega/)
+  1. Mockup design and stakeholder feedback
+  2. Data source acquisition and processing
+  3. Data warehouse creation
+  4. Build network visualization
+  5. Network analysis implementation
 
-### Data Sources
+### Mockup Design and Stakeholder Feedback
 
-Briefly discuss how we plan to acquire the data, from what sources, and what (if any) processing might be required.
+The initial phase of this project will involve creating mockups of the planned user interface. This will help to solidify technical decisions for important aspects such as choice of a visualization tool, the underlying data system (JSON/TSV, SQL, NoSQL, or graph database). It may also help to identify additional data sources and network analysis algorithms that should be included. The mockups will then be shown to colleaugues or other domain experts to gather feedback on the intial designs. Given the tight timeline of the semester deadline there will likely only be time for 1 or 2 iterations with stakeholders.
 
-- Meta orthologs and paralogs [[1]](#diopt)
-- [Alliance of Genome Resources](https://www.alliancegenome.org/) - Various model organism data (functional, disease associations, etc.) [[3]](#alliance).
+### Data Source Acquisition and Processing
 
-### Data Warehousing and Transformation
+Concurrently with mockups and stakeholder feedback, we will start the process of gathering the primary orthology and paralogy DIOPT data and performing initial processing and statistical analysis to assess any scaling issues that may arise later on. This will likely be done with Python scripts and automated as much as possible.
 
-No need for a lot of detail here, but I think we should give a high level overview of building a data warehouse. The whys and possible hows.
+**Data sources**
+  - [DIOPT](https://www.flyrnai.org/cgi-bin/DRSC_orthologs.pl) - Primary source of meta orthology and paralogy predictions.
+  - [Alliance of Genome Resources](https://www.alliancegenome.org) - Secondary source of gene functional and disease associations for all major model organisms.
+  - [Timetree of Life](https://timetree.org/) - Secondary source for evolutionary distance estimates between species.
 
-### Network Analysis Methods
+The following model organism species will be included in the Homology Explorer tool.
 
-Any processing and data analysis that we think we might want to do.
+**Model Organism Species**
+  - Escherichia coli (E. coli)
+  - Arabidopsis thaliana (Thale cress)
+  - Schizosaccharomyces pombe (Fission yeast)
+  - Saccharomyces cerevisiae (Yeast)
+  - Caenorhabditis elegans (Worm)
+  - Anopheles gambiae (Mosquito)
+  - Drosophila melanogaster (Fly)
+  - Danio rerio (Zebrafish)
+  - Xenopus tropicalis (Western clawed frog)
+  - Rattus norvegicus (Rat)
+  - Mus musculus (Mouse)
+  - Homo sapiens (Human)
 
-### Visualization
 
-Talk a little bit about our visualization options. Maybe mention the limitations of each in terms of the network size that they support.
+The DIOPT dataset will give us our primary data for the Homology Explorer. Each gene in the dataset will represent a node in the network. The ortholog and paralog predictions will define the edges, with the DIOPT scores acting as weights on each edge. Additional information that may be added as attributes of the nodes and edges include functional gene ontology terms (GO), evolutionary distance estimates between species, and disease ontology (DO) associations.
+
+### Data Warehouse Creation
+
+In order to power the network visualization a data system will need to be devised to support the final design features of the tool. The system will need to be able to serve data quickly and efficiently to the frontend, support basic search services, and possibly implement basic network analysis algorithms for performance reasons. We will evaluate the needs of the project and determine whether a NoSQL, SQL, or graph database is the best technology for the job.
+
+### Build Network Visualization
+
+The Homology Explorer tool will utilize 3 possible existing web based network visualization tools as a starting point from which we will extend and implement the required features.
+
+**Network Visualization Tools**
+  - [Cytoscape.js](https://js.cytoscape.org/)
+  - [Sigma](https://sigmajs.org)
+  - [Vega](https://vega.github.io/vega/)
+
+Web based network tools have limitations on the number of nodes and edges they can support before the tool becomes unusable. These limitations are mostly determined by the underlying technology used for painting the networks (SVG, Canvas, or WebGL). With these limitations in mind, each of these tools will need to be evaluated in the context of the finalized mockup and scale of the datasets before one is selected.
+
+### Network Analysis Implementation
+
+*Any thoughts here*
+
+**Random thoughts**
+- Shortest path between two genes utilizing the evolutionary distance estimates?
+- Centraility measures?
 
 ## Project Execution Roadmap
 
@@ -104,18 +130,19 @@ gantt
     Proposal Complete         :milestone, p5, 2023-03-03, 0d
 
     section Web App Development
-    Source and Process Data             :a1, after p5, 7d
-    Create and Host Database            :a2, after a1, 7d
-    Create Visualizations               :crit, a3, after a2, 21d
-    Build Web Things                    :a4, after a2, 21d
-    Testing                             :a5, after a3, 7d
-    Web App Complete                    :milestone, a6, after a5, 0d
+    Create mockups and gather feedback  :a1, after p5, 7d
+    Source and Process Data             :a2, after p5, 7d
+    Create Datawarehouse                :a3, after a2, 7d
+    Create Visualizations               :crit, a4, after a3, 21d
+    Build Web Things                    :a5, after a3, 21d
+    Testing                             :a6, after a4, 7d
+    Web App Complete                    :milestone, a7, after a6, 0d
 
     section Final Report
     Introduction              :f1, 2023-03-26, 7d
     Methods                   :f2, after f1, 14d
-    Results                   :f3, after a3, 14d
-    Discussion                :crit, f4, after a3, 14d
+    Results                   :f3, after a4, 14d
+    Discussion                :crit, f4, after a4, 14d
     Review                    :crit, f5, after f4, 14d
     Final Report Complete     :milestone, f6, after f5, 0d
 

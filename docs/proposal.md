@@ -10,22 +10,22 @@ toc: true
 
 # Abstract
 
-Genetic homology between species is an important tool that researchers rely on to study human disease models in other species, gene function, metabolic pathways, the impact of genetic variants, and more. Existing tools to predict and model these relationships do not provide researchers a wholistic view of genetic homology. The Gene Homology Explorer project aims to remedy this by creating, visualizing, and analyzing the network of homological gene relationships between species with a web application. Network analysis methods like community detection, path lengths, and centrality metrics are proposed to uncover the underlying structure of the gene homology network. The domain background, technical project approach, schedule, and related work are also discussed. 
+Genetic homology between species is an important tool that researchers rely on to study human disease models in other species, gene function, metabolic pathways, the impact of genetic variants, and more. Existing tools to predict and model these relationships do not provide researchers a wholistic view of genetic homology. The Gene Homology Explorer project aims to remedy this by creating, visualizing, and analyzing the network of homological gene relationships between species with a web application. Network analysis methods like community detection, path lengths, and centrality metrics are proposed to uncover the underlying structure of the gene homology network. The domain background, technical project approach, schedule, and related work are also discussed.
 
 # Introduction
 
-In the field of human genetic research, model organisms play a crucial role in helping to decipher functional mechanisms, disease mechanisms, variant impact, and many other aspects of genes^[Millburn GH, Crosby MA, Gramates LS, Tweedie S; FlyBase Consortium. FlyBase portals to human disease research using Drosophila models. Dis Model Mech. 2016 Mar;9(3):245-52. doi: 10.1242/dmm.023317. PMID: 26935103; PMCID: PMC4826978.]. Researchers in this field of study rely on previously published data in their organism of interest and also related organisms to discover as much information as possible. For example, a geneticist studying the KRAS gene in humans might look for studies on related genes in mice or rats before designing experiments or looking for drug targets. These related genes are called *orthologs*. Orthologs are homologous genes that are the result of a speciation event^[Koonin EV. Orthologs, paralogs, and evolutionary genomics. Annu Rev Genet. 2005;39:309-38. doi: 10.1146/annurev.genet.39.073003.114725. PMID: 16285863.]. In other words, a gene in one species that is directly, but possibly distantly, related to a gene in another species over an evolutionary time period. *Paralogs*, genes that are the result of a duplication event within a species, can also be used for this same purpose (Figure 1).
+In the field of human genetic research, model organisms play a crucial role in helping to decipher functional mechanisms, disease mechanisms, variant impact, and many other aspects of genes^[Millburn GH, Crosby MA, Gramates LS, Tweedie S; FlyBase Consortium. FlyBase portals to human disease research using Drosophila models. Dis Model Mech. 2016 Mar;9(3):245-52. doi: 10.1242/dmm.023317. PMID: 26935103; PMCID: PMC4826978.]. Researchers in this field of study rely on previously published data in their organism of interest and also related organisms to discover as much information as possible. For example, a geneticist studying the KRAS gene in humans might look for studies on related genes in mice or rats before designing experiments or looking for drug targets. These related genes are called _orthologs_. Orthologs are homologous genes that are the result of a speciation event^[Koonin EV. Orthologs, paralogs, and evolutionary genomics. Annu Rev Genet. 2005;39:309-38. doi: 10.1146/annurev.genet.39.073003.114725. PMID: 16285863.]. In other words, a gene in one species that is directly, but possibly distantly, related to a gene in another species over an evolutionary time period. _Paralogs_, genes that are the result of a duplication event within a species, can also be used for this same purpose (Figure 1).
 
 ```mermaid
 flowchart LR
-  
+
   subgraph Species 1
     G1[Ancestral Gene]
   end
 
   subgraph Species 2
     G2[Orthologous Gene] --> D(Duplication Event) --> G3[Paralogous Gene]
-  
+
   G1 --Speciation Event--> G2
 
   end
@@ -45,19 +45,19 @@ To date, the presentation of results from DIOPT have been limited to tabular HTM
 
 # Project Proposal
 
-Herein, we propose the development of a network visualization tool that will allow researchers to explore these relationships, filter based on species, algorithm scores, or other attributes, and easily link out to primary source databases for additional information. Below are details of the technical approach to accomplish this task and a project Road Map to outline key milestones and goals throughout the project duration. 
+Herein, we propose the development of a network visualization tool that will allow researchers to explore these relationships, filter based on species, algorithm scores, or other attributes, and easily link out to primary source databases for additional information. Below are details of the technical approach to accomplish this task and a project Road Map to outline key milestones and goals throughout the project duration.
 
 ## Technical Approach
 
 The overall technical approach for this project will be divided into 5 phases. Please refer to the [Project Execution Roadmap](#project-execution-roadmap) for a more detailed breakdown with planned timelines.
 
-  1. Mockup design and stakeholder feedback
-  2. Data source acquisition and processing
-  3. Data warehouse creation
-  4. Build network visualization
-  5. Network analysis implementation
+1. Mockup design and stakeholder feedback
+2. Data source acquisition and processing
+3. Data warehouse creation
+4. Build network visualization
+5. Network analysis implementation
 
-Some potential tools are discussed, though exactly what is used will be subject to change depending on the needs dictated by the project requirements and/or stakeholder input. 
+Some potential tools are discussed, though exactly what is used will be subject to change depending on the needs dictated by the project requirements and/or stakeholder input.
 
 ### Mockup Design and Stakeholder Feedback
 
@@ -77,7 +77,7 @@ Concurrently with mockups and stakeholder feedback, we will start the process of
 The following model organism species will be included in the Homology Explorer tool.
 
 **Model Organism Species**
-  
+
 - Arabidopsis thaliana (Thale cress)
 - Schizosaccharomyces pombe (Fission yeast)
 - Saccharomyces cerevisiae (Yeast)
@@ -95,9 +95,9 @@ Ortholog and Paralog relationships must be queried from the DIOPT resources for 
 
 ### Data Warehouse Creation
 
-In order to power the network visualization a data system will need to be devised to support the final design features of the tool. The system will need to be able to serve data quickly and efficiently to the frontend, support basic search services, and possibly implement basic network analysis algorithms for performance reasons. 
+In order to power the network visualization a data system will need to be devised to support the final design features of the tool. The system will need to be able to serve data quickly and efficiently to the frontend, support basic search services, and possibly implement basic network analysis algorithms for performance reasons.
 
-SQL and NoSQL solutions are under consideration. With smaller volumes of data, a SQL database will be a better choice for performance. However, this project is very young so the schema may at some point be subject to change and the scale of the data may grow very large one day (IE if all genes of all species were to be networked together). Given this and the inherent network structure of the project, NoSQL alternatives are also under strong consideration. Platforms under consideration include: 
+SQL and NoSQL solutions are under consideration. With smaller volumes of data, a SQL database will be a better choice for performance. However, this project is very young so the schema may at some point be subject to change and the scale of the data may grow very large one day (IE if all genes of all species were to be networked together). Given this and the inherent network structure of the project, NoSQL alternatives are also under strong consideration. Platforms under consideration include:
 
 - **SQL**: DuckDB, SQLite, PostgreSQL
 - **NoSQL**: MongoDB, Neo4J, Dgraph, JanusGraph
@@ -107,19 +107,20 @@ SQL and NoSQL solutions are under consideration. With smaller volumes of data, a
 The Homology Explorer tool will utilize 3 possible existing web based network visualization tools as a starting point from which we will extend and implement the required features.
 
 **Network Visualization Tools**
-  - [Cytoscape.js](https://js.cytoscape.org/)
-  - [Sigma](https://sigmajs.org)
-  - [Vega](https://vega.github.io/vega/)
+
+- [Cytoscape.js](https://js.cytoscape.org/)
+- [Sigma](https://sigmajs.org)
+- [Vega](https://vega.github.io/vega/)
 
 Web based network tools have limitations on the number of nodes and edges they can support before degradation of performance impacts usability. These limitations are mostly determined by the underlying technology used for painting the networks (SVG, Canvas, or WebGL). With these limitations in mind, each of these tools will need to be evaluated in the context of the finalized mockup and scale of the datasets before one is selected.
 
 ### Network Analysis Implementation
 
-As of yet, it is unknown what the underlying network structure of gene homology will look like. Analysing the network to uncover these underlying structural characteristics could add tremendous value to the field of genetic research. Some possible network analyses and their motivations are listed below: 
+As of yet, it is unknown what the underlying network structure of gene homology will look like. Analysing the network to uncover these underlying structural characteristics could add tremendous value to the field of genetic research. Some possible network analyses and their motivations are listed below:
 
-- The **Shortest Path** between two genes could be an estimator evolutionary distance. 
-- **Centraility Measures** could be used to determine the most popular gene homologs, or species which hold the most paralogous or orthologous gene relationships. 
-- **Detecting Communities** of gene homologs between species could be insightful, and perhaps provide a mechanism to predict homologous genes between species. 
+- The **Shortest Path** between two genes could be an estimator evolutionary distance.
+- **Centraility Measures** could be used to determine the most popular gene homologs, or species which hold the most paralogous or orthologous gene relationships.
+- **Detecting Communities** of gene homologs between species could be insightful, and perhaps provide a mechanism to predict homologous genes between species.
 
 ## Project Execution Roadmap
 

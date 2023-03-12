@@ -2,18 +2,30 @@
 
 A tool for exploring orthology and paraology relationships in model organism species.
 
+## Getting Started
+
+
+
 ## Development
 
 ### Requirements
 
-* pandoc 
-* tex
-* node
-* pnpm/yarn/npm
+- pandoc
+- tex
+- node
+- pnpm
 
-Note: This repository uses pnpm to manage javascript dependencies. Using npm or yarn may cause 
-issues due to the lock files not being used. Using npm or yarn for document generation should
-not be affected.
+Note: This repository uses pnpm to manage javascript dependencies. Using npm or yarn may cause
+issues due to the lock files not being used.
+
+### Setup
+
+```shell
+git clone git@github.com:jogoodma/homology-explorer.git
+cd homology-explorer
+pnpm install
+```
+
 
 ### PDF Generation
 
@@ -41,6 +53,3 @@ e.g.
 ```shell
 pnpm run pandoc:proposal
 ```
-
-
-

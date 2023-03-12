@@ -13,13 +13,20 @@
     }
   ],
   "scripts": {
+    "preinstall": "npx only-allow pnpm",
     "pandoc:proposal": "pandoc --pdf-engine=pdflatex --toc -N -o docs/proposal.pdf docs/proposal.md --filter mermaid-filter",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
-  "keywords": [],
+  "keywords": ["network","visualization","homology","orthology","paralogy"],
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "mermaid-filter": "^1.4.6"
-  }
+    "mermaid-filter": "^1.4.6",
+    "eslint-config-custom": "workspace:*",
+    "prettier": "latest"
+  },
+  "packageManager": "pnpm@7.28.0"
 }

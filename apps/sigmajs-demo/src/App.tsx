@@ -1,34 +1,28 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import './App.css'
+import { useEffect } from "react";
+import Graph from "graphology";
+import { SigmaContainer, useLoadGraph } from "@react-sigma/core";
+import "@react-sigma/core/lib/react-sigma.min.css";
 
-function App() {
-  const [count, setCount] = useState(0)
+const LoadGraph = () => {
+  const loadGraph = useLoadGraph();
 
+  useEffect(() => {
+    const graph = new Graph();
+    graph.addNode("first", { x: 0, y: 0, size: 15, label: "My first node", color: "#FA4F40" });
+    graph.addNode("second", { x: 10, y: 10, size: 10, label: "My second node", color: "#FA4F40" });
+    graph.addEdge("first","second")
+    loadGraph(graph);
+  }, [loadGraph]);
+
+  return null;
+};
+
+export const App = () => {
   return (
-    <div className="App">
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src="/vite.svg" className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </div>
-  )
-}
+    <SigmaContainer style={{ height: "1024px", width: "1024px" }}>
+      <LoadGraph />
+    </SigmaContainer>
+  );
+};
 
-export default App
+export default App;

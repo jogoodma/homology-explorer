@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "homology-explorer"
+version = "0.1.0"
+description = "A network visualization tool for exploring homology."
+authors = ["Your Name <you@example.com>"]
+license = "MIT"
+readme = "README.md"
+packages = [{include = "packages/homology_explorer"}]
+
+[tool.poetry.dependencies]
+python = ">=3.10,<3.12"
+notebook = "^6.5.3"
+networkx = "^3.0"
+pandas = "^1.5.3"
+numpy = "^1.24.2"
+duckdb = "^0.7.1"
+jupyterlab = "^3.6.1"
+scipy = "^1.10.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

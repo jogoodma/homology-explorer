@@ -1,5 +1,7 @@
-# Ignore everything in this directory
+# ignore everything...
 *
+
 # Except this file
 !.gitignore
 !README.md
+!dbBuilder.py

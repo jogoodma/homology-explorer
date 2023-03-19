@@ -4,8 +4,6 @@ A tool for exploring orthology and paraology relationships in model organism spe
 
 ## Getting Started
 
-
-
 ## Development
 
 ### Requirements
@@ -25,7 +23,6 @@ git clone git@github.com:jogoodma/homology-explorer.git
 cd homology-explorer
 pnpm install
 ```
-
 
 ### PDF Generation
 

@@ -12,7 +12,7 @@ flowchart LR
     a[(DuckDB SQL)]--raw data-->b[Python GeneNeighborhoodAPI]
     b--graphs-->d[Redis Cache]--graphs-->b
   end
-  
+
   subgraph Visualization Layer
     direction TB
     b--compiled graph-->c(gexf Graph);

@@ -9,9 +9,10 @@ def get_GeneInfo(db: Session, gene_id: int):
              .first()
 
 
-def get_OrthologPairs(db: Session, gene_id: int):
+def get_OrthologPairs(db: Session, gene_id: int, skip: int=0, limit: int=100):
     return db.query(models.OrthologPairs)\
              .filter((models.OrthologPairs.geneid1 == gene_id) | (models.OrthologPairs.geneid2 == gene_id))\
-             .first()
+             .offset(skip).limit(limit)\
+             .all()
 
 

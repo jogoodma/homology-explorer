@@ -20,8 +20,11 @@ fstapi-demo
 └── requirements.txt
 ```
 
-2. Either: 
+2. Run with `poetry`
    + `poetry run uvicorn app.main:app` to run the API locally
+   + navigate to http://127.0.0.1:8000/docs in browser
+
+3. Or with `docker`
    + `docker compose up` to build and run the container
 
 ## TODO

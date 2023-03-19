@@ -26,9 +26,9 @@ def read_GeneInfo(gene_id: int, db: Session = Depends(get_db)):
     return db_gene
 
 
-@app.get("/OrthologPairs/{gene_id}/", response_model=schemas.OrthologPairs)
-def read_OrthologPairs(gene_id: int, db: Session = Depends(get_db)):
-    db_pairs = crud.get_OrthologPairs(db, gene_id=gene_id)
+@app.get("/OrthologPairs/{gene_id}/", response_model=list[schemas.OrthologPairs])
+def read_OrthologPairs(gene_id: int, db: Session = Depends(get_db), skip: int = 0, limit: int = 100):
+    db_pairs = crud.get_OrthologPairs(db=db, gene_id=gene_id, skip=skip, limit=limit)
     if db_pairs is None:
         raise HTTPException(status_code=404, detail="Gene not found")
     return db_pairs

@@ -18,22 +18,18 @@ class GeneInfo(Base):
     map_location = Column(String)
     gene_type = Column(String)
 
-    #edges = relationship("OrthologPairs", back_populates="nodes")
-
 
 class OrthologPairs(Base):
     __tablename__ = "tblOrthologPairs"
 
     opb_id = Column(Integer, primary_key=True, index=True)
     species1 = Column(Integer)
-    geneid1 = Column(Integer)#, ForeignKey("tblGeneInfo.geneid"))
+    geneid1 = Column(Integer)
     species2 = Column(Integer)
-    geneid2  = Column(Integer)#, ForeignKey("tblGeneInfo.geneid"))
+    geneid2 = Column(Integer)
     weight = Column(Integer)
     best_score = Column(String)
     best_score_rev = Column(String)
     confidence = Column(String)
-
-    #nodes = relationship("GeneInfo", back_populates="edges")
 
 

@@ -29,5 +29,18 @@ fstapi-demo
 
 ## TODO
 
-Next steps are to upgrade the basic API as inspired by the `GeneNeighborhoodAPI`. See `../../docs`.
++ Add more API things
+   + See `../../docs/GeneNeighborhoodAPI` for some inspiration
+   + **Add `FastAPI` endpoints** for real-time network analysis calculations `networkx`
+   + **Add `FastAPI` endpoint** for top-10 search terms for Gene Code lookup
+      + for real-time search, `sqlalchemy` a possibility?
+      + https://web.archive.org/web/20121013063245/http://playnice.ly/blog/2010/05/05/a-fast-fuzzy-full-text-index-using-redis
+      + https://amitosh.medium.com/full-text-search-fts-with-postgresql-and-sqlalchemy-edc436330a0c
++ Some SQL things too
+   + CREATE TABLE + Index `GeneCode` list in `duck.db` database build phase
+   + Additional SQL table/attribute additions if necessary - IE, global network analyses
++ Redis Cache could be useful
+   + especially for text search
+   + also for neighborhood expansion clicking
+
 

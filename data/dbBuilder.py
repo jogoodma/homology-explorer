@@ -1,9 +1,11 @@
 import duckdb
 
 ### Initialize db connection
-con = duckdb.connect(database='duck.db')
+# con = duckdb.connect(database='duck.db')
+con = duckdb.connect(database=':memory:')
 
 ### build db from .tsv sourcefiles
+# tblGeneInfo
 con.execute(
     """
     DROP TABLE IF EXISTS tblGeneInfo;
@@ -15,6 +17,7 @@ con.execute(
     """
 )
 
+#tblOrthologPairs
 con.execute(
     """
     DROP TABLE IF EXISTS tblOrthologPairs;

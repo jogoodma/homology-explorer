@@ -19,7 +19,6 @@ class GeneInfo(GeneInfoBase):
     chromosome: str
     map_location: str
     gene_type: str
-    #edges: list[OrthologPairs] = []
     
     class Config:
         orm_mode = True
@@ -31,6 +30,7 @@ class OrthologPairsBase(BaseModel):
     species2: int
     geneid2: int
 
+
 class OrthologPairsCreate(OrthologPairsBase):
     pass
 
@@ -41,7 +41,7 @@ class OrthologPairs(OrthologPairsBase):
     best_score: str
     best_score_rev: str
     confidence: str
-    #nodes: list[GeneInfo] = []
 
     class Config:
         orm_mode = True
+

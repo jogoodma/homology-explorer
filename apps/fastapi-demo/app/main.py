@@ -34,3 +34,9 @@ def read_OrthologPairs(gene_id: int, db: Session = Depends(get_db), skip: int = 
     return db_pairs
 
 
+@app.get("/GeneNeighborhood/{gene_id}/")
+def read_GeneNeighborhood(gene_id: int, db: Session = Depends(get_db)):
+    db_neighborhood = crud.get_GeneNeighborhood(db=db, gene_id=gene_id)
+    if db_neighborhood is None:
+        raise HTTPException(status_code=404, detail="Gene not found")
+    return db_neighborhood

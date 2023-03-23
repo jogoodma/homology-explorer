@@ -25,9 +25,7 @@ class GeneInfo(GeneInfoBase):
 
 
 class OrthologPairsBase(BaseModel):
-    species1: int
     geneid1: int
-    species2: int
     geneid2: int
 
 
@@ -37,6 +35,8 @@ class OrthologPairsCreate(OrthologPairsBase):
 
 class OrthologPairs(OrthologPairsBase):
     opb_id: int
+    species1: int
+    species2: int
     weight: int
     best_score: str
     best_score_rev: str
@@ -44,4 +44,6 @@ class OrthologPairs(OrthologPairsBase):
 
     class Config:
         orm_mode = True
+
+
 

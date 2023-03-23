@@ -10,8 +10,12 @@
   },
   "dependencies": {
     "@react-sigma/core": "^3.3.0",
+    "@react-sigma/layout-circular": "^3.3.0",
+    "@react-sigma/layout-core": "^3.3.0",
     "@react-sigma/layout-forceatlas2": "^3.3.0",
     "graphology": "^0.25.1",
+    "graphology-gexf": "^0.10.3",
+    "graphology-layout": "^0.6.1",
     "graphology-layout-forceatlas2": "^0.10.1",
     "graphology-types": "^0.24.7",
     "lodash": "^4.17.21",

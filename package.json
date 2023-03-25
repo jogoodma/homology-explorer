@@ -1,0 +1,39 @@
+{
+  "name": "homology-explorer",
+  "version": "0.1.0",
+  "description": "A network visualization tool for exploring homology.",
+  "contributors": [
+    {
+      "name": "Josh Goodman",
+      "email": "jogoodma@iu.edu"
+    },
+    {
+      "name": "Mark Green",
+      "email": "mark@greenpnw.org"
+    }
+  ],
+  "scripts": {
+    "preinstall": "npx only-allow pnpm",
+    "pandoc:proposal": "pandoc --pdf-engine=pdflatex --toc -N -o docs/proposal.pdf docs/proposal.md --filter mermaid-filter",
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+  },
+  "keywords": [
+    "network",
+    "visualization",
+    "homology",
+    "orthology",
+    "paralogy"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "eslint-config-custom": "workspace:*",
+    "mermaid-filter": "^1.4.6",
+    "prettier": "latest",
+    "turbo": "^1.8.3"
+  },
+  "packageManager": "pnpm@7.28.0"
+}

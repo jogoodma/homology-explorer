@@ -1,5 +1,13 @@
+<<<<<<< HEAD
 # user added
 *.err
+=======
+### ADDED BY USER ###
+*.err
+*.gexf
+*.tsv
+*.db
+>>>>>>> origin/sigma-gexf
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -132,3 +140,5 @@ dmypy.json
 .pyre/
 
 .DS_Store
+node_modules
+.idea

@@ -1,18 +1,15 @@
 from pydantic import BaseModel
 
 
+# GeneInfo
 class GeneInfoBase(BaseModel):
+    symbol: str
     description: str
-
-
-class GeneInfoCreate(GeneInfoBase):
-    pass
+    speciesid: int
 
 
 class GeneInfo(GeneInfoBase):
     geneid: int
-    speciesid: int
-    symbol: str
     locus_tag: str
     species_specific_geneid: int
     species_specific_geneid_type: str
@@ -24,14 +21,11 @@ class GeneInfo(GeneInfoBase):
         orm_mode = True
 
 
+# Ortholog Pairs
 class OrthologPairsBase(BaseModel):
     geneid1: int
     geneid2: int
-
-
-class OrthologPairsCreate(OrthologPairsBase):
-    pass
-
+    
 
 class OrthologPairs(OrthologPairsBase):
     opb_id: int
@@ -45,5 +39,49 @@ class OrthologPairs(OrthologPairsBase):
     class Config:
         orm_mode = True
 
+
+# Gene Neighborhood Edges
+class GeneNeighborEdgesBase(BaseModel):
+    key: str
+
+
+class GeneNeighborEdgesAttr(BaseModel):
+    weight: int
+    opb_id: int
+
+    class Config:
+        orm_mode = True
+
+
+class GeneNeighborEdges(GeneNeighborEdgesBase):
+    source: int
+    target: int
+    attributes: GeneNeighborEdgesAttr | None = None
+
+    class Config:
+        orm_mode = True
+
+
+# Gene Neighborhood Nodes
+class GeneNeighborNodesBase(BaseModel):
+    key: int
+
+
+class GeneNeighborNodesAttr(BaseModel):
+    symbol: str
+    speciesid: int
+    description: str
+    chromosome: str
+    gene_type: str
+   
+    class Config:
+        orm_mode = True
+
+
+class GeneNeighborNodes(GeneNeighborNodesBase):
+    attributes: GeneNeighborNodesAttr | None = None
+
+    class Config:
+        orm_mode = True
 
 

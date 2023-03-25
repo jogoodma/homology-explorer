@@ -33,3 +33,60 @@ class OrthologPairs(Base):
     confidence = Column(String)
 
 
+class GeneNeighborEdges(Base):
+    __tablename__ = "evwGeneNeighborEdges"
+
+    key = Column(String, primary_key=True, index=True)
+    source = Column(String)
+    target = Column(String)
+
+    attributes = relationship(
+        "GeneNeighborEdgesAttr", 
+        back_populates="link",
+        uselist=False
+    )
+  
+
+class GeneNeighborEdgesAttr(Base):
+    __tablename__ = "evwGeneNeighborEdgesAttr"
+    
+    key = Column(String, ForeignKey("evwGeneNeighborEdges.key"), primary_key=True)
+    weight = Column(Integer)
+    opb_id = Column(Integer)
+    
+    link = relationship(
+        "GeneNeighborEdges", 
+        back_populates="attributes",
+        uselist=False
+    )
+
+
+class GeneNeighborNodes(Base):
+    __tablename__ = "evwGeneNeighborNodes"
+
+    key = Column(Integer, primary_key=True, index=True)
+
+    attributes = relationship(
+        "GeneNeighborNodesAttr", 
+        back_populates="node", 
+        uselist=False
+    )
+
+
+class GeneNeighborNodesAttr(Base):
+    __tablename__ = "evwGeneNeighborNodesAttr"
+    
+    key = Column(Integer, ForeignKey("evwGeneNeighborNodes.key"), primary_key=True)
+    symbol = Column(String)
+    speciesid = Column(Integer)
+    description = Column(String)
+    chromosome = Column(String)
+    gene_type = Column(String)
+
+    node = relationship(
+        "GeneNeighborNodes", 
+        back_populates="attributes", 
+        uselist=False
+    )
+
+

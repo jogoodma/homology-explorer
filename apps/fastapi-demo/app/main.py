@@ -34,10 +34,21 @@ def read_OrthologPairs(gene_id: int, db: Session = Depends(get_db), skip: int = 
     return db_pairs
 
 
-@app.get("/GeneNeighborhood/{gene_id}/", response_model=list[schemas.OrthologPairs])
-def read_GeneNeighborhood(gene_id: int, db: Session = Depends(get_db)):
-    db_neighborhood = crud.get_GeneNeighborhood(db=db, gene_id=gene_id)
-    if db_neighborhood is None:
+@app.get("/GeneNeighborEdges/{gene_id}/", response_model=list[schemas.GeneNeighborEdges])
+def read_GeneNeighborEdges(gene_id: int, db: Session = Depends(get_db)):
+    db_neighbors = crud.get_GeneNeighborhood(db=db, gene_id=gene_id)
+    db_neighboredges = crud.get_GeneNeighborEdges(db=db, neighbors=db_neighbors)
+    if db_neighboredges is None:
         raise HTTPException(status_code=404, detail="Gene not found")
-    return db_neighborhood
+    return db_neighboredges
+
+
+@app.get("/GeneNeighborNodes/{gene_id}/", response_model=list[schemas.GeneNeighborNodes])
+def read_GeneNeighborNodes(gene_id: int, db: Session = Depends(get_db)):
+    db_neighbors = crud.get_GeneNeighborhood(db=db, gene_id=gene_id)
+    db_neighbornodes = crud.get_GeneNeighborNodes(db=db, neighbors=db_neighbors)
+    if db_neighbornodes is None:
+        raise HTTPException(status_code=404, detail="Gene not found")
+    return db_neighbornodes
+
 

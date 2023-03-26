@@ -1,8 +1,8 @@
 import duckdb
 
 ### Initialize db connection
-# con = duckdb.connect(database='duck.db')
-con = duckdb.connect(database=':memory:')
+con = duckdb.connect(database='duck.db')
+#con = duckdb.connect(database=':memory:')
 
 ### build db from .tsv sourcefiles
 

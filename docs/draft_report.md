@@ -12,33 +12,16 @@ ${toc}
 
 # Abstract
 
-
-
 # Introduction
-
-
 
 # Methods
 
-
-
 ## Data Storage and API
-
-
 
 ## Network Analysis
 
-
-
 ## Web Application
-
-
 
 # Results
 
-
-
 # Discussion
-
-
-

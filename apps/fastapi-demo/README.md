@@ -5,7 +5,7 @@ This app serves a basic `FastAPI` access to the homology database, from within a
 1. Add the `duck.db` file to the `/app/` directory. Example Tree:
 
 ```markdown
-fstapi-demo
+fastapi-demo
 ├── app
 │   ├── crud.py
 │   ├── database.py

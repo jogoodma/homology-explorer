@@ -52,7 +52,6 @@ class GeneNeighborEdgesAttr(Base):
     
     key = Column(String, ForeignKey("evwGeneNeighborEdges.key"), primary_key=True)
     weight = Column(Integer)
-    opb_id = Column(Integer)
     
     link = relationship(
         "GeneNeighborEdges", 

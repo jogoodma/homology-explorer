@@ -47,7 +47,6 @@ class GeneNeighborEdgesBase(BaseModel):
 
 class GeneNeighborEdgesAttr(BaseModel):
     weight: int
-    opb_id: int
 
     class Config:
         orm_mode = True

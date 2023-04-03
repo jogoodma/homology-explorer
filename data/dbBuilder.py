@@ -42,7 +42,7 @@ con.execute(
     DROP VIEW IF EXISTS evwGeneNeighborEdges;
     CREATE VIEW evwGeneNeighborEdges AS 
         SELECT
-            concat_ws('->',geneid1,geneid2) AS 'key'
+            opb_id AS 'key'
             , geneid1 AS 'source'
             , geneid2 AS 'target'
         FROM tblOrthologPairs
@@ -56,9 +56,8 @@ con.execute(
     DROP VIEW IF EXISTS evwGeneNeighborEdgesAttr;
     CREATE VIEW evwGeneNeighborEdgesAttr AS 
         SELECT
-            concat_ws('->',geneid1,geneid2) AS 'key'
+            opb_id AS 'key'
             , weight
-            , opb_id
         FROM tblOrthologPairs
         WHERE best_score='Yes';
     """

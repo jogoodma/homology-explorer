@@ -36,6 +36,16 @@ con.execute(
 
 ### VIEWS ###
 
+#evwSymbolSearch
+con.execute(
+    """
+    DROP VIEW IF EXISTS evwSymbolSearch;
+    CREATE VIEW evwSymbolSearch AS 
+        SELECT geneid, speciesid, symbol
+        FROM tblGeneInfo;
+    """
+)
+
 #evwGeneNeighborEdges
 con.execute(
     """

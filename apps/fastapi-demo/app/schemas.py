@@ -1,15 +1,25 @@
 from pydantic import BaseModel
 
 
+# SymbolSearch
+class SymbolSearchBase(BaseModel):
+    geneid: int
+    speciesid: int
+    symbol: str
+
+    class Config:
+        orm_mode = True
+  
+
 # GeneInfo
 class GeneInfoBase(BaseModel):
     symbol: str
-    description: str
+    geneid: int
     speciesid: int
 
 
 class GeneInfo(GeneInfoBase):
-    geneid: int
+    description: str
     locus_tag: str
     species_specific_geneid: int
     species_specific_geneid_type: str
@@ -42,7 +52,7 @@ class OrthologPairs(OrthologPairsBase):
 
 # Gene Neighborhood Edges
 class GeneNeighborEdgesBase(BaseModel):
-    key: str
+    key: int
 
 
 class GeneNeighborEdgesAttr(BaseModel):

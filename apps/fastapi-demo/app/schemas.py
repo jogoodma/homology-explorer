@@ -2,7 +2,7 @@ from pydantic import BaseModel
 
 
 # SymbolSearch
-class SymbolSearchBase(BaseModel):
+class SymbolSearch(BaseModel):
     geneid: int
     symbol: str
     speciesid: int
@@ -83,8 +83,11 @@ class GeneNeighborNodesBase(BaseModel):
 
 class GeneNeighborNodesAttr(BaseModel):
     symbol: str
-    speciesid: int
     description: str
+    speciesid: int
+    common_name: str
+    genus: str
+    species: str
     chromosome: str
     gene_type: str
    

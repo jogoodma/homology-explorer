@@ -149,13 +149,18 @@ con.execute(
     DROP VIEW IF EXISTS evwGeneNeighborNodesAttr;
     CREATE VIEW evwGeneNeighborNodesAttr AS 
         SELECT
-            geneid AS 'key'
-            , symbol
-            , speciesid
-            , description
-            , chromosome
-            , gene_type
-        FROM tblGeneInfo
+            a.geneid AS 'key'
+            , a.symbol
+            , a.description
+            , a.speciesid
+            , b.common_name
+            , b.genus
+            , b.species
+            , a.chromosome
+            , a.gene_type
+        FROM tblGeneInfo a
+        LEFT JOIN tblSpecies b
+            ON a.speciesid = b.taxonomyid;
     """
 )
 

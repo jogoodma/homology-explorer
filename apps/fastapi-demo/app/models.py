@@ -90,8 +90,11 @@ class GeneNeighborNodesAttr(Base):
     
     key = Column(Integer, ForeignKey("evwGeneNeighborNodes.key"), primary_key=True)
     symbol = Column(String)
-    speciesid = Column(Integer)
     description = Column(String)
+    speciesid = Column(Integer)
+    common_name = Column(String)
+    genus = Column(String)
+    species = Column(String)  
     chromosome = Column(String)
     gene_type = Column(String)
 

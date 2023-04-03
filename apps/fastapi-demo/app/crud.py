@@ -30,7 +30,8 @@ def get_GeneInfo(db: Session, gene_id: int):
              .first()
 
 
-def get_OrthologPairs(db: Session, gene_id: int, skip: int = 0, limit: int = 1000000):
+def get_OrthologPairs(db: Session, gene_id: int, 
+                      skip: int = 0, limit: int = 1000000):
    
     return db.query(models.OrthologPairs)\
              .filter(
@@ -41,24 +42,53 @@ def get_OrthologPairs(db: Session, gene_id: int, skip: int = 0, limit: int = 100
 
 ### Gene Neighbor Info ###
 
-def get_GeneNeighborhood(db: Session, gene_id: int):
+def get_GeneNeighborhood(db: Session, gene_id: int, 
+#                         species: str | None = None,
+#                         strict: bool = True,
+                         weight_lb: int | None = None,
+                         weight_ub: int | None = None):
     
-    gid = db.query(models.OrthologPairs.geneid1, models.OrthologPairs.geneid2)\
-            .filter(
-                 (models.OrthologPairs.geneid1 == gene_id) | 
-                 (models.OrthologPairs.geneid2 == gene_id)
-            ).distinct().all()
+    q = db.query(models.OrthologPairs.geneid1, models.OrthologPairs.geneid2)\
+          .filter(
+              (models.OrthologPairs.geneid1 == gene_id) | 
+              (models.OrthologPairs.geneid2 == gene_id)
+          ).distinct()
     
-    return list(set([i for (i,j) in gid]+[j for (i,j) in gid]))
+#    if strict:
+#        if species is not None:
+#            q = q.filter(
+#                (models.OrthologPairs.species1 == species) &
+#                (models.OrthologPairs.species2 == species)
+#            )
+#    else:
+#        if species is not None:
+#            q = q.filter(
+#                (models.OrthologPairs.species1 == species) |
+#                (models.OrthologPairs.species2 == species)
+#            )
+#    
+    if weight_lb is not None:
+        q = q.filter((models.OrthologPairs.weight) >= weight_lb)
+ 
+    if weight_ub is not None:
+        q = q.filter((models.OrthologPairs.weight) <= weight_ub)
+    
+    q = q.all()
+    
+    result = list(set([i for (i,j) in q]+[j for (i,j) in q]))
+
+    return result
 
 
 def get_GeneNeighborEdges(db: Session, neighbors: list):   
     
-    return db.query(models.GeneNeighborEdges)\
-             .filter(
-                 (models.GeneNeighborEdges.source.in_(neighbors)) & 
-                 (models.GeneNeighborEdges.target.in_(neighbors))
-             ).all()
+    q = db.query(models.GeneNeighborEdges)\
+          .filter(
+              (models.GeneNeighborEdges.source.in_(neighbors)) & 
+              (models.GeneNeighborEdges.target.in_(neighbors))
+          )
+     
+    return q.all()
 
 
 def get_GeneNeighborNodes(db: Session, neighbors: list):

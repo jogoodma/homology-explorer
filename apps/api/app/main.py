@@ -36,7 +36,7 @@ def read_SymbolSearch(symbol: str, common_name: str = None,
     return db_symbol
 
 
-@app.get("/GeneInfo/{gene_id}/", response_model=schemas.GeneInfo)
+@app.get("/geneinfo/gene/{gene_id}/", response_model=schemas.GeneInfo)
 def read_GeneInfo(gene_id: int, db: Session = Depends(get_db)):
     
     db_gene = crud.get_GeneInfo(db, gene_id=gene_id)
@@ -47,7 +47,7 @@ def read_GeneInfo(gene_id: int, db: Session = Depends(get_db)):
     return db_gene
 
 
-@app.get("/OrthologPairs/{gene_id}/", response_model=list[schemas.OrthologPairs])
+@app.get("/orthologpairs/gene/{gene_id}/", response_model=list[schemas.OrthologPairs])
 def read_OrthologPairs(gene_id: int, db: Session = Depends(get_db), 
                        skip: int = 0, limit: int = 10000):
     
@@ -59,7 +59,7 @@ def read_OrthologPairs(gene_id: int, db: Session = Depends(get_db),
     return db_pairs
 
 
-@app.get("/GeneNeighborEdges/{gene_id}/", response_model=list[schemas.GeneNeighborEdges])
+@app.get("/geneneighboredges/gene/{gene_id}/", response_model=list[schemas.GeneNeighborEdges])
 def read_GeneNeighborEdges(gene_id: int, #species: str = None, strict: bool = True,
                            weight_lb: int = None, weight_ub: int = None, 
                            db: Session = Depends(get_db)):
@@ -76,7 +76,7 @@ def read_GeneNeighborEdges(gene_id: int, #species: str = None, strict: bool = Tr
     return db_neighboredges
 
 
-@app.get("/GeneNeighborNodes/{gene_id}/", response_model=list[schemas.GeneNeighborNodes])
+@app.get("/geneneighbornodes/gene/{gene_id}/", response_model=list[schemas.GeneNeighborNodes])
 def read_GeneNeighborNodes(gene_id: int, db: Session = Depends(get_db)):
     
     db_neighbors = crud.get_GeneNeighborhood(db=db, gene_id=gene_id)

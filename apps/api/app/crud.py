@@ -7,15 +7,15 @@ from . import models, schemas
 ### Original Gene and Orthology Info ###
 
 def get_SymbolSearch(db: Session, symbol: str, 
-                     common_name: str | None = None, 
+                     speciesid: int | None = None,
                      order_by_frequency: bool = True, 
                      skip: int = 0, limit: int = 20): 
     
     q = db.query(models.SymbolSearch)\
           .filter((models.SymbolSearch.symbol.like(f"%{symbol}%")))    
 
-    if common_name is not None:
-        q = q.filter((models.SymbolSearch.common_name == common_name))
+    if speciesid is not None:
+        q = q.filter((models.SymbolSearch.speciesid == speciesid))
 
     if order_by_frequency:
         q = q.order_by((models.SymbolSearch.frequency.desc().nullslast()))
@@ -43,8 +43,8 @@ def get_OrthologPairs(db: Session, gene_id: int,
 ### Gene Neighbor Info ###
 
 def get_GeneNeighborhood(db: Session, gene_id: int, 
-#                         species: str | None = None,
-#                         strict: bool = True,
+                         speciesid: int | None = None,
+                         strict: bool = True,
                          weight_lb: int | None = None,
                          weight_ub: int | None = None):
     
@@ -54,19 +54,19 @@ def get_GeneNeighborhood(db: Session, gene_id: int,
               (models.OrthologPairs.geneid2 == gene_id)
           ).distinct()
     
-#    if strict:
-#        if species is not None:
-#            q = q.filter(
-#                (models.OrthologPairs.species1 == species) &
-#                (models.OrthologPairs.species2 == species)
-#            )
-#    else:
-#        if species is not None:
-#            q = q.filter(
-#                (models.OrthologPairs.species1 == species) |
-#                (models.OrthologPairs.species2 == species)
-#            )
-#    
+    if strict:
+        if speciesid is not None:
+            q = q.filter(
+                (models.OrthologPairs.species1 == speciesid) &
+                (models.OrthologPairs.species2 == speciesid)
+            )
+    else:
+        if speciesid is not None:
+            q = q.filter(
+                (models.OrthologPairs.species1 == speciesid) |
+                (models.OrthologPairs.species2 == speciesid)
+            )
+    
     if weight_lb is not None:
         q = q.filter((models.OrthologPairs.weight) >= weight_lb)
  

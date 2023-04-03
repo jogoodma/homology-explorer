@@ -19,13 +19,13 @@ def get_db():
 
 
 @app.get("/search/gene/symbol/{symbol}/", response_model=list[schemas.SymbolSearch])
-def read_SymbolSearch(symbol: str, common_name: str = None, 
+def read_SymbolSearch(symbol: str, speciesid: int = None,
                       order_by_frequency: bool = True,
                       db: Session = Depends(get_db), 
                       skip: int = 0, limit: int = 20):
     
     db_symbol = crud.get_SymbolSearch(
-        db, symbol=symbol, common_name=common_name, 
+        db, symbol=symbol, speciesid=speciesid,
         order_by_frequency=order_by_frequency,
         skip=skip, limit=limit
     )
@@ -60,12 +60,12 @@ def read_OrthologPairs(gene_id: int, db: Session = Depends(get_db),
 
 
 @app.get("/geneneighboredges/gene/{gene_id}/", response_model=list[schemas.GeneNeighborEdges])
-def read_GeneNeighborEdges(gene_id: int, #species: str = None, strict: bool = True,
+def read_GeneNeighborEdges(gene_id: int, speciesid: int = None, strict: bool = True,
                            weight_lb: int = None, weight_ub: int = None, 
                            db: Session = Depends(get_db)):
     
     db_neighbors = crud.get_GeneNeighborhood(
-        db=db, gene_id=gene_id, #species=species, strict=strict,
+        db=db, gene_id=gene_id, speciesid=speciesid, strict=strict,
         weight_lb=weight_lb, weight_ub=weight_ub
     )
     db_neighboredges = crud.get_GeneNeighborEdges(db=db, neighbors=db_neighbors)

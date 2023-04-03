@@ -48,6 +48,38 @@ con.execute(
 
 ### VIEWS ###
 
+#evwGeneFrequency
+con.execute(
+    """
+    DROP VIEW IF EXISTS evwGeneFrequency;
+    CREATE VIEW evwGeneFrequency AS 
+       SELECT 
+        geneid1 AS 'geneid'
+        , COUNT(*) AS 'frequency' 
+       FROM tblOrthologPairs
+       GROUP BY geneid1;
+    """
+)
+
+#evwSymbolSearch
+con.execute(
+    """
+    DROP VIEW IF EXISTS evwSymbolSearch;
+    CREATE VIEW evwSymbolSearch AS 
+        SELECT 
+            a.geneid
+            , a.symbol
+            , a.speciesid
+            , b.common_name
+            , c.frequency
+        FROM tblGeneInfo a
+        LEFT JOIN tblSpecies b
+            ON a.speciesid = b.taxonomyid
+        LEFT JOIN evwGeneFrequency c
+            ON a.geneid = c.geneid;
+    """
+)
+
 #evwGeneInfo
 con.execute(
     """
@@ -68,23 +100,7 @@ con.execute(
             , a.map_location
             , a.gene_type
         FROM tblGeneInfo a
-        JOIN tblSpecies b
-            ON a.speciesid = b.taxonomyid;
-    """
-)
-
-#evwSymbolSearch
-con.execute(
-    """
-    DROP VIEW IF EXISTS evwSymbolSearch;
-    CREATE VIEW evwSymbolSearch AS 
-        SELECT 
-            a.geneid
-            , a.symbol
-            , a.speciesid
-            , b.common_name
-        FROM tblGeneInfo a
-        JOIN tblSpecies b
+        LEFT JOIN tblSpecies b
             ON a.speciesid = b.taxonomyid;
     """
 )

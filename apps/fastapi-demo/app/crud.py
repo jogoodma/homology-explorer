@@ -1,19 +1,26 @@
 from sqlalchemy.orm import Session
 from sqlalchemy.sql.expression import label
+from sqlalchemy import nullslast
 
 from . import models, schemas
 
 ### Original Gene and Orthology Info ###
 
-def get_SymbolSearch(db: Session, symbol: str, skip: int = 0, limit: int = 20): 
+def get_SymbolSearch(db: Session, symbol: str, 
+                     common_name: str | None = None, 
+                     order_by_frequency: bool = True, 
+                     skip: int = 0, limit: int = 20): 
+    
+    q = db.query(models.SymbolSearch)\
+          .filter((models.SymbolSearch.symbol.like(f"%{symbol}%")))    
 
-    q =    db.query(models.SymbolSearch)\
-             .filter(
-                 (models.SymbolSearch.symbol.like(f"%{symbol}%"))
-             ).offset(skip).limit(limit).all()
-    print(q)
+    if common_name is not None:
+        q = q.filter((models.SymbolSearch.common_name == common_name))
 
-    return q
+    if order_by_frequency:
+        q = q.order_by((models.SymbolSearch.frequency.desc().nullslast()))
+        
+    return q.offset(skip).limit(limit).all()
 
 
 def get_GeneInfo(db: Session, gene_id: int):

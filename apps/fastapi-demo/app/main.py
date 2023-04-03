@@ -18,15 +18,22 @@ def get_db():
         db.close()
 
 
-@app.get("/search/gene/symbol/{symbol}", response_model=list[schemas.SymbolSearchBase])
-def read_SymbolSearch(symbol: str, db: Session = Depends(get_db), skip: int = 0, limit: int = 20):
-    db_symbol = crud.get_SymbolSearch(db, symbol=symbol, skip=skip, limit=limit)
+@app.get("/search/gene/symbol/{symbol}/", response_model=list[schemas.SymbolSearchBase])
+def read_SymbolSearch(symbol: str, common_name: str = None, 
+                      order_by_frequency: bool = True,
+                      db: Session = Depends(get_db), 
+                      skip: int = 0, limit: int = 20):
+    db_symbol = crud.get_SymbolSearch(
+        db, symbol=symbol, common_name=common_name, 
+        order_by_frequency=order_by_frequency,
+        skip=skip, limit=limit
+    )
     if db_symbol is None:
         raise HTTPException(status_code=404, detail="Symbol not found")
     return db_symbol
 
 
-@app.get("/GeneInfo/{gene_id}", response_model=schemas.GeneInfo)
+@app.get("/GeneInfo/{gene_id}/", response_model=schemas.GeneInfo)
 def read_GeneInfo(gene_id: int, db: Session = Depends(get_db)):
     db_gene = crud.get_GeneInfo(db, gene_id=gene_id)
     if db_gene is None:
@@ -35,7 +42,8 @@ def read_GeneInfo(gene_id: int, db: Session = Depends(get_db)):
 
 
 @app.get("/OrthologPairs/{gene_id}/", response_model=list[schemas.OrthologPairs])
-def read_OrthologPairs(gene_id: int, db: Session = Depends(get_db), skip: int = 0, limit: int = 10000):
+def read_OrthologPairs(gene_id: int, db: Session = Depends(get_db), 
+                       skip: int = 0, limit: int = 10000):
     db_pairs = crud.get_OrthologPairs(db=db, gene_id=gene_id, skip=skip, limit=limit)
     if db_pairs is None:
         raise HTTPException(status_code=404, detail="Gene not found")

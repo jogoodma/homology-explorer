@@ -11,6 +11,7 @@ class SymbolSearch(Base):
     symbol = Column(String)
     speciesid = Column(Integer)
     common_name = Column(String)
+    frequency = Column(Integer)
 
 
 class GeneInfo(Base):

@@ -7,6 +7,7 @@ class SymbolSearchBase(BaseModel):
     symbol: str
     speciesid: int
     common_name: str
+    frequency: int | None = None
 
     class Config:
         orm_mode = True

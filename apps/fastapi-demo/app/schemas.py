@@ -4,8 +4,9 @@ from pydantic import BaseModel
 # SymbolSearch
 class SymbolSearchBase(BaseModel):
     geneid: int
-    speciesid: int
     symbol: str
+    speciesid: int
+    common_name: str
 
     class Config:
         orm_mode = True
@@ -13,13 +14,16 @@ class SymbolSearchBase(BaseModel):
 
 # GeneInfo
 class GeneInfoBase(BaseModel):
-    symbol: str
+    description: str
     geneid: int
+    symbol: str
     speciesid: int
+    common_name: str
 
 
 class GeneInfo(GeneInfoBase):
-    description: str
+    genus:str
+    species:str
     locus_tag: str
     species_specific_geneid: int
     species_specific_geneid_type: str

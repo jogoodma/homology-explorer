@@ -8,17 +8,21 @@ class SymbolSearch(Base):
     __tablename__ = "evwSymbolSearch"
 
     geneid = Column(Integer, primary_key=True, index=True)
-    speciesid = Column(Integer)
     symbol = Column(String)
+    speciesid = Column(Integer)
+    common_name = Column(String)
 
 
 class GeneInfo(Base):
-    __tablename__ = "tblGeneInfo"
+    __tablename__ = "evwGeneInfo"
 
     geneid = Column(Integer, primary_key=True, index=True)
-    speciesid = Column(Integer)
     symbol = Column(String)
     description = Column(String)
+    speciesid = Column(Integer)
+    common_name = Column(String)
+    genus = Column(String)
+    species = Column(String) 
     locus_tag = Column(String)
     species_specific_geneid = Column(Integer)
     species_specific_geneid_type = Column(String)

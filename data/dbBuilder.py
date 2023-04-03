@@ -4,9 +4,21 @@ import duckdb
 con = duckdb.connect(database='duck.db')
 #con = duckdb.connect(database=':memory:')
 
-### build db from .tsv sourcefiles
-
 ### TABLES ###
+
+# build db from .tsv sourcefiles
+
+#tblSpecies
+con.execute(
+    """
+    DROP TABLE IF EXISTS tblSpecies;
+    CREATE TABLE tblSpecies AS 
+        SELECT * FROM read_csv(
+            'Species.tsv', delim='\t',
+            header=True, AUTO_DETECT=TRUE
+        );
+    """
+)
 
 # tblGeneInfo
 con.execute(
@@ -36,13 +48,44 @@ con.execute(
 
 ### VIEWS ###
 
+#evwGeneInfo
+con.execute(
+    """
+    DROP VIEW IF EXISTS evwGeneInfo;
+    CREATE VIEW evwGeneInfo AS 
+        SELECT 
+            a.geneid
+            , a.symbol
+            , a.description
+            , a.speciesid
+            , b.common_name
+            , b.genus
+            , b.species
+            , a.locus_tag
+            , a.species_specific_geneid
+            , a.species_specific_geneid_type
+            , a.chromosome
+            , a.map_location
+            , a.gene_type
+        FROM tblGeneInfo a
+        JOIN tblSpecies b
+            ON a.speciesid = b.taxonomyid;
+    """
+)
+
 #evwSymbolSearch
 con.execute(
     """
     DROP VIEW IF EXISTS evwSymbolSearch;
     CREATE VIEW evwSymbolSearch AS 
-        SELECT geneid, speciesid, symbol
-        FROM tblGeneInfo;
+        SELECT 
+            a.geneid
+            , a.symbol
+            , a.speciesid
+            , b.common_name
+        FROM tblGeneInfo a
+        JOIN tblSpecies b
+            ON a.speciesid = b.taxonomyid;
     """
 )
 

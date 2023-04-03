@@ -5,6 +5,17 @@ from . import models, schemas
 
 ### Original Gene and Orthology Info ###
 
+def get_SymbolSearch(db: Session, symbol: str, skip: int = 0, limit: int = 20): 
+
+    q =    db.query(models.SymbolSearch)\
+             .filter(
+                 (models.SymbolSearch.symbol.like(f"%{symbol}%"))
+             ).offset(skip).limit(limit).all()
+    print(q)
+
+    return q
+
+
 def get_GeneInfo(db: Session, gene_id: int):
     
     return db.query(models.GeneInfo)\
@@ -24,6 +35,7 @@ def get_OrthologPairs(db: Session, gene_id: int, skip: int = 0, limit: int = 100
 ### Gene Neighbor Info ###
 
 def get_GeneNeighborhood(db: Session, gene_id: int):
+    
     gid = db.query(models.OrthologPairs.geneid1, models.OrthologPairs.geneid2)\
             .filter(
                  (models.OrthologPairs.geneid1 == gene_id) | 

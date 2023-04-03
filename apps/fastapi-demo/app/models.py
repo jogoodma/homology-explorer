@@ -4,6 +4,14 @@ from sqlalchemy.orm import relationship
 from .database import Base
 
 
+class SymbolSearch(Base):
+    __tablename__ = "evwSymbolSearch"
+
+    geneid = Column(Integer, primary_key=True, index=True)
+    speciesid = Column(Integer)
+    symbol = Column(String)
+
+
 class GeneInfo(Base):
     __tablename__ = "tblGeneInfo"
 
@@ -36,9 +44,9 @@ class OrthologPairs(Base):
 class GeneNeighborEdges(Base):
     __tablename__ = "evwGeneNeighborEdges"
 
-    key = Column(String, primary_key=True, index=True)
-    source = Column(String)
-    target = Column(String)
+    key = Column(Integer, primary_key=True, index=True)
+    source = Column(Integer)
+    target = Column(Integer)
 
     attributes = relationship(
         "GeneNeighborEdgesAttr", 
@@ -50,7 +58,7 @@ class GeneNeighborEdges(Base):
 class GeneNeighborEdgesAttr(Base):
     __tablename__ = "evwGeneNeighborEdgesAttr"
     
-    key = Column(String, ForeignKey("evwGeneNeighborEdges.key"), primary_key=True)
+    key = Column(Integer, ForeignKey("evwGeneNeighborEdges.key"), primary_key=True)
     weight = Column(Integer)
     
     link = relationship(

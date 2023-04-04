@@ -8,19 +8,21 @@ from . import models, schemas
 
 def get_SymbolSearch(db: Session, symbol: str, 
                      speciesid: int | None = None,
-                     order_by_frequency: bool = True, 
+                     order_by_alpha: bool = True, 
                      skip: int = 0, limit: int = 20): 
     
     q = db.query(models.SymbolSearch)\
-          .filter((models.SymbolSearch.symbol.like(f"%{symbol}%")))    
+          .filter((models.SymbolSearch.symbol.ilike(f"%{symbol}%")))    
 
     if speciesid is not None:
         q = q.filter((models.SymbolSearch.speciesid == speciesid))
+    
+    q = q.offset(skip).limit(limit)
 
-    if order_by_frequency:
-        q = q.order_by((models.SymbolSearch.frequency.desc().nullslast()))
+    if order_by_alpha:
+        q = q.order_by((models.SymbolSearch.symbol))
         
-    return q.offset(skip).limit(limit).all()
+    return q.all()
 
 
 def get_GeneInfo(db: Session, gene_id: int):

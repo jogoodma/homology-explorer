@@ -16,12 +16,12 @@ def get_SymbolSearch(db: Session, symbol: str,
 
     if speciesid is not None:
         q = q.filter((models.SymbolSearch.speciesid == speciesid))
-    
-    q = q.offset(skip).limit(limit)
 
     if order_by_alpha:
         q = q.order_by((models.SymbolSearch.symbol))
         
+    q = q.offset(skip).limit(limit)
+
     return q.all()
 
 

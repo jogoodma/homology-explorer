@@ -1,15 +1,23 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import GeneSearch from "../components/GeneSearch";
 import type { GeneInfo } from "../types";
-// TODO - Replace with API call.
-import jsonData from "../../../../data/human_gene_info.json";
 import { GeneResults } from "../components/GeneResults";
-
-const geneInfoData = jsonData as GeneInfo[];
 
 export default function Home() {
   // State variable for keeping track of user input.
   const [gene, setGene] = useState<string | null>(null);
+  const [geneInfoData, setGeneInfoData] = useState<GeneInfo[]>([]);
+
+  useEffect(() => {
+    const getGeneSearchResults = async () => {
+      const data = await fetch(`/api/search/gene/symbol/${gene}/`);
+      const jsonData: GeneInfo[] = await data.json();
+      setGeneInfoData(jsonData);
+    };
+    if (gene && gene.length > 0) {
+      getGeneSearchResults();
+    }
+  }, [gene]);
 
   const geneResults = geneInfoData
     .filter((geneInfo) => {

@@ -12,8 +12,8 @@ interface OrthologPair {
   best_score_rev: string;
   confidence: string;
 }
-const fetchOrthologPairs = async (): Promise<OrthologPair[]> => {
-  const response = await fetch(`/api/OrthologPairs/2911/`);
+const fetchOrthologPairs = async (geneid: string): Promise<OrthologPair[]> => {
+  const response = await fetch(`/api/orthologpairs/gene/${geneid}/`);
   if (response.ok) {
     return await response.json();
   } else {
@@ -21,8 +21,8 @@ const fetchOrthologPairs = async (): Promise<OrthologPair[]> => {
   }
 };
 
-export const createGraph = async () => {
-  const orthologPairs = await fetchOrthologPairs();
+export const createGraph = async (geneid: string) => {
+  const orthologPairs = await fetchOrthologPairs(geneid);
   const graph = new Graph();
   orthologPairs.forEach((op, i) => {
     const { geneid1, geneid2 } = op;

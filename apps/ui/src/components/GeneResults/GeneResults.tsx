@@ -1,4 +1,5 @@
 import { GeneInfo } from "../../types";
+import { Link } from "react-router-dom";
 
 interface GeneResultsProps {
   results: GeneInfo[];
@@ -9,9 +10,16 @@ export const GeneResults = ({ results }: GeneResultsProps) => {
   return (
     <div className="max-h-96 overflow-auto">
       {results.map((gene) => (
-        <p key={gene.geneid}>
-          {gene.symbol} {gene.description}
-        </p>
+        <div
+          key={gene.geneid}
+          className={"flex flex-row justify-between px-10"}
+        >
+          <div>Gene: {gene.symbol}</div>
+          <div>Species: {gene.speciesid}</div>
+          <div>
+            <Link to={`/network/gene/${gene.geneid}`}>View Network</Link>
+          </div>
+        </div>
       ))}
     </div>
   );

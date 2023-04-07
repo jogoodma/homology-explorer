@@ -6,13 +6,18 @@ import {
   ZoomControl,
 } from "@react-sigma/core";
 import "@react-sigma/core/lib/react-sigma.min.css";
-import OrthologyGraphLoader from "./components/OrthologyGraphLoader";
+import OrthologyGraphLoader from "../OrthologyGraphLoader";
 import { LayoutForceAtlas2Control } from "@react-sigma/layout-forceatlas2";
+import { useParams } from "react-router-dom";
 
-export const App = () => {
+export const GeneNetwork = () => {
+  const { geneid } = useParams();
+
+  if (!geneid) return null;
+
   return (
-    <SigmaContainer style={{ height: "1024px", width: "1024px" }}>
-      <OrthologyGraphLoader />
+    <SigmaContainer style={{ height: "1024px", width: "1400px" }}>
+      <OrthologyGraphLoader geneid={geneid} />
       <ControlsContainer position={"bottom-right"}>
         <ZoomControl />
         <FullScreenControl />
@@ -22,4 +27,4 @@ export const App = () => {
   );
 };
 
-export default App;
+export default GeneNetwork;

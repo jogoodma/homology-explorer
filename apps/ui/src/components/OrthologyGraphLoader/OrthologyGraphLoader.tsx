@@ -4,14 +4,17 @@ import { useLayoutForceAtlas2 } from "@react-sigma/layout-forceatlas2";
 import { useLayoutCircular } from "@react-sigma/layout-circular";
 import { createGraph } from "./OrthologyGraphLoader.helpers";
 
-const OrthologyGraphLoader = () => {
+interface OrthologyGraphLoaderProps {
+  geneid: string;
+}
+const OrthologyGraphLoader = ({ geneid }: OrthologyGraphLoaderProps) => {
   const { positions, assign } = useLayoutForceAtlas2();
   // const { positions, assign } = useLayoutCircular();
   const loadGraph = useLoadGraph();
 
   useEffect(() => {
     const initGraph = async () => {
-      const graph = await createGraph();
+      const graph = await createGraph(geneid);
       loadGraph(graph);
       assign();
     };

@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy.sql.expression import label
 from sqlalchemy import nullslast
+from thefuzz import process
 
 from . import models, schemas
 
@@ -8,20 +9,22 @@ from . import models, schemas
 
 def get_SymbolSearch(db: Session, symbol: str, 
                      speciesid: int | None = None,
-                     order_by_alpha: bool = True, 
-                     skip: int = 0, limit: int = 20): 
+                     limit: int = 20): 
     
     q = db.query(models.SymbolSearch)\
           .filter((models.SymbolSearch.symbol.ilike(f"%{symbol}%")))    
 
     if speciesid is not None:
         q = q.filter((models.SymbolSearch.speciesid == speciesid))
-    
-    q = q.offset(skip).limit(limit)
+     
+    simlist = process.extract(
+        symbol, 
+        set([d.__dict__['symbol'] for d in q.all()]),
+        limit = limit
+    )
 
-    if order_by_alpha:
-        q = q.order_by((models.SymbolSearch.symbol))
-        
+    q = q.filter
+
     return q.all()
 
 

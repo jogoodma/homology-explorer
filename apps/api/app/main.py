@@ -20,14 +20,11 @@ def get_db():
 
 @app.get("/search/gene/symbol/{symbol}/", response_model=list[schemas.SymbolSearch])
 def read_SymbolSearch(symbol: str, speciesid: int = None,
-                      order_by_alpha: bool = True,
                       db: Session = Depends(get_db), 
-                      skip: int = 0, limit: int = 20):
+                      limit: int = 20):
     
     db_symbol = crud.get_SymbolSearch(
-        db, symbol=symbol, speciesid=speciesid,
-        order_by_alpha=order_by_alpha,
-        skip=skip, limit=limit
+        db, symbol=symbol, speciesid=speciesid, limit=limit
     )
     
     if db_symbol is None:
@@ -75,6 +72,7 @@ def read_GeneNeighborEdges(gene_id: int, speciesid: int = None, strict: bool = T
     
     return db_neighboredges
 
+# TODO: replicate above below such that GeneNeighborNodes can be subset speciesid, strict, and weight
 
 @app.get("/geneneighbornodes/gene/{gene_id}/", response_model=list[schemas.GeneNeighborNodes])
 def read_GeneNeighborNodes(gene_id: int, db: Session = Depends(get_db)):

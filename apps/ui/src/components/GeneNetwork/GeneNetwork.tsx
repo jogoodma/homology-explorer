@@ -8,16 +8,23 @@ import {
 import "@react-sigma/core/lib/react-sigma.min.css";
 import OrthologyGraphLoader from "../OrthologyGraphLoader";
 import { LayoutForceAtlas2Control } from "@react-sigma/layout-forceatlas2";
-import { useParams } from "react-router-dom";
+import Graph from "graphology";
 
-export const GeneNetwork = () => {
-  const { geneid } = useParams();
-
-  if (!geneid) return null;
-
+interface GeneNetworkProps {
+  geneid: string;
+  graph: Graph;
+  height?: string;
+  width?: string;
+}
+export const GeneNetwork = ({
+  geneid,
+  graph,
+  height = "768px",
+  width = "1024px",
+}: GeneNetworkProps) => {
   return (
-    <SigmaContainer style={{ height: "1024px", width: "1400px" }}>
-      <OrthologyGraphLoader geneid={geneid} />
+    <SigmaContainer style={{ height, width }}>
+      <OrthologyGraphLoader geneid={geneid} graph={graph} />
       <ControlsContainer position={"bottom-right"}>
         <ZoomControl />
         <FullScreenControl />

@@ -1,16 +1,27 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import GeneNetwork from "./components/GeneNetwork/GeneNetwork";
+import Layout from "./pages/layout";
 import Home from "./pages/index";
+import GeneNetworkPage from "./pages/gene/network";
+import { loader as orthologPairLoader } from "./helpers/ortholog-pair.helpers";
 import "./index.css";
+import ErrorPage from "./pages/error";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Home />,
+    element: <Layout />,
+    errorElement: <ErrorPage />,
+    children: [
+      { index: true, element: <Home /> },
+      {
+        path: "/network/gene/:geneid",
+        element: <GeneNetworkPage />,
+        loader: orthologPairLoader,
+      },
+    ],
   },
-  { path: "/network/gene/:geneid", element: <GeneNetwork /> },
 ]);
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(

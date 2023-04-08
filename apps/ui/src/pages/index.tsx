@@ -30,19 +30,9 @@ export default function Home() {
     .slice(0, 19);
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <header className="w-full h-28 bg-indigo-700 justify-items-start flex flex-col justify-center">
-        <h1 className="text-slate-50 text-5xl pl-8">Homology Explorer</h1>
-      </header>
-      <main className="flex-auto flex flex-col items-center">
-        <section id="search" className="mt-20 w-3/5 p-8">
-          <GeneSearch onChange={(value) => setGene(value)} />
-          <GeneResults results={geneResults} />
-        </section>
-      </main>
-      <footer className="h-14 flex items-center justify-center">
-        <p>Brought to you by Mark Green and Josh Goodman</p>
-      </footer>
-    </div>
+    <section id="search" className="mt-20 w-3/5 p-8">
+      <GeneSearch onChange={(value) => setGene(value)} />
+      <GeneResults results={geneResults} />
+    </section>
   );
 }

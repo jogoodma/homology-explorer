@@ -2,6 +2,8 @@ import Graph from "graphology";
 import { random } from "graphology-layout";
 import { LoaderFunctionArgs } from "react-router-dom";
 
+import { ORGANISMS } from "../constants";
+
 type GeneId = number;
 interface OrthologPair {
   geneid1: GeneId;
@@ -37,24 +39,40 @@ export const getOrthologPairGraph = async (geneid: string) => {
   const graph = new Graph();
   orthologPairs.forEach((op, i) => {
     const { geneid1, geneid2 } = op;
-    addNodes(graph, geneid1, geneid2);
-    addEdge(graph, geneid1, geneid2);
+    addNodes(graph, op);
+    addEdge(graph, op);
   });
   random.assign(graph);
   console.debug("Finished preparing graph");
   return graph;
 };
 
-const addEdge = (graph: Graph, source: number, target: number) => {
+const addEdge = (graph: Graph, orthoPair: OrthologPair) => {
+  const { geneid1: source, geneid2: target, weight: size, ...rest } = orthoPair;
   if (!graph.hasEdge(source, target)) {
-    graph.addEdge(source, target);
+    graph.addEdge(source, target, { size, label: `Score: ${size}`, ...rest });
   }
 };
 
-const addNodes = (graph: Graph, ...nodes: number[]) => {
-  nodes.map((node) => {
+const organismNodeColors = ORGANISMS.reduce<Record<number, string>>(
+  (orgColors, org) => {
+    orgColors[org.taxid] = org.color;
+    return orgColors;
+  },
+  {}
+);
+const addNodes = (graph: Graph, op: OrthologPair) => {
+  const nodes = [
+    [op.geneid1, op.species1],
+    [op.geneid2, op.species2],
+  ];
+  nodes.map(([node, species]) => {
     if (!graph.hasNode(node)) {
-      graph.addNode(node, { size: 10, label: node });
+      graph.addNode(node, {
+        size: 17,
+        label: node,
+        color: organismNodeColors[species] ?? "grey",
+      });
     }
   });
 };

@@ -22,8 +22,11 @@ export const GeneNetwork = ({
   height = "768px",
   width = "1024px",
 }: GeneNetworkProps) => {
+  const sigmaSettings = {
+    renderEdgeLabels: true,
+  };
   return (
-    <SigmaContainer style={{ height, width }}>
+    <SigmaContainer style={{ height, width }} settings={sigmaSettings}>
       <OrthologyGraphLoader geneid={geneid} graph={graph} />
       <ControlsContainer position={"bottom-right"}>
         <ZoomControl />

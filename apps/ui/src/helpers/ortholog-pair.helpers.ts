@@ -2,7 +2,7 @@ import Graph from "graphology";
 import { random } from "graphology-layout";
 import { LoaderFunctionArgs } from "react-router-dom";
 
-import { ORGANISMS } from "../constants";
+import { ORGANISMS } from "../organisms";
 
 type GeneId = number;
 interface OrthologPair {

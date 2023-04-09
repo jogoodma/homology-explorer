@@ -1,4 +1,4 @@
-import { organisms } from "../../constants";
+import { organisms } from "../../organisms";
 
 export const SpeciesSelect = () => {
   return (

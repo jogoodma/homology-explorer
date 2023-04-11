@@ -45,29 +45,16 @@ def get_OrthologPairs(db: Session, gene_id: int,
 ### Gene Neighbor Info ###
 
 def get_GeneNeighborhood(db: Session, gene_id: int, 
-                         speciesid: int | None = None,
-                         strict: bool = True,
                          weight_lb: int | None = None,
                          weight_ub: int | None = None):
     
-    q = db.query(models.OrthologPairs.geneid1, models.OrthologPairs.geneid2)\
-          .filter(
+    q = db.query(
+              models.OrthologPairs.geneid1, 
+              models.OrthologPairs.geneid2
+          ).filter(
               (models.OrthologPairs.geneid1 == gene_id) | 
               (models.OrthologPairs.geneid2 == gene_id)
           ).distinct()
-    
-    if strict:
-        if speciesid is not None:
-            q = q.filter(
-                (models.OrthologPairs.species1 == speciesid) &
-                (models.OrthologPairs.species2 == speciesid)
-            )
-    else:
-        if speciesid is not None:
-            q = q.filter(
-                (models.OrthologPairs.species1 == speciesid) |
-                (models.OrthologPairs.species2 == speciesid)
-            )
     
     if weight_lb is not None:
         q = q.filter((models.OrthologPairs.weight) >= weight_lb)
@@ -98,5 +85,41 @@ def get_GeneNeighborNodes(db: Session, neighbors: list):
     return db.query(models.GeneNeighborNodes)\
              .filter((models.GeneNeighborNodes.key.in_(neighbors)))\
              .all()
+
+
+### Multigene Queries ###
+
+def get_MultiGeneInfo(db: Session, g: list, 
+                      skip: int = 0, limit: int = 1000000):
+    
+    return db.query(models.GeneInfo)\
+             .filter(
+                 (models.GeneInfo.geneid.in_(g))
+             ).offset(skip).limit(limit).all()
+
+
+def get_MultiGeneNeighborhood(db: Session, g: list, 
+                              weight_lb: int | None = None,
+                              weight_ub: int | None = None):
+    
+    q = db.query(
+              models.OrthologPairs.geneid1, 
+              models.OrthologPairs.geneid2
+          ).filter(
+              (models.OrthologPairs.geneid1.in_(g)) | 
+              (models.OrthologPairs.geneid2.in_(g))
+          ).distinct()
+    
+    if weight_lb is not None:
+        q = q.filter((models.OrthologPairs.weight) >= weight_lb)
+ 
+    if weight_ub is not None:
+        q = q.filter((models.OrthologPairs.weight) <= weight_ub)
+    
+    q = q.all()
+    
+    result = list(set([i for (i,j) in q]+[j for (i,j) in q]))
+
+    return result
 
 

@@ -1,5 +1,6 @@
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException, Query
 from sqlalchemy.orm import Session
+from typing import Annotated
 
 from . import crud, models, schemas
 from .database import SessionLocal, engine
@@ -47,6 +48,19 @@ def read_GeneInfo(gene_id: int, db: Session = Depends(get_db)):
     return db_gene
 
 
+@app.get("/geneinfo/multigene/", response_model=list[schemas.GeneInfo])
+def read_MultiGeneInfo(g: Annotated[list[int] | None, Query()],
+                       db: Session = Depends(get_db),
+                       skip: int = 0, limit: int = 10000):
+
+    db_genes = crud.get_MultiGeneInfo(db, g=g, skip=skip, limit=limit)
+
+    if db_genes is None:
+        raise HTTPException(status_code=404, detail="Genes not found")
+    
+    return db_genes
+
+
 @app.get("/orthologpairs/gene/{gene_id}/", response_model=list[schemas.OrthologPairs])
 def read_OrthologPairs(gene_id: int, db: Session = Depends(get_db), 
                        skip: int = 0, limit: int = 10000):
@@ -60,15 +74,15 @@ def read_OrthologPairs(gene_id: int, db: Session = Depends(get_db),
 
 
 @app.get("/geneneighboredges/gene/{gene_id}/", response_model=list[schemas.GeneNeighborEdges])
-def read_GeneNeighborEdges(gene_id: int, speciesid: int = None, strict: bool = True,
-                           weight_lb: int = None, weight_ub: int = None, 
+def read_GeneNeighborEdges(gene_id: int, weight_lb: int = None, weight_ub: int = None, 
                            db: Session = Depends(get_db)):
     
     db_neighbors = crud.get_GeneNeighborhood(
-        db=db, gene_id=gene_id, speciesid=speciesid, strict=strict,
-        weight_lb=weight_lb, weight_ub=weight_ub
+        db=db, gene_id=gene_id, weight_lb=weight_lb, weight_ub=weight_ub
     )
-    db_neighboredges = crud.get_GeneNeighborEdges(db=db, neighbors=db_neighbors)
+    db_neighboredges = crud.get_GeneNeighborEdges(
+        db=db, neighbors=db_neighbors
+    )
     
     if db_neighboredges is None:
         raise HTTPException(status_code=404, detail="Gene not found")
@@ -76,14 +90,55 @@ def read_GeneNeighborEdges(gene_id: int, speciesid: int = None, strict: bool = T
     return db_neighboredges
 
 
-@app.get("/geneneighbornodes/gene/{gene_id}/", response_model=list[schemas.GeneNeighborNodes])
-def read_GeneNeighborNodes(gene_id: int, db: Session = Depends(get_db)):
+@app.get("/geneneighboredges/multigene/", response_model=list[schemas.GeneNeighborEdges])
+def read_MultiGeneNeighborEdges(g: Annotated[list[int] | None, Query()],
+                                weight_lb: int = None, weight_ub: int = None, 
+                                db: Session = Depends(get_db)):
     
-    db_neighbors = crud.get_GeneNeighborhood(db=db, gene_id=gene_id)
-    db_neighbornodes = crud.get_GeneNeighborNodes(db=db, neighbors=db_neighbors)
+    db_neighbors = crud.get_MultiGeneNeighborhood(
+        db=db, g=g, weight_lb=weight_lb, weight_ub=weight_ub
+    )
+    db_neighboredges = crud.get_GeneNeighborEdges(
+        db=db, neighbors=db_neighbors
+    )
+    
+    if db_neighboredges is None:
+        raise HTTPException(status_code=404, detail="Genes not found")
+    
+    return db_neighboredges
+
+
+@app.get("/geneneighbornodes/gene/{gene_id}/", response_model=list[schemas.GeneNeighborNodes])
+def read_GeneNeighborNodes(gene_id: int, weight_lb: int = None, weight_ub: int = None, 
+                           db: Session = Depends(get_db)):
+ 
+    db_neighbors = crud.get_GeneNeighborhood(
+        db=db, gene_id=gene_id, weight_lb=weight_lb, weight_ub=weight_ub
+    )    
+    db_neighbornodes = crud.get_GeneNeighborNodes(
+        db=db, neighbors=db_neighbors
+    )
     
     if db_neighbornodes is None:
         raise HTTPException(status_code=404, detail="Gene not found")
+    
+    return db_neighbornodes
+
+
+@app.get("/geneneighbornodes/multigene/", response_model=list[schemas.GeneNeighborNodes])
+def read_MultiGeneNeighborNodes(g: Annotated[list[int] | None, Query()],
+                                weight_lb: int = None, weight_ub: int = None, 
+                                db: Session = Depends(get_db)):
+     
+    db_neighbors = crud.get_GeneNeighborhood(
+        db=db, g=g, weight_lb=weight_lb, weight_ub=weight_ub
+    )
+    db_neighbornodes = crud.get_GeneNeighborNodes(
+        db=db, neighbors=db_neighbors
+    )
+    
+    if db_neighbornodes is None:
+        raise HTTPException(status_code=404, detail="Genes not found")
     
     return db_neighbornodes
 

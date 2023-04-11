@@ -89,16 +89,26 @@ def get_GeneNeighborNodes(db: Session, neighbors: list):
 
 ### Multigene Queries ###
 
-def get_MultiGeneInfo(db: Session, g: list, 
+def get_MultiGeneInfo(db: Session, genelist: list, 
                       skip: int = 0, limit: int = 1000000):
-    
+   
     return db.query(models.GeneInfo)\
              .filter(
-                 (models.GeneInfo.geneid.in_(g))
+                 (models.GeneInfo.geneid.in_(genelist.genes))
              ).offset(skip).limit(limit).all()
 
 
-def get_MultiGeneNeighborhood(db: Session, g: list, 
+def get_MultiOrthologPairs(db: Session, genelist: list, 
+                           skip: int = 0, limit: int = 1000000):
+   
+    return db.query(models.OrthologPairs)\
+             .filter(
+                 (models.OrthologPairs.geneid1.in_(genelist.genes)) | 
+                 (models.OrthologPairs.geneid2.in_(genelist.genes))
+             ).offset(skip).limit(limit).all()
+
+
+def get_MultiGeneNeighborhood(db: Session, genelist: list, 
                               weight_lb: int | None = None,
                               weight_ub: int | None = None):
     
@@ -106,8 +116,8 @@ def get_MultiGeneNeighborhood(db: Session, g: list,
               models.OrthologPairs.geneid1, 
               models.OrthologPairs.geneid2
           ).filter(
-              (models.OrthologPairs.geneid1.in_(g)) | 
-              (models.OrthologPairs.geneid2.in_(g))
+              (models.OrthologPairs.geneid1.in_(genelist.genes)) | 
+              (models.OrthologPairs.geneid2.in_(genelist.genes))
           ).distinct()
     
     if weight_lb is not None:

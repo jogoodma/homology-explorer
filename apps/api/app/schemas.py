@@ -102,3 +102,9 @@ class GeneNeighborNodes(GeneNeighborNodesBase):
         orm_mode = True
 
 
+# Multigene Post Request format
+
+class GeneList(BaseModel):
+    genes: list[int] | None = None
+
+

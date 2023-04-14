@@ -102,6 +102,23 @@ class GeneNeighborNodes(GeneNeighborNodesBase):
         orm_mode = True
 
 
+# Gene Neighbor Net
+
+class GeneNeighborNodelist(BaseModel):
+    id: int
+
+
+class GeneNeighborEdgelist(BaseModel):
+    source: int
+    target: int
+    value: int
+
+
+class GeneNeighborNodeLink(BaseModel):
+    nodes: list[GeneNeighborNodelist] | None = None
+    links: list[GeneNeighborEdgelist] | None = None
+
+
 # Multigene Post Request format
 
 class GeneList(BaseModel):

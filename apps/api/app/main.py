@@ -162,3 +162,32 @@ def read_MultiGeneNeighborNodes(genelist: schemas.GeneList,
     return db_neighbornodes
 
 
+@app.post("/geneneighbornodelink/multigene/", response_model=schemas.GeneNeighborNodeLink)
+def read_MultiGeneNeighborNodeLink(genelist: schemas.GeneList,
+                                   weight_lb: int = None, weight_ub: int = None, 
+                                   db: Session = Depends(get_db)):
+     
+    db_neighbors = crud.get_MultiGeneNeighborhood(
+        db=db, genelist=genelist, 
+        weight_lb=weight_lb, weight_ub=weight_ub
+    )
+    db_neighbornodelist = crud.get_GeneNeighborNodelist(
+        db=db, neighbors=db_neighbors
+    )
+    db_neighboredgelist = crud.get_GeneNeighborEdgelist(
+        db=db, neighbors=db_neighbors
+    )
+
+    result = dict()
+    result['nodes'] = db_neighbornodelist
+    result['links'] = db_neighboredgelist
+
+    if db_neighbornodelist is None:
+        raise HTTPException(status_code=404, detail="Genes not found")
+    
+    if db_neighboredgelist is None:
+        raise HTTPException(status_code=404, detail="Genes not found")
+    
+    return result
+
+

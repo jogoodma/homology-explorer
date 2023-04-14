@@ -46,6 +46,21 @@ class OrthologPairs(Base):
     confidence = Column(String)
 
 
+class GeneNeighborEdgelist(Base):
+    __tablename__ = "evwGeneNeighborEdgelist"
+
+    key = Column(Integer, primary_key=True, index=True)
+    source = Column(Integer)
+    target = Column(Integer)
+    value = Column(Integer)
+
+
+class GeneNeighborNodelist(Base):
+    __tablename__ = "evwGeneNeighborNodelist"
+
+    id = Column(Integer, primary_key=True, index=True)
+
+
 class GeneNeighborEdges(Base):
     __tablename__ = "evwGeneNeighborEdges"
 

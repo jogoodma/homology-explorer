@@ -87,6 +87,29 @@ def get_GeneNeighborNodes(db: Session, neighbors: list):
              .all()
 
 
+### Graph Queries ###
+
+
+def get_GeneNeighborEdgelist(db: Session, neighbors: list):
+
+    q = db.query(models.GeneNeighborEdgelist)\
+          .filter(
+              (models.GeneNeighborEdgelist.source.in_(neighbors)) & 
+              (models.GeneNeighborEdgelist.target.in_(neighbors))
+          )
+     
+    return q.all()
+
+
+
+def get_GeneNeighborNodelist(db: Session, neighbors: list):
+
+    q = db.query(models.GeneNeighborNodelist)\
+          .filter((models.GeneNeighborNodelist.id.in_(neighbors)))
+     
+    return q.all()
+
+
 ### Multigene Queries ###
 
 def get_MultiGeneInfo(db: Session, genelist: list, 
@@ -131,5 +154,10 @@ def get_MultiGeneNeighborhood(db: Session, genelist: list,
     result = list(set([i for (i,j) in q]+[j for (i,j) in q]))
 
     return result
+
+
+
+
+
 
 

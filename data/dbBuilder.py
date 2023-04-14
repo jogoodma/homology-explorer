@@ -165,3 +165,30 @@ con.execute(
     """
 )
 
+#evwGeneNeighborEdgelist
+con.execute(
+    """
+    DROP VIEW IF EXISTS evwGeneNeighborEdgelist;
+    CREATE VIEW evwGeneNeighborEdgelist AS
+        SELECT
+            opb_id AS 'key'
+            , geneid1 AS 'source'
+            , geneid2 AS 'target'
+            , weight AS 'value'
+        FROM tblOrthologPairs
+        WHERE best_score='Yes';
+    """
+)
+
+#evwGeneNeighborNodelist
+con.execute(
+    """
+    DROP VIEW IF EXISTS evwGeneNeighborNodelist;
+    CREATE VIEW evwGeneNeighborNodelist AS
+        SELECT
+            geneid AS 'id'
+        FROM tblGeneInfo
+    """
+)
+
+

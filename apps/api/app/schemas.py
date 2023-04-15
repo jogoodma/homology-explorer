@@ -26,7 +26,7 @@ class GeneInfo(GeneInfoBase):
     genus:str
     species:str
     locus_tag: str
-    species_specific_geneid: int
+    species_specific_geneid: str
     species_specific_geneid_type: str
     chromosome: str
     map_location: str

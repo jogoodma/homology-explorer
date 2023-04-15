@@ -8,7 +8,7 @@ const Layout = () => {
           <h1 className="text-slate-50 text-5xl pl-8">Homology Explorer</h1>
         </a>
       </header>
-      <main className="flex-auto flex flex-col items-center">
+      <main>
         <Outlet />
       </main>
       <footer className="h-14 flex items-center justify-center">

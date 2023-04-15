@@ -3,6 +3,7 @@ import { random } from "graphology-layout";
 import { LoaderFunctionArgs } from "react-router-dom";
 
 import { ORGANISMS } from "../organisms";
+import { GeneInfo } from "../types";
 
 type GeneId = number;
 interface OrthologPair {
@@ -16,6 +17,29 @@ interface OrthologPair {
   best_score_rev: string;
   confidence: string;
 }
+
+type GeneInfoMap = Map<number, GeneInfo>;
+
+const fetchGeneInfo = async (geneids: number[]): Promise<GeneInfoMap> => {
+  try {
+    const response = await fetch("/api/geneinfo/multigene/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        genes: geneids,
+      }),
+    });
+    const geneInfo: GeneInfo[] = await response.json();
+    // Create a map/dict for fast retrieval of gene information.
+    return new Map<number, GeneInfo>(geneInfo.map((gi) => [gi.geneid, gi]));
+  } catch (error) {
+    console.error(`Error fetching gene info for: ${error}`);
+  }
+  return new Map();
+};
+
 const fetchOrthologPairs = async (geneid: string): Promise<OrthologPair[]> => {
   console.debug("Fetching ortholog pairs");
   const response = await fetch(`/api/orthologpairs/gene/${geneid}/`);
@@ -36,10 +60,15 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
 export const getOrthologPairGraph = async (geneid: string) => {
   console.debug("Preparing ortholog graph");
   const orthologPairs = await fetchOrthologPairs(geneid);
+  // Get a unique list of all gene IDs in network.
+  const geneIds = [
+    ...new Set(orthologPairs.flatMap((op) => [op.geneid1, op.geneid2])),
+  ];
+  const geneInfo = await fetchGeneInfo(geneIds);
   const graph = new Graph();
   orthologPairs.forEach((op, i) => {
     const { geneid1, geneid2 } = op;
-    addNodes(graph, op);
+    addNodes(graph, op, geneInfo);
     addEdge(graph, op);
   });
   random.assign(graph);
@@ -61,17 +90,20 @@ const organismNodeColors = ORGANISMS.reduce<Record<number, string>>(
   },
   {}
 );
-const addNodes = (graph: Graph, op: OrthologPair) => {
+const addNodes = (graph: Graph, op: OrthologPair, gi: GeneInfoMap) => {
   const nodes = [
     [op.geneid1, op.species1],
     [op.geneid2, op.species2],
   ];
   nodes.map(([node, species]) => {
     if (!graph.hasNode(node)) {
+      const geneInfo = gi.get(node);
+      const label = geneInfo?.symbol ?? node;
       graph.addNode(node, {
         size: 17,
-        label: node,
+        label,
         color: organismNodeColors[species] ?? "grey",
+        ...geneInfo,
       });
     }
   });

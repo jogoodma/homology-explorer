@@ -65,7 +65,11 @@ export const getOrthologPairGraph = async (geneid: string) => {
     ...new Set(orthologPairs.flatMap((op) => [op.geneid1, op.geneid2])),
   ];
   const geneInfo = await fetchGeneInfo(geneIds);
-  const graph = new Graph();
+  const graph = new Graph({
+    allowSelfLoops: false,
+    type: "undirected",
+    multi: false,
+  });
   orthologPairs.forEach((op, i) => {
     const { geneid1, geneid2 } = op;
     addNodes(graph, op, geneInfo);
@@ -77,9 +81,14 @@ export const getOrthologPairGraph = async (geneid: string) => {
 };
 
 const addEdge = (graph: Graph, orthoPair: OrthologPair) => {
-  const { geneid1: source, geneid2: target, weight: size, ...rest } = orthoPair;
+  const { geneid1: source, geneid2: target, weight, ...rest } = orthoPair;
   if (!graph.hasEdge(source, target)) {
-    graph.addEdge(source, target, { size, label: `Score: ${size}`, ...rest });
+    graph.addEdge(source, target, {
+      weight,
+      size: weight,
+      label: `Score: ${weight}`,
+      ...rest,
+    });
   }
 };
 

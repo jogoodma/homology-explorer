@@ -1,7 +1,6 @@
 import {
   ControlsContainer,
   FullScreenControl,
-  SearchControl,
   SigmaContainer,
   ZoomControl,
 } from "@react-sigma/core";
@@ -9,6 +8,8 @@ import "@react-sigma/core/lib/react-sigma.min.css";
 import OrthologyGraphLoader from "../OrthologyGraphLoader";
 import { LayoutForceAtlas2Control } from "@react-sigma/layout-forceatlas2";
 import Graph from "graphology";
+import FilterScore from "../FilterScore";
+import DragNDrop from "../DragNDrop";
 
 interface GeneNetworkProps {
   geneid: string;
@@ -34,10 +35,12 @@ export const GeneNetwork = ({
       settings={sigmaSettings}
     >
       <OrthologyGraphLoader geneid={geneid} graph={graph} />
-      <ControlsContainer position={"bottom-right"}>
+      <ControlsContainer position={"top-right"}>
         <ZoomControl />
         <FullScreenControl />
         <LayoutForceAtlas2Control />
+        <FilterScore />
+        <DragNDrop />
       </ControlsContainer>
     </SigmaContainer>
   );

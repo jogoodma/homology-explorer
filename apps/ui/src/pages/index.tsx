@@ -30,7 +30,7 @@ export default function Home() {
     .slice(0, 19);
 
   return (
-    <section id="search" className="mt-20 p-8 flex justify-center">
+    <section id="search" className="mt-20 p-8 flex flex-col justify-center">
       <GeneSearch onChange={(value) => setGene(value)} />
       <GeneResults results={geneResults} />
     </section>

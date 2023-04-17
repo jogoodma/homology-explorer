@@ -4,9 +4,11 @@ from sqlalchemy.orm import relationship
 from .database import Base
 
 
+### Basic Gene and Orthology Info ###
+
 class SymbolSearch(Base):
     __tablename__ = "evwSymbolSearch"
-
+    
     geneid = Column(Integer, primary_key=True, index=True)
     symbol = Column(String)
     speciesid = Column(Integer)
@@ -16,7 +18,7 @@ class SymbolSearch(Base):
 
 class GeneInfo(Base):
     __tablename__ = "evwGeneInfo"
-
+    
     geneid = Column(Integer, primary_key=True, index=True)
     symbol = Column(String)
     description = Column(String)
@@ -34,7 +36,7 @@ class GeneInfo(Base):
 
 class OrthologPairs(Base):
     __tablename__ = "tblOrthologPairs"
-
+    
     opb_id = Column(Integer, primary_key=True, index=True)
     species1 = Column(Integer)
     geneid1 = Column(Integer)
@@ -46,28 +48,29 @@ class OrthologPairs(Base):
     confidence = Column(String)
 
 
+### Gene Neighbor Info ###
+
 class GeneNeighborEdgelist(Base):
     __tablename__ = "evwGeneNeighborEdgelist"
+    
+    source = Column(Integer, primary_key=True)
+    target = Column(Integer, primary_key=True)
+    value = Column(Integer, primary_key=True)
 
-    key = Column(Integer, primary_key=True, index=True)
-    source = Column(Integer)
-    target = Column(Integer)
-    value = Column(Integer)
 
-
-class GeneNeighborNodelist(Base):
-    __tablename__ = "evwGeneNeighborNodelist"
-
-    id = Column(Integer, primary_key=True, index=True)
-
+#class GeneNeighborNodelist(Base):
+#    __tablename__ = "evwGeneNeighborNodelist"
+#    
+#    id = Column(Integer, primary_key=True, index=True)
+#
 
 class GeneNeighborEdges(Base):
     __tablename__ = "evwGeneNeighborEdges"
-
+    
     key = Column(Integer, primary_key=True, index=True)
     source = Column(Integer)
     target = Column(Integer)
-
+    
     attributes = relationship(
         "GeneNeighborEdgesAttr", 
         back_populates="link",
@@ -90,9 +93,9 @@ class GeneNeighborEdgesAttr(Base):
 
 class GeneNeighborNodes(Base):
     __tablename__ = "evwGeneNeighborNodes"
-
+    
     key = Column(Integer, primary_key=True, index=True)
-
+    
     attributes = relationship(
         "GeneNeighborNodesAttr", 
         back_populates="node", 
@@ -112,7 +115,7 @@ class GeneNeighborNodesAttr(Base):
     species = Column(String)  
     chromosome = Column(String)
     gene_type = Column(String)
-
+    
     node = relationship(
         "GeneNeighborNodes", 
         back_populates="attributes", 

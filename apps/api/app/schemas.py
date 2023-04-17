@@ -8,7 +8,7 @@ class SymbolSearch(BaseModel):
     speciesid: int
     common_name: str
     frequency: int | None = None
-
+    
     class Config:
         orm_mode = True
   
@@ -40,7 +40,7 @@ class GeneInfo(GeneInfoBase):
 class OrthologPairsBase(BaseModel):
     geneid1: int
     geneid2: int
-    
+
 
 class OrthologPairs(OrthologPairsBase):
     opb_id: int
@@ -50,7 +50,7 @@ class OrthologPairs(OrthologPairsBase):
     best_score: str
     best_score_rev: str
     confidence: str
-
+    
     class Config:
         orm_mode = True
 
@@ -62,7 +62,7 @@ class GeneNeighborEdgesBase(BaseModel):
 
 class GeneNeighborEdgesAttr(BaseModel):
     weight: int
-
+    
     class Config:
         orm_mode = True
 
@@ -71,7 +71,7 @@ class GeneNeighborEdges(GeneNeighborEdgesBase):
     source: int
     target: int
     attributes: GeneNeighborEdgesAttr | None = None
-
+    
     class Config:
         orm_mode = True
 
@@ -90,46 +90,19 @@ class GeneNeighborNodesAttr(BaseModel):
     species: str
     chromosome: str
     gene_type: str
-   
+       
     class Config:
         orm_mode = True
 
 
 class GeneNeighborNodes(GeneNeighborNodesBase):
     attributes: GeneNeighborNodesAttr | None = None
-
-    class Config:
-        orm_mode = True
-
-
-# Gene Neighbor Net
-
-class GeneNeighborNodelist(BaseModel):
-    id: int
-
-    class Config:
-        orm_mode = True
-
-
-class GeneNeighborEdgelist(BaseModel):
-    source: int
-    target: int
-    value: int
-
-    class Config:
-        orm_mode = True
-
-
-class GeneNeighborNodeLink(BaseModel):
-    nodes: list[GeneNeighborNodelist] | None = None
-    links: list[GeneNeighborEdgelist] | None = None
-
+    
     class Config:
         orm_mode = True
 
 
 # Multigene Post Request format
-
 class GeneList(BaseModel):
     genes: list[int] | None = None
 

@@ -18,6 +18,7 @@ def get_db():
     finally:
         db.close()
 
+### GET calls ###
 
 @app.get("/search/gene/symbol/{symbol}/", response_model=list[schemas.SymbolSearch])
 def read_SymbolSearch(symbol: str, speciesid: int = None,
@@ -48,21 +49,6 @@ def read_GeneInfo(gene_id: int, db: Session = Depends(get_db)):
     return db_gene
 
 
-@app.post("/geneinfo/multigene/", response_model=list[schemas.GeneInfo])
-def read_MultiGeneInfo(genelist: schemas.GeneList, 
-                       db: Session = Depends(get_db),
-                       skip: int = 0, limit: int = 10000):
-
-    db_genes = crud.get_MultiGeneInfo(
-        db=db, genelist=genelist, skip=skip, limit=limit
-    )
-
-    if db_genes is None:
-        raise HTTPException(status_code=404, detail="Genes not found")
-    
-    return db_genes
-
-
 @app.get("/orthologpairs/gene/{gene_id}/", response_model=list[schemas.OrthologPairs])
 def read_OrthologPairs(gene_id: int, db: Session = Depends(get_db), 
                        skip: int = 0, limit: int = 10000):
@@ -71,21 +57,6 @@ def read_OrthologPairs(gene_id: int, db: Session = Depends(get_db),
     
     if db_pairs is None:
         raise HTTPException(status_code=404, detail="Gene not found")
-    
-    return db_pairs
-
-
-@app.post("/orthologpairs/multigene/", response_model=list[schemas.OrthologPairs])
-def read_MultiOrthologPairs(genelist: schemas.GeneList,
-                            db: Session = Depends(get_db), 
-                            skip: int = 0, limit: int = 10000):
-    
-    db_pairs = crud.get_MultiOrthologPairs(
-        db=db, genelist=genelist, skip=skip, limit=limit
-    )
-    
-    if db_pairs is None:
-        raise HTTPException(status_code=404, detail="Genes not found")
     
     return db_pairs
 
@@ -107,6 +78,55 @@ def read_GeneNeighborEdges(gene_id: int, weight_lb: int = None, weight_ub: int =
     return db_neighboredges
 
 
+@app.get("/geneneighbornodes/gene/{gene_id}/", response_model=list[schemas.GeneNeighborNodes])
+def read_GeneNeighborNodes(gene_id: int, weight_lb: int = None, weight_ub: int = None, 
+                           db: Session = Depends(get_db)):
+     
+    db_neighbors = crud.get_GeneNeighborhood(
+        db=db, gene_id=gene_id, weight_lb=weight_lb, weight_ub=weight_ub
+    )    
+    db_neighbornodes = crud.get_GeneNeighborNodes(
+        db=db, neighbors=db_neighbors
+    )
+    
+    if db_neighbornodes is None:
+        raise HTTPException(status_code=404, detail="Gene not found")
+    
+    return db_neighbornodes
+
+
+### POST calls ###
+
+@app.post("/geneinfo/multigene/", response_model=list[schemas.GeneInfo])
+def read_MultiGeneInfo(genelist: schemas.GeneList, 
+                       db: Session = Depends(get_db),
+                       skip: int = 0, limit: int = 10000):
+
+    db_genes = crud.get_MultiGeneInfo(
+        db=db, genelist=genelist, skip=skip, limit=limit
+    )
+
+    if db_genes is None:
+        raise HTTPException(status_code=404, detail="Genes not found")
+    
+    return db_genes
+
+
+@app.post("/orthologpairs/multigene/", response_model=list[schemas.OrthologPairs])
+def read_MultiOrthologPairs(genelist: schemas.GeneList,
+                            db: Session = Depends(get_db), 
+                            skip: int = 0, limit: int = 10000):
+    
+    db_pairs = crud.get_MultiOrthologPairs(
+        db=db, genelist=genelist, skip=skip, limit=limit
+    )
+    
+    if db_pairs is None:
+        raise HTTPException(status_code=404, detail="Genes not found")
+    
+    return db_pairs
+
+
 @app.post("/geneneighboredges/multigene/", response_model=list[schemas.GeneNeighborEdges])
 def read_MultiGeneNeighborEdges(genelist: schemas.GeneList,
                                 weight_lb: int = None, weight_ub: int = None, 
@@ -126,21 +146,6 @@ def read_MultiGeneNeighborEdges(genelist: schemas.GeneList,
     return db_neighboredges
 
 
-@app.get("/geneneighbornodes/gene/{gene_id}/", response_model=list[schemas.GeneNeighborNodes])
-def read_GeneNeighborNodes(gene_id: int, weight_lb: int = None, weight_ub: int = None, 
-                           db: Session = Depends(get_db)):
- 
-    db_neighbors = crud.get_GeneNeighborhood(
-        db=db, gene_id=gene_id, weight_lb=weight_lb, weight_ub=weight_ub
-    )    
-    db_neighbornodes = crud.get_GeneNeighborNodes(
-        db=db, neighbors=db_neighbors
-    )
-    
-    if db_neighbornodes is None:
-        raise HTTPException(status_code=404, detail="Gene not found")
-    
-    return db_neighbornodes
 
 
 @app.post("/geneneighbornodes/multigene/", response_model=list[schemas.GeneNeighborNodes])
@@ -162,40 +167,37 @@ def read_MultiGeneNeighborNodes(genelist: schemas.GeneList,
     return db_neighbornodes
 
 
-@app.post("/geneneighbornodelink/multigene/", response_model=schemas.GeneNeighborNodeLink)
-def read_MultiGeneNeighborNodeLink(genelist: schemas.GeneList,
-                                   weight_lb: int = None, weight_ub: int = None, 
-                                   db: Session = Depends(get_db)):
+@app.post("/geneneighbornodes/multigene/{analysis}") #TODO: work on validation response model
+def read_MultiGeneNeighborNodeAnalysis(genelist: schemas.GeneList, analysis: str,
+                                       weight_lb: int = None, weight_ub: int = None, 
+                                       alpha: float = 0.85,
+                                       db: Session = Depends(get_db)):
      
     db_neighbors = crud.get_MultiGeneNeighborhood(
         db=db, genelist=genelist, 
         weight_lb=weight_lb, weight_ub=weight_ub
     )
-    db_neighbornodelist = crud.get_GeneNeighborNodelist(
+    db_analysis = crud.get_GeneNeighborNodeInfo(
         db=db, neighbors=db_neighbors
     )
-    db_neighboredgelist = crud.get_GeneNeighborEdgelist(
+    db_edgelist = crud.get_GeneNeighborEdgelist(
         db=db, neighbors=db_neighbors
     )
-
-    result = dict()
-    result['nodes'] = db_neighbornodelist
-    result['links'] = db_neighboredgelist
-
-    if db_neighbornodelist is None:
+    
+    if analysis == 'pagerank':
+        db_newnodeattr = crud.get_Pagerank(
+            db=db, edgelist=db_edgelist, alpha=alpha
+        )   
+        db_analysis = crud.add_NodeAnalysis(
+            db=db, nodeattrs=db_analysis, newnodeattr=db_newnodeattr
+        )
+        
+    if analysis not in ['pagerank']:
+        raise HTTPException(status_code=404, detail="Analysis not found")
+    
+    if db_neighbors is None:
         raise HTTPException(status_code=404, detail="Genes not found")
     
-    if db_neighboredgelist is None:
-        raise HTTPException(status_code=404, detail="Genes not found")
-
-    print(type(result))
-    print(type(result['nodes']))
-    print(type(result['links']))
-    
-    from pprint import pprint
-    pprint(result['nodes'])
-    pprint(result['links'])
-
-    return result
+    return db_analysis
 
 

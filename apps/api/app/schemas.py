@@ -26,7 +26,7 @@ class GeneInfo(GeneInfoBase):
     genus:str
     species:str
     locus_tag: str
-    species_specific_geneid: int
+    species_specific_geneid: str
     species_specific_geneid_type: str
     chromosome: str
     map_location: str
@@ -107,16 +107,25 @@ class GeneNeighborNodes(GeneNeighborNodesBase):
 class GeneNeighborNodelist(BaseModel):
     id: int
 
+    class Config:
+        orm_mode = True
+
 
 class GeneNeighborEdgelist(BaseModel):
     source: int
     target: int
     value: int
 
+    class Config:
+        orm_mode = True
+
 
 class GeneNeighborNodeLink(BaseModel):
     nodes: list[GeneNeighborNodelist] | None = None
     links: list[GeneNeighborEdgelist] | None = None
+
+    class Config:
+        orm_mode = True
 
 
 # Multigene Post Request format

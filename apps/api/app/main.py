@@ -187,7 +187,15 @@ def read_MultiGeneNeighborNodeLink(genelist: schemas.GeneList,
     
     if db_neighboredgelist is None:
         raise HTTPException(status_code=404, detail="Genes not found")
+
+    print(type(result))
+    print(type(result['nodes']))
+    print(type(result['links']))
     
+    from pprint import pprint
+    pprint(result['nodes'])
+    pprint(result['links'])
+
     return result
 
 

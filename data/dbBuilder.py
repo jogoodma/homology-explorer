@@ -106,6 +106,27 @@ con.execute(
     """
 )
 
+#evwOrthologPairs
+con.execute(
+    """
+    DROP VIEW IF EXISTS evwOrthologPairs;
+    CREATE VIEW evwOrthologPairs AS 
+        SELECT
+            opb_id
+            , geneid1
+            , geneid2
+            , species1
+            , species2
+            , weight
+            , best_score
+            , best_score_rev
+            , confidence
+            , CASE WHEN species1 = species2 
+                THEN 'paralog' ELSE 'homolog' END AS ortholog_type
+        FROM tblOrthologPairs;
+    """
+)
+
 #evwGeneNeighborEdges
 con.execute(
     """
@@ -164,4 +185,20 @@ con.execute(
             ON a.speciesid = b.taxonomyid;
     """
 )
+
+#evwGeneNeighborEdgelist
+con.execute(
+    """
+    DROP VIEW IF EXISTS evwGeneNeighborEdgelist;
+    CREATE VIEW evwGeneNeighborEdgelist AS
+        SELECT
+            opb_id AS 'key'
+            , geneid1 AS 'source'
+            , geneid2 AS 'target'
+            , weight
+        FROM tblOrthologPairs
+        WHERE best_score='Yes';
+    """
+)
+
 

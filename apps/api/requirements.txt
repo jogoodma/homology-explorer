@@ -4,3 +4,5 @@ uvicorn
 duckdb
 duckdb-engine
 sqlalchemy
+networkx
+git+https://github.com/Nathaniel-Rodriguez/linkcom.git

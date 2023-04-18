@@ -210,7 +210,8 @@ def add_EdgeAnalysis(db: Session, edgeattrs: list, newedgeattr: list):
           'target': e['geneid2'],
           'attributes': {
             'weight': e['weight'],
-            'confidence': e['confidence']
+            'confidence': e['confidence'],
+            'ortholog_type': e['ortholog_type']
           }
         } for e in edgevars 
     ]
@@ -227,8 +228,6 @@ def add_EdgeAnalysis(db: Session, edgeattrs: list, newedgeattr: list):
                             'attributes': attributes
                           }
                 newedgelist.append(newedge)
-    
-    print(newedgelist)
     
     return newedgelist
 

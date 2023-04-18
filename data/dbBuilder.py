@@ -106,6 +106,27 @@ con.execute(
     """
 )
 
+#evwOrthologPairs
+con.execute(
+    """
+    DROP VIEW IF EXISTS evwOrthologPairs;
+    CREATE VIEW evwOrthologPairs AS 
+        SELECT
+            opb_id
+            , geneid1
+            , geneid2
+            , species1
+            , species2
+            , weight
+            , best_score
+            , best_score_rev
+            , confidence
+            , CASE WHEN species1 = species2 
+                THEN 'paralog' ELSE 'homolog' END AS ortholog_type
+        FROM tblOrthologPairs;
+    """
+)
+
 #evwGeneNeighborEdges
 con.execute(
     """

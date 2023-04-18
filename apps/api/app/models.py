@@ -35,7 +35,7 @@ class GeneInfo(Base):
 
 
 class OrthologPairs(Base):
-    __tablename__ = "tblOrthologPairs"
+    __tablename__ = "evwOrthologPairs"
     
     opb_id = Column(Integer, primary_key=True, index=True)
     species1 = Column(Integer)
@@ -46,6 +46,7 @@ class OrthologPairs(Base):
     best_score = Column(String)
     best_score_rev = Column(String)
     confidence = Column(String)
+    ortholog_type = Column(String)
 
 
 ### Gene Neighbor Info ###

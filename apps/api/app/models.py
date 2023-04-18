@@ -58,12 +58,6 @@ class GeneNeighborEdgelist(Base):
     value = Column(Integer, primary_key=True)
 
 
-#class GeneNeighborNodelist(Base):
-#    __tablename__ = "evwGeneNeighborNodelist"
-#    
-#    id = Column(Integer, primary_key=True, index=True)
-#
-
 class GeneNeighborEdges(Base):
     __tablename__ = "evwGeneNeighborEdges"
     

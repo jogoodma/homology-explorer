@@ -1,3 +1,4 @@
+import linkcom
 import networkx as nx
 from sqlalchemy.orm import Session
 from sqlalchemy.sql.expression import label
@@ -65,7 +66,7 @@ def get_GeneNeighborhood(db: Session, gene_id: int,
     
     q = q.all()
     
-    result = list(set([i for (i,j) in q]+[j for (i,j) in q]))
+    result = list(set([ i for (i,j) in q ] + [ j for (i,j) in q ]))
     
     return result
 
@@ -95,6 +96,17 @@ def get_GeneNeighborEdges(db: Session, neighbors: list):
     return q.all()
 
 
+def get_GeneNeighborEdgeInfo(db: Session, neighbors: list):
+    
+    q = db.query(models.OrthologPairs)\
+          .filter(
+              (models.OrthologPairs.geneid1.in_(neighbors)) &
+              (models.OrthologPairs.geneid2.in_(neighbors))
+          )
+    
+    return q.all()
+
+
 def get_GeneNeighborEdgelist(db:Session, neighbors: list):
     
     edges = db.query(models.GeneNeighborEdgelist)\
@@ -106,8 +118,8 @@ def get_GeneNeighborEdgelist(db:Session, neighbors: list):
     edgevars = [ vars(e) for e in edges ]
     
     for ev in edgevars:
-        ev['attributes'] = { 'weight': ev['value'] }
-        ev.pop('value')
+        ev['attributes'] = { 'weight': ev['weight'] }
+        ev.pop('weight')
         ev.pop('_sa_instance_state')
       
     edgelist = [ tuple(e.values()) for e in edgevars ]
@@ -115,7 +127,7 @@ def get_GeneNeighborEdgelist(db:Session, neighbors: list):
     return edgelist
 
 
-### Network Analysis ###
+### Network Analysis - Nodes ###
 
 def get_Pagerank(db: Session, edgelist: list, alpha: float):
      
@@ -125,7 +137,7 @@ def get_Pagerank(db: Session, edgelist: list, alpha: float):
     pagerank = nx.pagerank(g, alpha=alpha, weight='weight')
     
     newnodeattr = [
-        { 'key':key,'attributes':{'pagerank':value} }
+        { 'key': key, 'attributes': { 'pagerank':value } }
         for key, value in pagerank.items()
     ]
     
@@ -156,12 +168,56 @@ def add_NodeAnalysis(db: Session, nodeattrs: list, newnodeattr: list):
         for new in newnodeattr:
             if node['key'] == new['key']:
                 attributes = { **node['attributes'], **new['attributes'] }
-                newnode = { 'key':node['key'], 'attributes':attributes }
+                newnode = { 'key': node['key'], 'attributes': attributes }
                 newnodelist.append(newnode)
     
-    print(newnodelist)
-    
     return newnodelist
+
+
+### Network Analysis - Edges ###
+
+def get_Linkcom(db: Session, edgelist: list, threshold: float):
+    
+    g = nx.DiGraph()
+    g.add_edges_from(edgelist)
+    
+    e2c,_,_,_ = linkcom.cluster(
+        g, threshold=threshold, 
+        is_weighted=True, weight_key='weight',
+        to_file=False
+    )
+    
+    print(e2c)
+    
+    return e2c
+
+def add_EdgeAnalysis(db: Session, edgeattrs: list, newedgeattrs: list):
+    
+    edgevars = [ vars(edge) for edge in edgeattrs ]
+    
+    edgeattrlist = [
+        {
+            'key': e['opb_id'], 
+            'source': e['geneid1'],
+            'target': e['geneid2']
+            'attributes': {
+                'weight': e['weight'],
+                'confidence': e['confidence']
+           }
+        } for e in edgevars 
+    ]
+     
+    newedgelist = []
+    for edge in edgeattrlist:
+        for new in newedgeattr:
+            if edge['key'] == new['key']:
+                attributes = { **edge['attributes'], **new['attributes'] }
+                newedge = { 'key': edge['key'], 'attributes': attributes }
+                newedgelist.append(newedge)
+    
+    print(newedgelist)
+    
+    return newedgelist
 
 
 ### Multigene Queries ###
@@ -205,7 +261,7 @@ def get_MultiGeneNeighborhood(db: Session, genelist: list,
     
     q = q.all()
     
-    result = list(set([i for (i,j) in q]+[j for (i,j) in q]))
+    result = list(set([ i for (i,j) in q ] + [ j for (i,j) in q ]))
     
     return result
 

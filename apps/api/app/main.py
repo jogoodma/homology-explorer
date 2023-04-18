@@ -146,6 +146,38 @@ def read_MultiGeneNeighborEdges(genelist: schemas.GeneList,
     return db_neighboredges
 
 
+@app.post("/geneneighboredges/multigene/{analysis}")
+def read_MultiGeneNeighborEdgeAnalysis(genelist: schemas.GeneList, analysis: str,
+                                       weight_lb: int = None, weight_ub: int = None, 
+                                       threshold: float = 0.85,
+                                       db: Session = Depends(get_db)):
+     
+    db_neighbors = crud.get_MultiGeneNeighborhood(
+        db=db, genelist=genelist, 
+        weight_lb=weight_lb, weight_ub=weight_ub
+    )
+    db_analysis = crud.get_GeneNeighborEdgeInfo(
+        db=db, neighbors=db_neighbors
+    )
+    db_edgelist = crud.get_GeneNeighborEdgelist(
+        db=db, neighbors=db_neighbors
+    )
+    
+    if analysis == 'linkcom':
+        db_newnodeattr = crud.get_Linkcom(
+            db=db, edgelist=db_edgelist, threshold=threshold
+        )
+        db_analysis = crud.add_EdgeAnalysis(
+            db=db, nodeattrs=db_analysis, newnodeattr=db_newnodeattr
+        )
+        
+    if analysis not in ['linkcom']:
+        raise HTTPException(status_code=404, detail="Analysis not found")
+    
+    if db_neighbors is None:
+        raise HTTPException(status_code=404, detail="Genes not found")
+    
+    return db_analysis
 
 
 @app.post("/geneneighbornodes/multigene/", response_model=list[schemas.GeneNeighborNodes])
@@ -167,7 +199,7 @@ def read_MultiGeneNeighborNodes(genelist: schemas.GeneList,
     return db_neighbornodes
 
 
-@app.post("/geneneighbornodes/multigene/{analysis}") #TODO: work on validation response model
+@app.post("/geneneighbornodes/multigene/{analysis}")
 def read_MultiGeneNeighborNodeAnalysis(genelist: schemas.GeneList, analysis: str,
                                        weight_lb: int = None, weight_ub: int = None, 
                                        alpha: float = 0.85,

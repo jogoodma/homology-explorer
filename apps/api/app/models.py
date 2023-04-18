@@ -55,7 +55,7 @@ class GeneNeighborEdgelist(Base):
     
     source = Column(Integer, primary_key=True)
     target = Column(Integer, primary_key=True)
-    value = Column(Integer, primary_key=True)
+    weight = Column(Integer, primary_key=True)
 
 
 class GeneNeighborEdges(Base):

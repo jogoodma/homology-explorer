@@ -150,16 +150,16 @@ def add_NodeAnalysis(db: Session, nodeattrs: list, newnodeattr: list):
     
     nodeattrlist = [
         {
-            'key': n['geneid'], 
-            'attributes': {
-                'symbol': n['symbol'],
-                'description': n['description'],
-                'speciesid': n['speciesid'],
-                'common_name': n['common_name'],
-                'genus': n['genus'],
-                'species': n['chromosome'],
-                'gene_type': n['gene_type']
-            }
+          'key': n['geneid'], 
+          'attributes': {
+            'symbol': n['symbol'],
+            'description': n['description'],
+            'speciesid': n['speciesid'],
+            'common_name': n['common_name'],
+            'genus': n['genus'],
+            'species': n['chromosome'],
+            'gene_type': n['gene_type']
+          }
         } for n in nodevars 
     ]
      
@@ -178,41 +178,54 @@ def add_NodeAnalysis(db: Session, nodeattrs: list, newnodeattr: list):
 
 def get_Linkcom(db: Session, edgelist: list, threshold: float):
     
-    g = nx.DiGraph()
+    g = nx.Graph()
     g.add_edges_from(edgelist)
     
-    e2c,_,_,_ = linkcom.cluster(
+    e2c,_ = linkcom.cluster(
         g, threshold=threshold, 
         is_weighted=True, weight_key='weight',
         to_file=False
     )
     
-    print(e2c)
+    newedgeattr = [ 
+        { 
+          'source': key[0], 
+          'target': key[1],
+          'attributes': {
+            'linkcom': value
+          }
+        } for key, value in e2c.items()
+    ]
     
-    return e2c
+    return newedgeattr
 
-def add_EdgeAnalysis(db: Session, edgeattrs: list, newedgeattrs: list):
+def add_EdgeAnalysis(db: Session, edgeattrs: list, newedgeattr: list):
     
     edgevars = [ vars(edge) for edge in edgeattrs ]
     
     edgeattrlist = [
         {
-            'key': e['opb_id'], 
-            'source': e['geneid1'],
-            'target': e['geneid2']
-            'attributes': {
-                'weight': e['weight'],
-                'confidence': e['confidence']
-           }
+          'key': e['opb_id'], 
+          'source': e['geneid1'],
+          'target': e['geneid2'],
+          'attributes': {
+            'weight': e['weight'],
+            'confidence': e['confidence']
+          }
         } for e in edgevars 
     ]
-     
+    
     newedgelist = []
     for edge in edgeattrlist:
         for new in newedgeattr:
-            if edge['key'] == new['key']:
+            if edge['source'] == new['source'] and edge['target'] == new['target']:
                 attributes = { **edge['attributes'], **new['attributes'] }
-                newedge = { 'key': edge['key'], 'attributes': attributes }
+                newedge = { 
+                            'key': edge['key'],
+                            'source': edge['source'], 
+                            'target': edge['target'],
+                            'attributes': attributes
+                          }
                 newedgelist.append(newedge)
     
     print(newedgelist)

@@ -149,7 +149,7 @@ def read_MultiGeneNeighborEdges(genelist: schemas.GeneList,
 @app.post("/geneneighboredges/multigene/{analysis}")
 def read_MultiGeneNeighborEdgeAnalysis(genelist: schemas.GeneList, analysis: str,
                                        weight_lb: int = None, weight_ub: int = None, 
-                                       threshold: float = 0.85,
+                                       threshold: float = 0.5,
                                        db: Session = Depends(get_db)):
      
     db_neighbors = crud.get_MultiGeneNeighborhood(
@@ -164,11 +164,11 @@ def read_MultiGeneNeighborEdgeAnalysis(genelist: schemas.GeneList, analysis: str
     )
     
     if analysis == 'linkcom':
-        db_newnodeattr = crud.get_Linkcom(
+        db_newedgeattr = crud.get_Linkcom(
             db=db, edgelist=db_edgelist, threshold=threshold
         )
         db_analysis = crud.add_EdgeAnalysis(
-            db=db, nodeattrs=db_analysis, newnodeattr=db_newnodeattr
+            db=db, edgeattrs=db_analysis, newedgeattr=db_newedgeattr
         )
         
     if analysis not in ['linkcom']:

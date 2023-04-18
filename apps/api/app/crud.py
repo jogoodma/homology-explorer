@@ -199,6 +199,7 @@ def get_Linkcom(db: Session, edgelist: list, threshold: float):
     
     return newedgeattr
 
+
 def add_EdgeAnalysis(db: Session, edgeattrs: list, newedgeattr: list):
     
     edgevars = [ vars(edge) for edge in edgeattrs ]

@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "dataparser"
+version = "0.1.0"
+description = "parses DIOPT homology .tsv files"
+authors = ["greenmmq <mark@greenpnw.org>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+duckdb = "^0.7.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

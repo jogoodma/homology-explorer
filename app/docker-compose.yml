@@ -1,0 +1,31 @@
+version: "3.11"
+
+services:
+
+  nginx:
+    build: ./nginx
+    ports:
+      - 80:80
+    depends_on:
+      - api
+
+  api:
+    build: ./api
+    ports: 
+      - 8000:8000
+    depends_on: 
+      - data
+    environment: 
+      - DATABASE_URL=/data/duck.db
+
+  data:
+    build: ./data
+    volumes:
+      - ./data:/data
+
+  #  ui:
+  #    build: ./ui
+  #    ports:
+  #      - 5174:5174
+  #    depends_on:
+  #      - api

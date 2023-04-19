@@ -14,5 +14,7 @@ data
 ├── duck.db
 ├── Gene_Information.tsv
 ├── Ortholog_Pair_Best.tsv
+├── Species.tsv
 └── README.md
+
 ```

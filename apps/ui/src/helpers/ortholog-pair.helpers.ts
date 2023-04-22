@@ -18,6 +18,16 @@ interface OrthologPair {
   confidence: string;
 }
 
+interface Edge {
+  key?: number;
+  source: number;
+  target: number;
+  attributes: {
+    weight: number;
+    [propName: string]: string | number | boolean;
+  };
+}
+
 type GeneInfoMap = Map<number, GeneInfo>;
 
 const fetchGeneInfo = async (geneids: number[]): Promise<GeneInfoMap> => {
@@ -49,6 +59,15 @@ const fetchOrthologPairs = async (geneid: string): Promise<OrthologPair[]> => {
     throw Error(response.statusText);
   }
 };
+const fetchNetworkNeighborEdges = async (geneid: string): Promise<Edge[]> => {
+  console.debug("Fetching gene neighbor edges");
+  const response = await fetch(`/api/geneneighboredges/gene/${geneid}/`);
+  if (response.ok) {
+    return await response.json();
+  } else {
+    throw Error(response.statusText);
+  }
+};
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   console.debug("Loader called with params:", params);
@@ -65,6 +84,7 @@ export const getOrthologPairGraph = async (geneid: string) => {
     ...new Set(orthologPairs.flatMap((op) => [op.geneid1, op.geneid2])),
   ];
   const geneInfo = await fetchGeneInfo(geneIds);
+  const neighborEdges = await fetchNetworkNeighborEdges(geneid);
   const graph = new Graph({
     allowSelfLoops: false,
     type: "undirected",
@@ -73,22 +93,55 @@ export const getOrthologPairGraph = async (geneid: string) => {
   orthologPairs.forEach((op, i) => {
     const { geneid1, geneid2 } = op;
     addNodes(graph, op, geneInfo);
-    addEdge(graph, op);
+    addEdge({ graph, orthoPair: op });
+  });
+  neighborEdges.forEach((edge) => {
+    console.log("Adding", edge);
+    addEdge({ graph, neighborEdge: edge });
   });
   random.assign(graph);
   console.debug("Finished preparing graph");
   return graph;
 };
 
-const addEdge = (graph: Graph, orthoPair: OrthologPair) => {
-  const { geneid1: source, geneid2: target, weight, ...rest } = orthoPair;
-  if (!graph.hasEdge(source, target)) {
-    graph.addEdge(source, target, {
-      weight,
-      size: weight,
-      label: `Score: ${weight}`,
-      ...rest,
-    });
+interface AddEdgeProps {
+  graph: Graph;
+  orthoPair?: OrthologPair;
+  neighborEdge?: Edge;
+}
+const addEdge = ({ graph, orthoPair, neighborEdge }: AddEdgeProps) => {
+  let edge: Edge;
+  if (orthoPair) {
+    const { geneid1: source, geneid2: target, weight, ...rest } = orthoPair;
+    edge = {
+      source,
+      target,
+      attributes: {
+        weight,
+        size: weight,
+        label: `Score: ${weight}`,
+        ...rest,
+      },
+    };
+  } else if (neighborEdge) {
+    const { source, target, attributes } = neighborEdge;
+    const { weight, ...rest } = attributes;
+    edge = {
+      source,
+      target,
+      attributes: {
+        weight,
+        size: weight,
+        label: `Score: ${weight}`,
+      },
+    };
+  } else {
+    return;
+  }
+  if (!edge || !edge?.source || !edge?.target) return;
+
+  if (!graph.hasEdge(edge.source, edge.target)) {
+    graph.addEdge(edge.source, edge.target, edge.attributes);
   }
 };
 

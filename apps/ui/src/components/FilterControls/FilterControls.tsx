@@ -11,7 +11,6 @@ const FilterControls = ({ sigma, setHiddenEdges }: FilterControlsProps) => {
 
   // Set hidden edges when the IDs change
   useEffect(() => {
-    console.log(scoreIds);
     setHiddenEdges(scoreIds);
   }, [scoreIds, setHiddenEdges]);
   return (

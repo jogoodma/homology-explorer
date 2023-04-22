@@ -33,7 +33,7 @@
     "eslint-config-custom": "workspace:*",
     "mermaid-filter": "^1.4.6",
     "prettier": "latest",
-    "turbo": "^1.8.8"
+    "turbo": "^1.9.3"
   },
   "packageManager": "pnpm@7.28.0"
 }

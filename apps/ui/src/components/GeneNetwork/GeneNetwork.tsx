@@ -1,6 +1,7 @@
 import {
   ControlsContainer,
   FullScreenControl,
+  SearchControl,
   SigmaContainer,
   ZoomControl,
 } from "@react-sigma/core";
@@ -45,6 +46,9 @@ export const GeneNetwork = ({
         <LayoutForceAtlas2Control />
         <GraphReducers hiddenNodes={hiddenNodes} hiddenEdges={hiddenEdges} />
         <DragNDrop />
+      </ControlsContainer>
+      <ControlsContainer position={"bottom-right"}>
+        <SearchControl style={{ width: "200px" }} />
       </ControlsContainer>
     </SigmaContainer>
   );

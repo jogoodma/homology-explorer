@@ -95,8 +95,8 @@ export const getOrthologPairGraph = async (geneid: string) => {
     addNodes(graph, op, geneInfo);
     addEdge({ graph, orthoPair: op });
   });
+  console.log(graph.type);
   neighborEdges.forEach((edge) => {
-    console.log("Adding", edge);
     addEdge({ graph, neighborEdge: edge });
   });
   random.assign(graph);
@@ -119,7 +119,6 @@ const addEdge = ({ graph, orthoPair, neighborEdge }: AddEdgeProps) => {
       attributes: {
         weight,
         size: weight,
-        label: `Score: ${weight}`,
         ...rest,
       },
     };
@@ -132,7 +131,6 @@ const addEdge = ({ graph, orthoPair, neighborEdge }: AddEdgeProps) => {
       attributes: {
         weight,
         size: weight,
-        label: `Score: ${weight}`,
       },
     };
   } else {

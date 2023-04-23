@@ -12,7 +12,7 @@ const FilterControls = ({ sigma, setHiddenEdges }: FilterControlsProps) => {
   // Set hidden edges when the IDs change
   useEffect(() => {
     setHiddenEdges(scoreIds);
-  }, [scoreIds, setHiddenEdges]);
+  }, [scoreIds, setHiddenEdges, sigma]);
   return (
     <div>
       <h3 className={"text-2xl text-bolder mb-5"}>Network Filters</h3>

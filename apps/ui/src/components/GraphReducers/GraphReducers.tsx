@@ -27,20 +27,37 @@ const GraphReducers = ({ hiddenNodes, hiddenEdges }: GraphReducerProps) => {
     }
     setSettings({
       nodeReducer: (node, data) => {
-        const newData: Partial<NodeDisplayData> = { ...data, hidden: false };
+        const newData: Attributes = { ...data, hidden: false };
+        const graph = sigma.getGraph();
+        graph.setNodeAttribute(node, "hidden", false);
+
+        // Hide orphaned nodes.
+        const numVisibleEdges = graph.filterEdges(node, (edge, attributes) => {
+          return !attributes.hidden;
+        }).length;
+
         if (hiddenNodes.has(node)) {
+          graph.setNodeAttribute(node, "hidden", true);
           newData.hidden = true;
+        } else if (numVisibleEdges === 0) {
+          newData.hidden = true;
+          graph.setNodeAttribute(node, "hidden", true);
         }
         return newData;
       },
       edgeReducer: (edge, data) => {
         const newData: Partial<EdgeAttributes> = { ...data, hidden: false };
+        const graph = sigma.getGraph();
+        graph.setEdgeAttribute(edge, "hidden", false);
+
         if (hiddenEdges.has(edge)) {
+          graph.setEdgeAttribute(edge, "hidden", true);
           newData.hidden = true;
         }
         return newData;
       },
     });
+    sigma.refresh();
   }, [setSettings, sigma, hiddenEdges, hiddenNodes]);
 
   return null;

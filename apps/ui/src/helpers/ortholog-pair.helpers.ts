@@ -95,7 +95,6 @@ export const getOrthologPairGraph = async (geneid: string) => {
     addNodes(graph, op, geneInfo);
     addEdge({ graph, orthoPair: op });
   });
-  console.log(graph.type);
   neighborEdges.forEach((edge) => {
     addEdge({ graph, neighborEdge: edge });
   });
@@ -160,7 +159,7 @@ const addNodes = (graph: Graph, op: OrthologPair, gi: GeneInfoMap) => {
       const geneInfo = gi.get(node);
       const label = geneInfo?.symbol ?? node;
       graph.addNode(node, {
-        size: 17,
+        size: 10,
         label,
         color: organismNodeColors[species] ?? "grey",
         ...geneInfo,

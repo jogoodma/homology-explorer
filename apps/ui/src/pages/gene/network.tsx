@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useLoaderData, useParams } from "react-router-dom";
 import Graph from "graphology";
 import type { EdgeEntry } from "graphology-types";
@@ -17,6 +17,15 @@ const GeneNetworkPage = () => {
   const [hiddenNodes, setHiddenNodes] = useState<Set<string>>(new Set());
   const [hiddenEdges, setHiddenEdges] = useState<Set<string>>(new Set());
 
+  const handleHiddenEdgesChange = useCallback(
+    (edgeIds: Set<string>) => setHiddenEdges(edgeIds),
+    [setHiddenEdges]
+  );
+  const handleHiddenNodesChange = useCallback(
+    (nodeIds: Set<string>) => setHiddenNodes(nodeIds),
+    [setHiddenNodes]
+  );
+
   if (!geneid) return null;
   return (
     <>
@@ -33,7 +42,11 @@ const GeneNetworkPage = () => {
         <OrganismKey />
       </section>
       <section className={"pl-10"}>
-        <FilterControls sigma={sigma} setHiddenEdges={setHiddenEdges} />
+        <FilterControls
+          sigma={sigma}
+          onHiddenEdgesChange={handleHiddenEdgesChange}
+          onHiddenNodesChange={handleHiddenNodesChange}
+        />
       </section>
     </>
   );

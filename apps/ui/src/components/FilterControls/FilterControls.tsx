@@ -1,11 +1,13 @@
 import Sigma from "sigma";
 import ScoreSlider from "../ScoreSlider";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { difference, union } from "../../helpers/set-operations.helpers";
+import SpeciesToggle from "../SpeciesToggle";
+import { GeneInfo } from "../../types";
 
 type FilterControlsCallback = (prev: Set<string>) => Set<string>;
 interface FilterControlsProps {
-  sigma: Sigma | null;
+  sigma: Sigma;
   onHiddenEdgesChange: (edgeIds: Set<string>) => void;
   onHiddenNodesChange: (nodeIds: Set<string>) => void;
 }
@@ -15,15 +17,17 @@ const FilterControls = ({
   onHiddenNodesChange,
 }: FilterControlsProps) => {
   const [scoreEdgeIds, setScoreEdgeIds] = useState(new Set<string>());
+  const [speciesNodeIds, setSpeciesNodeIds] = useState(new Set<string>());
+
+  const graph = sigma.getGraph();
 
   useEffect(() => {
     // Union of all edge IDs from filters to hide.
     const allEdgesToHide = union(scoreEdgeIds);
     // Union of all edge IDs from filters to hide.
-    const allNodesToHide = union(new Set<string>());
+    const allNodesToHide = union(speciesNodeIds);
 
     // Set hidden edges when the IDs change
-    const graph = sigma?.getGraph();
     if (graph) {
       const allNodes = graph.nodes();
       if (allNodes) {
@@ -41,13 +45,41 @@ const FilterControls = ({
     }
     onHiddenEdgesChange(allEdgesToHide);
     onHiddenNodesChange(allNodesToHide);
-  }, [scoreEdgeIds, onHiddenEdgesChange, onHiddenNodesChange, sigma]);
+  }, [
+    scoreEdgeIds,
+    speciesNodeIds,
+    onHiddenEdgesChange,
+    onHiddenNodesChange,
+    graph,
+  ]);
+
+  const taxIds = useMemo(() => {
+    if (graph) {
+      return new Set(
+        graph.mapNodes(
+          (node) =>
+            graph.getNodeAttribute(node, "speciesid") as GeneInfo["speciesid"]
+        )
+      );
+    }
+    return new Set<number>();
+  }, [graph]);
 
   return (
-    <div>
+    <>
       <h3 className={"text-2xl text-bolder mb-5"}>Network Filters</h3>
-      <ScoreSlider sigma={sigma} onChange={(edges) => setScoreEdgeIds(edges)} />
-    </div>
+      <div className={"flex flex-row gap-20"}>
+        <ScoreSlider
+          sigma={sigma}
+          onChange={(edges) => setScoreEdgeIds(edges)}
+        />
+        <SpeciesToggle
+          sigma={sigma}
+          enabledSpecies={taxIds}
+          onChange={(nodes) => setSpeciesNodeIds(nodes)}
+        />
+      </div>
+    </>
   );
 };
 

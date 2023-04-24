@@ -34,8 +34,8 @@ const ScoreSlider = ({ sigma, onChange }: ScoreSliderProps) => {
     onChange(edgesToHide);
   };
   return (
-    <div className={"ml-5 w-72"}>
-      <h4 className={"font-bold mb-10 -ml-5"}>Ortholog Score:</h4>
+    <div className={"mx-10 w-1/4 shrink-0"}>
+      <h4 className={"font-bold mb-10 -ml-8"}>Ortholog Score:</h4>
       <RangeSlider
         aria-label={["min", "max"]}
         defaultValue={[1, 16]}

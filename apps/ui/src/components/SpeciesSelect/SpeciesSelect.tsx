@@ -1,9 +1,9 @@
-import { organisms } from "../../organisms";
+import { ORGANISMS } from "../../organisms";
 
 export const SpeciesSelect = () => {
   return (
     <select id={"species"} name={"species"}>
-      {organisms.map((o) => (
+      {ORGANISMS.map((o) => (
         <option key={o.taxid} value={o.taxid}>
           {o.genus} {o.species} ({o.commonName}
         </option>

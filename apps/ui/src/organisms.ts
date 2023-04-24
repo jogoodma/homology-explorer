@@ -6,6 +6,10 @@ interface Organism {
   color: string;
 }
 
+export const getOrganism = (taxid: number) => {
+  return ORGANISMS.find((o) => o.taxid === taxid);
+};
+
 export const ORGANISMS: Organism[] = [
   {
     taxid: 9606,

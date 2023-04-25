@@ -7,9 +7,9 @@ const GeneSearch = ({ onChange }: GeneSearchProps) => {
   };
 
   return (
-    <form>
-      <label htmlFor="id" className="text-4xl text-gray-500">
-        Enter a Gene:
+    <form className={"max-w-5xl"}>
+      <label htmlFor="id" className="text-5xl text-gray-500">
+        Enter a Gene
       </label>
       <input
         id="gene"

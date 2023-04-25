@@ -154,6 +154,21 @@ con.execute(
     """
 )
 
+#evwGeneNeighborEdgelist
+con.execute(
+    """
+    DROP VIEW IF EXISTS evwGeneNeighborEdgelist;
+    CREATE VIEW evwGeneNeighborEdgelist AS
+        SELECT
+            opb_id AS 'key'
+            , geneid1 AS 'source'
+            , geneid2 AS 'target'
+            , weight
+        FROM tblOrthologPairs
+        WHERE best_score='Yes';
+    """
+)
+
 #evwGeneNeighborNodes
 con.execute(
     """
@@ -185,20 +200,4 @@ con.execute(
             ON a.speciesid = b.taxonomyid;
     """
 )
-
-#evwGeneNeighborEdgelist
-con.execute(
-    """
-    DROP VIEW IF EXISTS evwGeneNeighborEdgelist;
-    CREATE VIEW evwGeneNeighborEdgelist AS
-        SELECT
-            opb_id AS 'key'
-            , geneid1 AS 'source'
-            , geneid2 AS 'target'
-            , weight
-        FROM tblOrthologPairs
-        WHERE best_score='Yes';
-    """
-)
-
 

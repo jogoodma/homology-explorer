@@ -3,32 +3,13 @@ import { random } from "graphology-layout";
 import { LoaderFunctionArgs } from "react-router-dom";
 
 import { ORGANISMS } from "../organisms";
-import { GeneInfo } from "../types";
-
-type GeneId = number;
-interface OrthologPair {
-  geneid1: GeneId;
-  geneid2: GeneId;
-  opb_id: number;
-  species1: number;
-  species2: number;
-  weight: number;
-  best_score: string;
-  best_score_rev: string;
-  confidence: string;
-}
-
-interface Edge {
-  key?: number;
-  source: number;
-  target: number;
-  attributes: {
-    weight: number;
-    [propName: string]: string | number | boolean;
-  };
-}
-
-type GeneInfoMap = Map<number, GeneInfo>;
+import type {
+  Edge,
+  OrthologPair,
+  GeneInfoMap,
+  GeneInfo,
+  GeneNode,
+} from "../types";
 
 const fetchGeneInfo = async (geneids: number[]): Promise<GeneInfoMap> => {
   try {
@@ -48,6 +29,18 @@ const fetchGeneInfo = async (geneids: number[]): Promise<GeneInfoMap> => {
     console.error(`Error fetching gene info for: ${error}`);
   }
   return new Map();
+};
+
+const fetchNetworkNeighborNodes = async (
+  geneid: string
+): Promise<GeneNode[]> => {
+  console.debug("Fetching gene neighbor nodes");
+  const response = await fetch(`/api/geneneighbornodes/gene/${geneid}/`);
+  if (response.ok) {
+    return await response.json();
+  } else {
+    throw Error(response.statusText);
+  }
 };
 
 const fetchOrthologPairs = async (geneid: string): Promise<OrthologPair[]> => {
@@ -78,22 +71,18 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
 
 export const getOrthologPairGraph = async (geneid: string) => {
   console.debug("Preparing ortholog graph");
-  const orthologPairs = await fetchOrthologPairs(geneid);
+  const geneNodes = await fetchNetworkNeighborNodes(geneid);
   // Get a unique list of all gene IDs in network.
-  const geneIds = [
-    ...new Set(orthologPairs.flatMap((op) => [op.geneid1, op.geneid2])),
-  ];
-  const geneInfo = await fetchGeneInfo(geneIds);
+  //const geneIds = [...new Set(geneNodes.map((gn) => gn.key))];
+  //const geneInfo = await fetchGeneInfo(geneIds);
   const neighborEdges = await fetchNetworkNeighborEdges(geneid);
   const graph = new Graph({
     allowSelfLoops: false,
     type: "undirected",
     multi: false,
   });
-  orthologPairs.forEach((op, i) => {
-    const { geneid1, geneid2 } = op;
-    addNodes(graph, op, geneInfo);
-    addEdge({ graph, orthoPair: op });
+  geneNodes.forEach((gn, i) => {
+    addGeneNode(graph, gn);
   });
   neighborEdges.forEach((edge) => {
     addEdge({ graph, neighborEdge: edge });
@@ -149,6 +138,21 @@ const organismNodeColors = ORGANISMS.reduce<Record<number, string>>(
   },
   {}
 );
+const addGeneNode = (graph: Graph, gene: GeneNode) => {
+  if (!graph.hasNode(gene.key)) {
+    const { symbol, speciesid, ...rest } = gene.attributes;
+    const label = symbol ?? gene.key;
+    graph.addNode(gene.key, {
+      size: 10,
+      label,
+      color: organismNodeColors[speciesid] ?? "grey",
+      speciesid,
+      symbol,
+      ...rest,
+    });
+  }
+};
+
 const addNodes = (graph: Graph, op: OrthologPair, gi: GeneInfoMap) => {
   const nodes = [
     [op.geneid1, op.species1],

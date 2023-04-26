@@ -19,7 +19,9 @@ export const GeneResults = ({ results }: GeneResultsProps) => {
         return (
           <div
             key={gene.geneid}
-            className={"flex flex-row justify-between py-2 hover:bg-indigo-100"}
+            className={
+              "flex flex-row justify-between py-2 hover:border-rose-300 hover:border-b"
+            }
           >
             <div className={"font-bold basis-1/2"}>{gene.symbol}</div>
             <div className={"basis-1/4"}>{species}</div>

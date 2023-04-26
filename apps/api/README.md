@@ -21,6 +21,7 @@ api
 ```
 
 2. Run with `poetry`
+
    - `poetry run uvicorn app.main:app` to run the API locally from the `homology-explorer/apps/api/` directory
    - navigate to http://127.0.0.1:8000/docs in browser for the Swagger UI
 
@@ -41,4 +42,4 @@ COMPLETE - 4/17/23, MG
 - Some SQL things too
   - ~CREATE TABLE + Index `GeneCode` list in `duck.db` database build phase~
   - ~Additional SQL table/attribute additions if necessary - IE, global network analyses~
-  - ~add ortholog_type to SQL evwOrthologPairs~
+  - ~add homolog_type to SQL evwOrthologPairs~

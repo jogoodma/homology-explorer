@@ -122,7 +122,7 @@ con.execute(
             , best_score_rev
             , confidence
             , CASE WHEN species1 = species2 
-                THEN 'paralog' ELSE 'homolog' END AS ortholog_type
+                THEN 'paralog' ELSE 'ortholog' END AS homolog_type
         FROM tblOrthologPairs;
     """
 )

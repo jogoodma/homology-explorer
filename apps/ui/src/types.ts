@@ -49,8 +49,19 @@ export type NodeAttributes = Pick<
   | "gene_type"
 >;
 export interface GeneNode {
-  key: number;
+  key: GeneId;
   attributes: NodeAttributes;
 }
 
 export type GeneInfoMap = Map<number, GeneInfo>;
+
+export interface LinkcomResult {
+  key: number;
+  source: GeneId;
+  target: GeneId;
+  attributes: {
+    confidence: string;
+    homolog_type: "ortholog" | "paralog";
+    linkcom: number;
+  };
+}

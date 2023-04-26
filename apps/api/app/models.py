@@ -46,7 +46,7 @@ class OrthologPairs(Base):
     best_score = Column(String)
     best_score_rev = Column(String)
     confidence = Column(String)
-    ortholog_type = Column(String)
+    homolog_type = Column(String)
 
 
 ### Gene Neighbor Info ###

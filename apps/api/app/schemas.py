@@ -50,7 +50,7 @@ class OrthologPairs(OrthologPairsBase):
     best_score: str
     best_score_rev: str
     confidence: str
-    ortholog_type: str
+    homolog_type: str
     
     class Config:
         orm_mode = True

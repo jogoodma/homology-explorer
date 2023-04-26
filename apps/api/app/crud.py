@@ -212,7 +212,7 @@ def add_EdgeAnalysis(db: Session, edgeattrs: list, newedgeattr: list):
           'attributes': {
             'weight': e['weight'],
             'confidence': e['confidence'],
-            'ortholog_type': e['ortholog_type']
+            'homolog_type': e['homolog_type']
           }
         } for e in edgevars 
     ]

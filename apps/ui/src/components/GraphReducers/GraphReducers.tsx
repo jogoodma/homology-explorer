@@ -1,7 +1,9 @@
 import { useEffect } from "react";
-import { useRegisterEvents, useSetSettings, useSigma } from "@react-sigma/core";
+import { useSetSettings, useSigma } from "@react-sigma/core";
 import { Attributes, EdgeEntry } from "graphology-types";
 import { EdgeDisplayData, NodeDisplayData } from "sigma/types";
+
+import { interpolateSpectral } from "d3-scale-chromatic";
 
 interface EdgeAttributes extends EdgeDisplayData {
   weight: number;
@@ -10,6 +12,7 @@ interface EdgeAttributes extends EdgeDisplayData {
 interface GraphReducerProps {
   hiddenNodes: Set<string>;
   hiddenEdges: Set<string>;
+  showLinkcom?: boolean;
 }
 
 /**
@@ -17,8 +20,13 @@ interface GraphReducerProps {
  *
  * @param hiddenNodes - A list of node IDs to hide from the display.
  * @param hiddenEdges - A list of edge IDs to hide from the display.
+ * @param showLinkcom - Whether to show the linkcom attributes as colors.
  */
-const GraphReducers = ({ hiddenNodes, hiddenEdges }: GraphReducerProps) => {
+const GraphReducers = ({
+  hiddenNodes,
+  hiddenEdges,
+  showLinkcom = false,
+}: GraphReducerProps) => {
   const sigma = useSigma();
   const setSettings = useSetSettings();
 
@@ -39,6 +47,16 @@ const GraphReducers = ({ hiddenNodes, hiddenEdges }: GraphReducerProps) => {
 
         if (hiddenEdges.has(edge)) {
           newData.hidden = true;
+        }
+        const graph = sigma.getGraph();
+        if (
+          showLinkcom &&
+          graph &&
+          graph.hasEdgeAttribute(edge, "linkcom_norm")
+        ) {
+          newData.color = interpolateSpectral(
+            graph.getEdgeAttribute(edge, "linkcom_norm")
+          );
         }
         return newData;
       },

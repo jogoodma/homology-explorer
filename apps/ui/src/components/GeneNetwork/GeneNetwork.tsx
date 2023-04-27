@@ -20,6 +20,7 @@ interface GeneNetworkProps {
   sigmaRef?: any;
   hiddenNodes?: Set<string>;
   hiddenEdges?: Set<string>;
+  showLinkcom?: boolean;
 }
 export const GeneNetwork = ({
   geneid,
@@ -29,6 +30,7 @@ export const GeneNetwork = ({
   sigmaRef = () => {},
   hiddenNodes = new Set(),
   hiddenEdges = new Set(),
+  showLinkcom = false,
 }: GeneNetworkProps) => {
   const sigmaSettings = {
     renderEdgeLabels: true,
@@ -44,7 +46,11 @@ export const GeneNetwork = ({
         <ZoomControl />
         <FullScreenControl />
         <LayoutForceAtlas2Control />
-        <GraphReducers hiddenNodes={hiddenNodes} hiddenEdges={hiddenEdges} />
+        <GraphReducers
+          hiddenNodes={hiddenNodes}
+          hiddenEdges={hiddenEdges}
+          showLinkcom={showLinkcom}
+        />
         <DragNDrop />
       </ControlsContainer>
       <ControlsContainer position={"bottom-right"}>

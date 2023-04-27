@@ -7,6 +7,7 @@ import OrganismKey from "../../components/OrganismKey";
 import FilterControls from "../../components/FilterControls";
 import { GeneInfo } from "../../types";
 import { getOrganism, ORGANISMS } from "../../organisms";
+import Analysis from "../../components/Analysis";
 
 const GeneNetworkPage = () => {
   const { geneid } = useParams();
@@ -16,6 +17,9 @@ const GeneNetworkPage = () => {
 
   const [hiddenNodes, setHiddenNodes] = useState<Set<string>>(new Set());
   const [hiddenEdges, setHiddenEdges] = useState<Set<string>>(new Set());
+  const [showLinkcom, setShowlinkcom] = useState<boolean>(false);
+
+  const toggleLinkcom = () => setShowlinkcom((prevState) => !prevState);
 
   if (!geneid || !graph) return null;
 
@@ -43,9 +47,20 @@ const GeneNetworkPage = () => {
             sigmaRef={setSigma}
             hiddenNodes={hiddenNodes}
             hiddenEdges={hiddenEdges}
+            showLinkcom={showLinkcom}
           />
         </div>
-        <OrganismKey />
+        <div className={"flex flex-col gap-6"}>
+          <OrganismKey />
+          {sigma && (
+            <Analysis
+              sigma={sigma}
+              geneid={parseInt(geneid)}
+              showLinkcom={showLinkcom}
+              toggleLinkcom={toggleLinkcom}
+            />
+          )}
+        </div>
       </section>
       <section className={"px-10"}>
         {sigma && (

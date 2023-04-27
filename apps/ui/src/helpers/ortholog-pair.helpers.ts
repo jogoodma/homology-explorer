@@ -5,10 +5,12 @@ import { LoaderFunctionArgs } from "react-router-dom";
 import { ORGANISMS } from "../organisms";
 import type {
   Edge,
-  OrthologPair,
-  GeneInfoMap,
+  GeneId,
   GeneInfo,
+  GeneInfoMap,
   GeneNode,
+  LinkcomResult,
+  OrthologPair,
 } from "../types";
 
 const fetchGeneInfo = async (geneids: number[]): Promise<GeneInfoMap> => {
@@ -170,4 +172,29 @@ const addNodes = (graph: Graph, op: OrthologPair, gi: GeneInfoMap) => {
       });
     }
   });
+};
+
+export const fetchLinkcomAnalysis = async (
+  geneIds: GeneId[],
+  threshold: number = 0.5
+): Promise<LinkcomResult[]> => {
+  try {
+    const response = await fetch(
+      `/api/geneneighboredges/multigene/linkcom?threshold=${threshold}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          genes: geneIds,
+        }),
+      }
+    );
+    // Create a map/dict for fast retrieval of gene information.
+    return await response.json();
+  } catch (error) {
+    console.error(`Error fetching linkcom analysis result for: ${error}`);
+  }
+  return [];
 };

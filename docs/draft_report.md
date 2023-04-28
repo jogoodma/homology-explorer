@@ -155,12 +155,84 @@ apps/api
 ```
 
 - **database.py**
+   - This file handles session connections to the database
 - **models.py**
+   - This file structures the SQL tables into an object relational model (ORM)
+   - Once instantiated as an ORM object, the tables are easy to manipulate using other python libraries. 
 - **schemas.py**
+   - This file enforces data types and structural representations of ORM objects
+   - Both objects used for posts and responses can be validated according to these schema
 - **crud.py**
+   - This file contains functions for parsing, analyzing, and transforming ORM objects
+   - Also contains capability for interacting with the database via the API using CRUD operations 
 - **main.py**
+   - This file packages the functions and CRUD operations with the ORM models and serves the requests through HTTP API calls. 
+   - It also validates POST and GET operations and constrains inputs/outputs according to design specifications, and assigns query and path parameters to HTTP routes. 
 
-### `Networkx` Analysis
+The interface works more or less as follows for each of the API endpoints:
+
+- The API is turned on via `uvicorn` ASGI^[https://asgi.readthedocs.io/en/latest/] (Asynchronous Server Gateway Interface) 
+- Database connection is made when a user makes a request
+- A user sends an HTTP request to the open port to match the query and path parameters specified by the available API endpoints in `main.py`. 
+- If a valid endpoint is called, then the endpoint 
+   - validates the query/path parameters by type for GET calls and by schema for POST calls
+   - executes it's selection of CRUD operations by calling on the ORM models connected to the database
+   - serializes an output or returns error code
+   - validates the output of the CRUD operations by schema
+   - returns HTTP response body
+
+And that's it! The API endpoints all vary somewhat depending on their intended purpose, but follow this general pattern of operations. Some API calls only involve one database CRUD call, while some are composed of three or four. 
+
+### API Endpoints
+
+In the case of this API, all of the endpoints are designed to help a user explore the network of genes as defined by the DIOPT database. These endpoints are discussed individually at length below.
+
+#### General Information
+
+GET Calls:
+- `/search/gene/symbol/{symbol}/`
+- `/geneinfo/gene/{gene_id}/`
+- `/orthologpairs/gene/{gene_id}/`
+
+These endpoints query basic information from the database tables. The symbol search is used to populate search results for the dynamic gene search option at the beginning of the UI. The other two endpoints return node or edge data for a single requests gene. The edge data returns a list of all edges attached to the requested node (gene).
+
+#### Multigene Requests
+
+POST Calls:
+- `/geneinfo/multigene/`
+- `/orthologpairs/multigene/`
+
+These endpoints require the user to post a list of `geneid`s which are then parsed using and `in` SQL comparative instead of an `=` as used in the case of the single `geneid` calls in the general information endpoints. In this way, the multigene endpoints is able to provide node and edge info as above but instead for a list of genes. 
+
+#### The Gene Neighborhood
+
+GET Calls:
+- `/geneneighboredges/gene/{gene_id}/`
+- `/geneneighbornodes/gene/{gene_id}/`
+
+POST Calls:
+- `/geneneighboredges/multigene/`
+- `/geneneighbornodes/multigene/`
+
+These `geneneighbor*` endpoints are composed of two CRUD operations. The first CRUD operation for each endpoint computes the *gene neighborhood* to build a list of all the distinct first degree neighbors of the requested gene or genes. This operation can be parameterized by an upper pr lower bound to constrain the neighbors to be only those first degree neighbors with weights constrained by the bounds - this acts as a way to filter a neighborhood's edges by weight. 
+
+By calling a commonly parameterized initialization function, the gene neighborhood allows easily for multiple different API calls to reference the same list of edges. This both makes the syntax easily accessible to users and allows for the same subgraph to be easily requeried for a variety of different information. 
+
+The second CRUD operation then fetches either:
+1. Nodes, and the gene information is returned for each node in the first degree neighborhood of the gene or genes. Or,
+2. Edges, and a list of homolog edges are returned for each edge between each node pair in the 1st degree neighborhood of the requested gene or genes' neighborhood. 
+
+TODO: Update `crud.get_GeneNeighborEdgelist` to take as arguments the weight_lb and weight_ub
+
+The gene neighborhood represents the closest related genes to those queried as defined by various homology prediction algorithms.
+
+#### Network Analysis
+
+POST Calls:
+- `/geneneighboredges/multigene/{analysis}`
+- `/geneneighbornodes/multigene/{analysis}`
+
+
 
 ## User Interface
 

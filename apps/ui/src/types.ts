@@ -65,3 +65,12 @@ export interface LinkcomResult {
     linkcom: number;
   };
 }
+
+type PagerankAttributes = Omit<NodeAttributes, "chromosome"> & {
+  pagerank: number;
+};
+
+export interface PagerankResult {
+  key: number;
+  attributes: PagerankAttributes;
+}

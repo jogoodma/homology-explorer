@@ -11,6 +11,7 @@ import { LayoutForceAtlas2Control } from "@react-sigma/layout-forceatlas2";
 import Graph from "graphology";
 import GraphReducers from "../GraphReducers";
 import DragNDrop from "../DragNDrop";
+import { LayoutNoverlapControl } from "@react-sigma/layout-noverlap";
 
 interface GeneNetworkProps {
   geneid: string;
@@ -21,6 +22,7 @@ interface GeneNetworkProps {
   hiddenNodes?: Set<string>;
   hiddenEdges?: Set<string>;
   showLinkcom?: boolean;
+  showPagerank?: boolean;
 }
 export const GeneNetwork = ({
   geneid,
@@ -31,6 +33,7 @@ export const GeneNetwork = ({
   hiddenNodes = new Set(),
   hiddenEdges = new Set(),
   showLinkcom = false,
+  showPagerank = false,
 }: GeneNetworkProps) => {
   const sigmaSettings = {
     renderEdgeLabels: true,
@@ -45,11 +48,12 @@ export const GeneNetwork = ({
       <ControlsContainer position={"top-right"}>
         <ZoomControl />
         <FullScreenControl />
-        <LayoutForceAtlas2Control />
+        <LayoutNoverlapControl />
         <GraphReducers
           hiddenNodes={hiddenNodes}
           hiddenEdges={hiddenEdges}
           showLinkcom={showLinkcom}
+          showPagerank={showPagerank}
         />
         <DragNDrop />
       </ControlsContainer>

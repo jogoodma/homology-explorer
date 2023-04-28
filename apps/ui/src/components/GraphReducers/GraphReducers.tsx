@@ -13,6 +13,7 @@ interface GraphReducerProps {
   hiddenNodes: Set<string>;
   hiddenEdges: Set<string>;
   showLinkcom?: boolean;
+  showPagerank?: boolean;
 }
 
 /**
@@ -26,6 +27,7 @@ const GraphReducers = ({
   hiddenNodes,
   hiddenEdges,
   showLinkcom = false,
+  showPagerank = false,
 }: GraphReducerProps) => {
   const sigma = useSigma();
   const setSettings = useSetSettings();
@@ -39,6 +41,14 @@ const GraphReducers = ({
         const newData: Attributes = { ...data, hidden: false };
         if (hiddenNodes.has(node)) {
           newData.hidden = true;
+        }
+        const graph = sigma.getGraph();
+        if (
+          showPagerank &&
+          graph &&
+          graph.hasNodeAttribute(node, "pagerank_norm")
+        ) {
+          newData.size = graph.getNodeAttribute(node, "pagerank_norm");
         }
         return newData;
       },

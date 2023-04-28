@@ -1,8 +1,11 @@
 import Sigma from "sigma";
-import { fetchLinkcomAnalysis } from "../../helpers/ortholog-pair.helpers";
+import {
+  fetchLinkcomAnalysis,
+  fetchPagerankAnalysis,
+} from "../../helpers/ortholog-pair.helpers";
 import { GeneId } from "../../types";
-import { useState } from "react";
 import { normalize } from "./Analysis.helpers";
+import { scaleLinear } from "d3-scale";
 import {
   FormControl,
   FormLabel,
@@ -18,12 +21,16 @@ interface AnalysisProps {
   sigma: Sigma;
   showLinkcom?: boolean;
   toggleLinkcom: () => void;
+  showPagerank?: boolean;
+  togglePagerank: () => void;
 }
 const Analysis = ({
   geneid,
   sigma,
   showLinkcom = false,
   toggleLinkcom,
+  showPagerank = false,
+  togglePagerank,
 }: AnalysisProps) => {
   const handleShowLinkcom = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -56,8 +63,40 @@ const Analysis = ({
     }
   };
 
+  const handleShowPagerank = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const data = new FormData(e.currentTarget);
+    // Do this if we are NOT showing linkcom
+    if (!showPagerank) {
+      togglePagerank();
+      const alpha = parseFloat(data.get("pagerank_alpha") as string) ?? 0.85;
+      const analysis = await fetchPagerankAnalysis([geneid], alpha);
+      const graph = sigma.getGraph();
+      // TODO - implement result caching.
+      const pagerankValues = analysis.map((node) => node.attributes.pagerank);
+      const max = Math.max(...pagerankValues);
+      const min = Math.min(...pagerankValues);
+      const scale = scaleLinear([min, max], [2, 20]);
+      analysis.forEach((result) => {
+        const {
+          key,
+          attributes: { pagerank },
+        } = result;
+        const node = graph.findNode((n) => n === key.toString());
+        if (node) {
+          graph.mergeNodeAttributes(node, {
+            pagerank,
+            pagerank_norm: scale(pagerank),
+          });
+        }
+      });
+    } else {
+      togglePagerank();
+    }
+  };
+
   return (
-    <div>
+    <div className={"flex flex-col gap-10"}>
       <div>
         <h4 className={"text-slate-600 text-xl"}>Linkcom Analysis</h4>
         <form onSubmit={handleShowLinkcom}>
@@ -82,6 +121,33 @@ const Analysis = ({
             className="rounded-lg bg-emerald-400 mt-2 p-2 drop-shadow-md active:bg-emerald-600"
           >
             {showLinkcom ? "Hide" : "Show"} Linkcom
+          </button>
+        </form>
+      </div>
+      <div>
+        <h4 className={"text-slate-600 text-xl"}>Pagerank Analysis</h4>
+        <form onSubmit={handleShowPagerank}>
+          <FormControl>
+            <FormLabel>Alpha</FormLabel>
+            <NumberInput
+              name="pagerank_alpha"
+              max={1}
+              min={0}
+              defaultValue={0.85}
+              step={0.1}
+            >
+              <NumberInputField />
+              <NumberInputStepper>
+                <NumberIncrementStepper />
+                <NumberDecrementStepper />
+              </NumberInputStepper>
+            </NumberInput>
+          </FormControl>
+          <button
+            type={"submit"}
+            className="rounded-lg bg-emerald-400 mt-2 p-2 drop-shadow-md active:bg-emerald-600"
+          >
+            {showPagerank ? "Hide" : "Show"} Pagerank
           </button>
         </form>
       </div>

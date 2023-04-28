@@ -17,9 +17,11 @@ const GeneNetworkPage = () => {
 
   const [hiddenNodes, setHiddenNodes] = useState<Set<string>>(new Set());
   const [hiddenEdges, setHiddenEdges] = useState<Set<string>>(new Set());
-  const [showLinkcom, setShowlinkcom] = useState<boolean>(false);
+  const [showLinkcom, setShowLinkcom] = useState<boolean>(false);
+  const [showPagerank, setShowPagerank] = useState<boolean>(false);
 
-  const toggleLinkcom = () => setShowlinkcom((prevState) => !prevState);
+  const toggleLinkcom = () => setShowLinkcom((prevState) => !prevState);
+  const togglePagerank = () => setShowPagerank((prevState) => !prevState);
 
   if (!geneid || !graph) return null;
 
@@ -48,6 +50,7 @@ const GeneNetworkPage = () => {
             hiddenNodes={hiddenNodes}
             hiddenEdges={hiddenEdges}
             showLinkcom={showLinkcom}
+            showPagerank={showPagerank}
           />
         </div>
         <div className={"flex flex-col gap-6"}>
@@ -58,6 +61,8 @@ const GeneNetworkPage = () => {
               geneid={parseInt(geneid)}
               showLinkcom={showLinkcom}
               toggleLinkcom={toggleLinkcom}
+              showPagerank={showPagerank}
+              togglePagerank={togglePagerank}
             />
           )}
         </div>

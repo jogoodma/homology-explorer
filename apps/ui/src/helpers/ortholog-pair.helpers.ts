@@ -11,6 +11,7 @@ import type {
   GeneNode,
   LinkcomResult,
   OrthologPair,
+  PagerankResult,
 } from "../types";
 
 const fetchGeneInfo = async (geneids: number[]): Promise<GeneInfoMap> => {
@@ -191,10 +192,32 @@ export const fetchLinkcomAnalysis = async (
         }),
       }
     );
-    // Create a map/dict for fast retrieval of gene information.
     return await response.json();
   } catch (error) {
     console.error(`Error fetching linkcom analysis result for: ${error}`);
+  }
+  return [];
+};
+export const fetchPagerankAnalysis = async (
+  geneIds: GeneId[],
+  alpha: number = 0.85
+): Promise<PagerankResult[]> => {
+  try {
+    const response = await fetch(
+      `/api/geneneighbornodes/multigene/pagerank?alpha=${alpha}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          genes: geneIds,
+        }),
+      }
+    );
+    return await response.json();
+  } catch (error) {
+    console.error(`Error fetching pagerank analysis result for: ${error}`);
   }
   return [];
 };

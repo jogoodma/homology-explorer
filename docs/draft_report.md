@@ -18,15 +18,30 @@ Evolutionary genomics is an important field of study for biomedical researchers,
 
 EG mRNA techniques, etc.
 
-Gene orthology allows researchers to compare genetic traits, both between and within species^[https://bio.libretexts.org/Bookshelves/Microbiology/Microbiology_(Boundless)/07%3A_Microbial_Genetics/7.13%3A_Bioinformatics/7.13C%3A_Homologs_Orthologs_and_Paralogs]. Although there are many methods for predicting homologous relationships between genes, recent related works^[DIOPT] have compiled a unified database cataloguing these relationships. While this is extremely useful for researchers, the tabular format of the database obscures the network embedding inherent in the data - whereby edges are predictions of relationships between genes, and the genes themselves are nodes.
+Gene homology allows researchers to compare genetic traits, both between and within species^[https://bio.libretexts.org/Bookshelves/Microbiology/Microbiology_(Boundless)/07%3A_Microbial_Genetics/7.13%3A_Bioinformatics/7.13C%3A_Homologs_Orthologs_and_Paralogs]. Although there are many methods for predicting homologous relationships between genes, recent related works^[DIOPT] have compiled a unified database cataloguing these relationships. While this is extremely useful for researchers, the tabular format of the database obscures the network structure inherent in the data - whereby edges are predictions of relationships between genes, and the genes themselves are nodes.
 
 This research aims to close the gap between biomedical researchers and the gene homology database by visualizing the gene homology network as an interactive, searchable web application capable of exploring orthologous relationships of individual genes, of lists multiple genes, and of their respective gene neighborhoods. To enhance the researchers understanding of these relationships, we also aim to provide network analysis tools via the UI to perform network operations of centrality measurement and link community detection.
 
+## Problem Statement
+
+Although a database has been compiled to catalogue and rank relationships between genes predicted by a variety of different models, there is not an easily accessible way for researchers to access this data. This leads us to the first and main problem: 
+
+> Improve accessibility to gene homology network.
+
+To solve this problem, the team has decided to design a web application to serve network visualization and analysis of the network data in a way that allows users to explore the gene homology network with focus and ease. 
+
+Some additional problem constraints are as follows:
+
+- The web application should be designed such that it can be hosted by DIOPT, the research organization which compiled these data. This means it needs to be a production-grade application which can handle multiple concurrent users without crashing. This standard of development raises the bar above that of simply a minimum viable product. 
+- The web application should be responsive and allow for users to search for and drill into various different genes, as well as tailor the results based on parameterizations of the various network operations.
+
 # Methods
 
-The schematic below outlines the web application design architecture. For portability, the application is packaged as a `docker-compose` image with two containers:
+The schematic below outlines the web application design architecture. 
 
-- The backend application programming interface (API) container runs the database and implements the `FastAPI` python framework to serialize, validate, and apply network and filtering analyses to the data.
+For portability, the application is packaged as a `docker-compose` image which can be hosted on a container registry and run as a standalone app service. The image consists of two containers:
+
+- The backend application programming interface (API) container runs the database and implements the `FastAPI` python framework to manage database access serialize, validate, and apply network and filtering analyses to the data.
 - The frontend user interface (UI) container runs the visualization application by implementing the `Sigma.js` and `Graphology` network frameworks through a javascript `React` framework.
 
 ```mermaid
@@ -70,6 +85,8 @@ homology-explorer
 ├── data
 └── docs
 ```
+
+
 
 The sections below outline the methods used to develop the web application and implement the network analysis tools.
 
@@ -136,7 +153,10 @@ The `dbBuilder.py` script constructs this `duck.db` database using the DuckDB py
 
 In order for web application users to efficiently access the newly created orthology database, an API can be used to broker, transform, and validate data between the database and the UI. Python is the preferred language for this API because it allows us to easily use the `networkx` library to analyze network data in real-time.
 
-`FastAPI` is a popular python web framework focused on high performance and easy development, and was selected as the framework for our web application backend. It was selected over more popular frameworks Django and Flask due to its comparative performance advantage^[https://www.techempower.com/benchmarks/#section=data-r21&hw=ph&test=query&l=zijzen-35r&d=b&f=0-0-6bk-0-0-0-b8jk-0-1ekg-4fti4g-0-0-0-0&c=d] and ease of implementation. The framework as applied here is largely based off this official tutorial^[https://fastapi.tiangolo.com/tutorial/sql-databases/] from the `FastAPI` documentation.
+`FastAPI` is a popular python web API framework focused on high performance and easy development. We selected the framework for our web application backend because:
+- The API runs asynchronously which allows it to handle multiple concurrent users and calls performantly^[https://www.techempower.com/benchmarks/#section=data-r21&hw=ph&test=query&l=zijzen-35r&d=b&f=0-0-6bk-0-0-0-b8jk-0-1ekg-4fti4g-0-0-0-0&c=d] 
+- The API is in python, which is useful since we will need to leverage the `networkx` python library. This simplifies the API by keeping it all within 1 lanuage. 
+- There is good documentation and it is a relatively easy framework to learn and implement. For example, this application is largely based off this official tutorial^[https://fastapi.tiangolo.com/tutorial/sql-databases/] from the `FastAPI` documentation.
 
 Below is an example directory tree of the `FastAPI` service embedded with the `duck.db`.
 
@@ -224,7 +244,7 @@ The second CRUD operation then fetches either:
 
 TODO: Update `crud.get_GeneNeighborEdgelist` to take as arguments the weight_lb and weight_ub
 
-The gene neighborhood represents the closest related genes to those queried as defined by various homology prediction algorithms.
+The gene neighborhood represents the closest related genes to those queried as defined by various homology prediction algorithms. 
 
 #### Network Analysis
 
@@ -232,6 +252,64 @@ POST Calls:
 - `/geneneighboredges/multigene/{analysis}`
 - `/geneneighbornodes/multigene/{analysis}`
 
+Network analysis endpoints are constructed in a manner similar to the multigene gene neighborhood endpoints. The endpoints operates as follows
+
+1. The MultiGeneNeighborhood is called and the node or edge info are queried for the neighborhood
+2. Next, the neighborhood is serialized to an edgelist format which is then passed to a `networkx` call.
+   - This step converts the edgelist to a `nx.Graph()` object, performs a network analysis of some kind, and returns an edgelist or nodelist with the calculated attribute.
+3. The newly calculated attribute from step 2 is appended to the node or edge info calculated in step 1 to return a new edge or node list along with all the attributes (original and calculated) for edge object of the list. 
+
+For network analysis calls related to either the nodes or the edges, this framework allows for the actual network CRUD operations themselves to be easily added to the API. This can be done easily and swiftly by:
+1. passing the edgelist of the neighborhood to instantiate it as an `nx.Graph` object
+2. running the network analysis
+3. serializing the output such that the newly created attribute can be appended to the original node or edge attribute list. 
+
+For example, the network CRUD operation for the `geneneighbornodes/multigene/PageRank/` call consists of a mere 8 lines:
+
+```python
+def get_Pagerank(db: Session, edgelist: list, alpha: float):
+     
+    g = nx.DiGraph()
+    g.add_edges_from(edgelist)
+    
+    pagerank = nx.pagerank(g, alpha=alpha, weight='weight')
+    
+    newnodeattr = [
+        { 'key': key, 'attributes': { 'pagerank': value } }
+        for key, value in pagerank.items()
+    ]
+    
+    return newnodeattr
+```
+
+... and the network CRUD operation for the `geneneighboredges/multigene/Linkcom/` call consists of scant more:
+
+```python
+def get_Linkcom(db: Session, edgelist: list, threshold: float):
+    
+    g = nx.Graph()
+    g.add_edges_from(edgelist)
+    
+    e2c,_ = linkcom.cluster(
+        g, threshold=threshold, 
+        is_weighted=True, weight_key='weight',
+        to_file=False
+    )
+    
+    newedgeattr = [ 
+        { 
+          'source': key[0], 
+          'target': key[1],
+          'attributes': {
+            'linkcom': value
+          }
+        } for key, value in e2c.items()
+    ]
+    
+    return newedgeattr
+```
+
+Query parameters can also be used to toggle the output of the analysis by tuning various hyperparameters. 
 
 
 ## User Interface

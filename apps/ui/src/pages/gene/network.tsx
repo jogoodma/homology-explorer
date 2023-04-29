@@ -6,18 +6,9 @@ import { GeneNetwork } from "../../components/GeneNetwork";
 import OrganismKey from "../../components/OrganismKey";
 import FilterControls from "../../components/FilterControls";
 import { GeneInfo, HoveredNodes, LayoutType, LayoutTypes } from "../../types";
-import { getOrganism, ORGANISMS } from "../../organisms";
+import { getOrganism } from "../../organisms";
 import Analysis from "../../components/Analysis";
-import {
-  FormControl,
-  FormLabel,
-  NumberDecrementStepper,
-  NumberIncrementStepper,
-  NumberInput,
-  NumberInputField,
-  NumberInputStepper,
-  Select,
-} from "@chakra-ui/react";
+import { FormControl, FormLabel, Select } from "@chakra-ui/react";
 import GeneInfoDisplay from "../../components/GeneInfoDisplay";
 
 const GeneNetworkPage = () => {

@@ -1,6 +1,7 @@
 import { GeneInfo } from "../../types";
 import { ReactNode } from "react";
 import GeneLink from "../GeneLink";
+import { Link } from "react-router-dom";
 
 interface GeneInfoDisplayProps {
   info?: GeneInfo;
@@ -42,6 +43,19 @@ const GeneInfoDisplay = ({ info }: GeneInfoDisplayProps) => {
 
         <Label>Chromosome:</Label>
         <Value>{info.chromosome}</Value>
+
+        <Label>Network:</Label>
+        <Value>
+          <Link
+            to={`/network/gene/${info.geneid}`}
+            className={
+              "bg-teal-500 hover:bg-teal-700 p-2 text-white rounded-lg"
+            }
+            reloadDocument={true}
+          >
+            View Network
+          </Link>
+        </Value>
       </dl>
     </>
   );

@@ -14,7 +14,9 @@ import type {
   PagerankResult,
 } from "../types";
 
-const fetchGeneInfo = async (geneids: number[]): Promise<GeneInfoMap> => {
+export const fetchGeneInfo = async (
+  geneids: number[]
+): Promise<GeneInfoMap> => {
   try {
     const response = await fetch("/api/geneinfo/multigene/", {
       method: "POST",

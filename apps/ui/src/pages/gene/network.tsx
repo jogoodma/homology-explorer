@@ -1,4 +1,4 @@
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useRef, useState } from "react";
 import { useLoaderData, useParams } from "react-router-dom";
 import Graph from "graphology";
 import type Sigma from "sigma";
@@ -18,6 +18,7 @@ import {
   NumberInputStepper,
   Select,
 } from "@chakra-ui/react";
+import GeneInfoDisplay from "../../components/GeneInfoDisplay";
 
 const GeneNetworkPage = () => {
   const { geneid } = useParams();
@@ -30,6 +31,13 @@ const GeneNetworkPage = () => {
   const [showLinkcom, setShowLinkcom] = useState<boolean>(false);
   const [showPagerank, setShowPagerank] = useState<boolean>(false);
   const [layout, setLayout] = useState<LayoutType>("forceatlas2");
+  const [geneInfoForDisplay, setGeneInfoForDisplay] = useState<GeneInfo>();
+
+  const handleGeneInfoUpdate = (geneInfo: GeneInfo | undefined) => {
+    if (geneInfo) {
+      setGeneInfoForDisplay(geneInfo);
+    }
+  };
 
   const toggleLinkcom = () => setShowLinkcom((prevState) => !prevState);
   const togglePagerank = () => setShowPagerank((prevState) => !prevState);
@@ -59,10 +67,14 @@ const GeneNetworkPage = () => {
       <div className={"ml-14 w-1/6"}>
         <FormControl>
           <FormLabel>Layout</FormLabel>
-          <Select onChange={handleLayoutChange} size={"sm"}>
+          <Select
+            onChange={handleLayoutChange}
+            size={"sm"}
+            defaultValue={layout}
+          >
             {LayoutTypes.map((lt) => {
               return (
-                <option key={lt} value={lt} selected={layout === lt}>
+                <option key={lt} value={lt}>
                   {lt}
                 </option>
               );
@@ -81,6 +93,7 @@ const GeneNetworkPage = () => {
             showLinkcom={showLinkcom}
             showPagerank={showPagerank}
             layout={layout}
+            onClick={handleGeneInfoUpdate}
           />
         </div>
         <div className={"flex flex-col gap-6"}>
@@ -97,7 +110,10 @@ const GeneNetworkPage = () => {
           )}
         </div>
       </section>
-      <section className={"px-10"}>
+      <section className={"mx-10 mb-10"}>
+        {sigma && <GeneInfoDisplay info={geneInfoForDisplay} />}
+      </section>
+      <section className={"mx-10"}>
         {sigma && (
           <FilterControls
             sigma={sigma}

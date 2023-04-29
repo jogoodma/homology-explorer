@@ -1,3 +1,5 @@
+import { Attributes } from "graphology-types";
+
 export type GeneId = number;
 export interface GeneInfo {
   geneid: number;
@@ -47,7 +49,8 @@ export type NodeAttributes = Pick<
   | "species"
   | "chromosome"
   | "gene_type"
->;
+> &
+  Attributes;
 export interface GeneNode {
   key: GeneId;
   attributes: NodeAttributes;

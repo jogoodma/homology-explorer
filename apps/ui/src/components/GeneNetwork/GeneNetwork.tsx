@@ -11,6 +11,9 @@ import Graph from "graphology";
 import GraphReducers from "../GraphReducers";
 import DragNDrop from "../DragNDrop";
 import { LayoutType } from "../../types";
+import GeneInfoDisplayTrigger, {
+  GeneInfoDisplayTriggerProps,
+} from "../GeneInfoDisplayTrigger";
 
 interface GeneNetworkProps {
   geneid: string;
@@ -23,6 +26,7 @@ interface GeneNetworkProps {
   showLinkcom?: boolean;
   showPagerank?: boolean;
   layout?: LayoutType;
+  onClick: GeneInfoDisplayTriggerProps["onClick"];
 }
 export const GeneNetwork = ({
   geneid,
@@ -35,6 +39,7 @@ export const GeneNetwork = ({
   showLinkcom = false,
   showPagerank = false,
   layout = "forceatlas2",
+  onClick,
 }: GeneNetworkProps) => {
   const sigmaSettings = {
     renderEdgeLabels: true,
@@ -55,8 +60,9 @@ export const GeneNetwork = ({
           showLinkcom={showLinkcom}
           showPagerank={showPagerank}
         />
-        <DragNDrop />
       </ControlsContainer>
+      <DragNDrop />
+      <GeneInfoDisplayTrigger onClick={onClick} />
       <ControlsContainer position={"bottom-right"}>
         <SearchControl style={{ width: "200px" }} />
       </ControlsContainer>

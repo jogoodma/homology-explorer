@@ -48,13 +48,14 @@ const Analysis = ({
       );
       const maxCat = Math.max(...edgeCats);
       const minCat = Math.min(...edgeCats);
+      const scale = scaleLinear([minCat, maxCat], [0, 1]);
       analysis.forEach((result) => {
         const { source, target, attributes } = result;
         const edge = graph.edge(source, target);
         if (edge) {
           graph.mergeEdgeAttributes(edge, {
             ...attributes,
-            linkcom_norm: normalize(attributes.linkcom, maxCat, minCat),
+            linkcom_norm: scale(attributes.linkcom),
           });
         }
       });
@@ -76,7 +77,7 @@ const Analysis = ({
       const pagerankValues = analysis.map((node) => node.attributes.pagerank);
       const max = Math.max(...pagerankValues);
       const min = Math.min(...pagerankValues);
-      const scale = scaleLinear([min, max], [2, 20]);
+      const scale = scaleLinear([min, max], [2, 50]);
       analysis.forEach((result) => {
         const {
           key,

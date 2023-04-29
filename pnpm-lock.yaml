@@ -34,18 +34,27 @@ importers:
       '@react-sigma/core':
         specifier: ^3.4.0
         version: 3.4.0(graphology@0.25.1)(lodash@4.17.21)(react@18.2.0)(sigma@2.4.0)
+      '@react-sigma/layout-circlepack':
+        specifier: ^3.4.0
+        version: 3.4.0(graphology-layout@0.6.1)(graphology@0.25.1)(lodash@4.17.21)(react@18.2.0)(sigma@2.4.0)
       '@react-sigma/layout-circular':
         specifier: ^3.4.0
         version: 3.4.0(graphology-layout@0.6.1)(graphology@0.25.1)(lodash@4.17.21)(react@18.2.0)(sigma@2.4.0)
       '@react-sigma/layout-core':
         specifier: ^3.4.0
         version: 3.4.0(graphology@0.25.1)(lodash@4.17.21)(react@18.2.0)(sigma@2.4.0)
+      '@react-sigma/layout-force':
+        specifier: ^3.4.0
+        version: 3.4.0(graphology-layout-force@0.2.4)(graphology@0.25.1)(lodash@4.17.21)(react@18.2.0)(sigma@2.4.0)
       '@react-sigma/layout-forceatlas2':
         specifier: ^3.4.0
         version: 3.4.0(graphology-layout-forceatlas2@0.10.1)(graphology@0.25.1)(lodash@4.17.21)(react@18.2.0)(sigma@2.4.0)
       '@react-sigma/layout-noverlap':
         specifier: ^3.4.0
         version: 3.4.0(graphology-layout-noverlap@0.4.2)(graphology@0.25.1)(lodash@4.17.21)(react@18.2.0)(sigma@2.4.0)
+      '@react-sigma/layout-random':
+        specifier: ^3.4.0
+        version: 3.4.0(graphology-layout@0.6.1)(graphology@0.25.1)(lodash@4.17.21)(react@18.2.0)(sigma@2.4.0)
       '@tailwindcss/forms':
         specifier: ^0.5.3
         version: 0.5.3(tailwindcss@3.3.1)
@@ -1704,6 +1713,20 @@ packages:
       sigma: 2.4.0(graphology-types@0.24.7)
     dev: false
 
+  /@react-sigma/layout-circlepack@3.4.0(graphology-layout@0.6.1)(graphology@0.25.1)(lodash@4.17.21)(react@18.2.0)(sigma@2.4.0):
+    resolution: {integrity: sha512-drwm6Y8ops4DAreqLWmmxZXYbCch0ozZtea6HlA0+NO6Lgx70L18EYcJ0Tk6xsKy/LFTJufZw9Yeln1O3RVOtQ==}
+    peerDependencies:
+      graphology-layout: ^0.6.1
+    dependencies:
+      '@react-sigma/layout-core': 3.4.0(graphology@0.25.1)(lodash@4.17.21)(react@18.2.0)(sigma@2.4.0)
+      graphology-layout: 0.6.1(graphology-types@0.24.7)
+    transitivePeerDependencies:
+      - graphology
+      - lodash
+      - react
+      - sigma
+    dev: false
+
   /@react-sigma/layout-circular@3.4.0(graphology-layout@0.6.1)(graphology@0.25.1)(lodash@4.17.21)(react@18.2.0)(sigma@2.4.0):
     resolution: {integrity: sha512-WdWIHf+CmryODrJQ29WyU29g8H4MjiGLS44C1JUQjLfNnjLvon8AftuiHlJasFCc9fQYdHQQ4sHyNeEYTXKf5A==}
     peerDependencies:
@@ -1722,6 +1745,20 @@ packages:
     resolution: {integrity: sha512-SgBHf3ftCZ38bmXXitnOXu5nazSX+4XiZbcFs9XUH+G0xwQYlIO4NZI2YFjkMav2dPOcU/sVghdnMpBn+jorwQ==}
     dependencies:
       '@react-sigma/core': 3.4.0(graphology@0.25.1)(lodash@4.17.21)(react@18.2.0)(sigma@2.4.0)
+    transitivePeerDependencies:
+      - graphology
+      - lodash
+      - react
+      - sigma
+    dev: false
+
+  /@react-sigma/layout-force@3.4.0(graphology-layout-force@0.2.4)(graphology@0.25.1)(lodash@4.17.21)(react@18.2.0)(sigma@2.4.0):
+    resolution: {integrity: sha512-TnzbRCQcbLy3u35MTFbCP4F0kNows0Bkxe0eLbGHlkPLpX8QxdgjgDy18CYvpXstF32xwW8dDh9XEQ/08MYTjg==}
+    peerDependencies:
+      graphology-layout-force: ^0.2.4
+    dependencies:
+      '@react-sigma/layout-core': 3.4.0(graphology@0.25.1)(lodash@4.17.21)(react@18.2.0)(sigma@2.4.0)
+      graphology-layout-force: 0.2.4(graphology-types@0.24.7)
     transitivePeerDependencies:
       - graphology
       - lodash
@@ -1750,6 +1787,20 @@ packages:
     dependencies:
       '@react-sigma/layout-core': 3.4.0(graphology@0.25.1)(lodash@4.17.21)(react@18.2.0)(sigma@2.4.0)
       graphology-layout-noverlap: 0.4.2(graphology-types@0.24.7)
+    transitivePeerDependencies:
+      - graphology
+      - lodash
+      - react
+      - sigma
+    dev: false
+
+  /@react-sigma/layout-random@3.4.0(graphology-layout@0.6.1)(graphology@0.25.1)(lodash@4.17.21)(react@18.2.0)(sigma@2.4.0):
+    resolution: {integrity: sha512-RY6BaLODTMrYDOR+Gsm+F/2lrGb6Ph96AvlL0Dh0BMtfI7SnhJ/UVdWRWx1nGqpAzy8FB5qW/gXIghI/43mHmg==}
+    peerDependencies:
+      graphology-layout: ^0.6.1
+    dependencies:
+      '@react-sigma/layout-core': 3.4.0(graphology@0.25.1)(lodash@4.17.21)(react@18.2.0)(sigma@2.4.0)
+      graphology-layout: 0.6.1(graphology-types@0.24.7)
     transitivePeerDependencies:
       - graphology
       - lodash
@@ -3886,6 +3937,15 @@ packages:
       graphology-types: 0.24.7
       graphology-utils: 2.5.2(graphology-types@0.24.7)
       xml-writer: 1.7.0
+    dev: false
+
+  /graphology-layout-force@0.2.4(graphology-types@0.24.7):
+    resolution: {integrity: sha512-NYZz0YAnDkn5pkm30cvB0IScFoWGtbzJMrqaiH070dYlYJiag12Oc89dbVfaMaVR/w8DMIKxn/ix9Bqj+Umm9Q==}
+    peerDependencies:
+      graphology-types: '>=0.19.0'
+    dependencies:
+      graphology-types: 0.24.7
+      graphology-utils: 2.5.2(graphology-types@0.24.7)
     dev: false
 
   /graphology-layout-forceatlas2@0.10.1(graphology-types@0.24.7):

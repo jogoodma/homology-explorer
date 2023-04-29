@@ -1,13 +1,23 @@
-import { useState } from "react";
+import { ChangeEvent, useState } from "react";
 import { useLoaderData, useParams } from "react-router-dom";
 import Graph from "graphology";
 import type Sigma from "sigma";
 import { GeneNetwork } from "../../components/GeneNetwork";
 import OrganismKey from "../../components/OrganismKey";
 import FilterControls from "../../components/FilterControls";
-import { GeneInfo } from "../../types";
+import { GeneInfo, LayoutType, LayoutTypes } from "../../types";
 import { getOrganism, ORGANISMS } from "../../organisms";
 import Analysis from "../../components/Analysis";
+import {
+  FormControl,
+  FormLabel,
+  NumberDecrementStepper,
+  NumberIncrementStepper,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
+  Select,
+} from "@chakra-ui/react";
 
 const GeneNetworkPage = () => {
   const { geneid } = useParams();
@@ -19,9 +29,14 @@ const GeneNetworkPage = () => {
   const [hiddenEdges, setHiddenEdges] = useState<Set<string>>(new Set());
   const [showLinkcom, setShowLinkcom] = useState<boolean>(false);
   const [showPagerank, setShowPagerank] = useState<boolean>(false);
+  const [layout, setLayout] = useState<LayoutType>("forceatlas2");
 
   const toggleLinkcom = () => setShowLinkcom((prevState) => !prevState);
   const togglePagerank = () => setShowPagerank((prevState) => !prevState);
+
+  const handleLayoutChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    setLayout(e.currentTarget.value as LayoutType);
+  };
 
   if (!geneid || !graph) return null;
 
@@ -41,6 +56,20 @@ const GeneNetworkPage = () => {
         </span>
         )
       </h2>
+      <div className={"ml-14 w-1/6"}>
+        <FormControl>
+          <FormLabel>Layout</FormLabel>
+          <Select onChange={handleLayoutChange} size={"sm"}>
+            {LayoutTypes.map((lt) => {
+              return (
+                <option key={lt} value={lt} selected={layout === lt}>
+                  {lt}
+                </option>
+              );
+            })}
+          </Select>
+        </FormControl>
+      </div>
       <section className={"flex flex-row m-10 justify-around"}>
         <div className="border-2 border-slate-300">
           <GeneNetwork
@@ -51,6 +80,7 @@ const GeneNetworkPage = () => {
             hiddenEdges={hiddenEdges}
             showLinkcom={showLinkcom}
             showPagerank={showPagerank}
+            layout={layout}
           />
         </div>
         <div className={"flex flex-col gap-6"}>

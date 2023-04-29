@@ -74,3 +74,13 @@ export interface PagerankResult {
   key: number;
   attributes: PagerankAttributes;
 }
+
+export const LayoutTypes = [
+  "circular",
+  "circlepack",
+  "force",
+  "forceatlas2",
+  "noverlap",
+  "random",
+] as const;
+export type LayoutType = (typeof LayoutTypes)[number];

@@ -7,11 +7,10 @@ import {
 } from "@react-sigma/core";
 import "@react-sigma/core/lib/react-sigma.min.css";
 import OrthologyGraphLoader from "../OrthologyGraphLoader";
-import { LayoutForceAtlas2Control } from "@react-sigma/layout-forceatlas2";
 import Graph from "graphology";
 import GraphReducers from "../GraphReducers";
 import DragNDrop from "../DragNDrop";
-import { LayoutNoverlapControl } from "@react-sigma/layout-noverlap";
+import { LayoutType } from "../../types";
 
 interface GeneNetworkProps {
   geneid: string;
@@ -23,6 +22,7 @@ interface GeneNetworkProps {
   hiddenEdges?: Set<string>;
   showLinkcom?: boolean;
   showPagerank?: boolean;
+  layout?: LayoutType;
 }
 export const GeneNetwork = ({
   geneid,
@@ -34,6 +34,7 @@ export const GeneNetwork = ({
   hiddenEdges = new Set(),
   showLinkcom = false,
   showPagerank = false,
+  layout = "forceatlas2",
 }: GeneNetworkProps) => {
   const sigmaSettings = {
     renderEdgeLabels: true,
@@ -44,11 +45,10 @@ export const GeneNetwork = ({
       style={{ height, width }}
       settings={sigmaSettings}
     >
-      <OrthologyGraphLoader geneid={geneid} graph={graph} />
+      <OrthologyGraphLoader geneid={geneid} graph={graph} layout={layout} />
       <ControlsContainer position={"top-right"}>
         <ZoomControl />
         <FullScreenControl />
-        <LayoutNoverlapControl />
         <GraphReducers
           hiddenNodes={hiddenNodes}
           hiddenEdges={hiddenEdges}

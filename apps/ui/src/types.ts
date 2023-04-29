@@ -87,3 +87,8 @@ export const LayoutTypes = [
   "random",
 ] as const;
 export type LayoutType = (typeof LayoutTypes)[number];
+
+export interface HoveredNodes {
+  hoveredNode: string;
+  hoveredNodeNeighbors: Set<string>;
+}

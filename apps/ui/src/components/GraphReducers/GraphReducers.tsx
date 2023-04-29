@@ -4,6 +4,7 @@ import { Attributes, EdgeEntry } from "graphology-types";
 import { EdgeDisplayData, NodeDisplayData } from "sigma/types";
 
 import { interpolateSpectral } from "d3-scale-chromatic";
+import { HoveredNodes } from "../../types";
 
 interface EdgeAttributes extends EdgeDisplayData {
   weight: number;
@@ -12,6 +13,7 @@ interface EdgeAttributes extends EdgeDisplayData {
 interface GraphReducerProps {
   hiddenNodes: Set<string>;
   hiddenEdges: Set<string>;
+  hoveredNodes: HoveredNodes | null;
   showLinkcom?: boolean;
   showPagerank?: boolean;
 }
@@ -26,6 +28,7 @@ interface GraphReducerProps {
 const GraphReducers = ({
   hiddenNodes,
   hiddenEdges,
+  hoveredNodes,
   showLinkcom = false,
   showPagerank = false,
 }: GraphReducerProps) => {
@@ -50,6 +53,14 @@ const GraphReducers = ({
         ) {
           newData.size = graph.getNodeAttribute(node, "pagerank_norm");
         }
+        if (
+          hoveredNodes &&
+          !hoveredNodes.hoveredNodeNeighbors.has(node) &&
+          hoveredNodes.hoveredNode !== node
+        ) {
+          newData.label = "";
+          newData.color = "#dee7ef";
+        }
         return newData;
       },
       edgeReducer: (edge, data) => {
@@ -67,6 +78,12 @@ const GraphReducers = ({
           newData.color = interpolateSpectral(
             graph.getEdgeAttribute(edge, "linkcom_norm")
           );
+        }
+        if (
+          hoveredNodes &&
+          !graph.hasExtremity(edge, hoveredNodes.hoveredNode)
+        ) {
+          newData.hidden = true;
         }
         return newData;
       },

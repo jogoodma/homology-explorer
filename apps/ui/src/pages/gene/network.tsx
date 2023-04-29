@@ -5,7 +5,7 @@ import type Sigma from "sigma";
 import { GeneNetwork } from "../../components/GeneNetwork";
 import OrganismKey from "../../components/OrganismKey";
 import FilterControls from "../../components/FilterControls";
-import { GeneInfo, LayoutType, LayoutTypes } from "../../types";
+import { GeneInfo, HoveredNodes, LayoutType, LayoutTypes } from "../../types";
 import { getOrganism, ORGANISMS } from "../../organisms";
 import Analysis from "../../components/Analysis";
 import {
@@ -32,7 +32,11 @@ const GeneNetworkPage = () => {
   const [showPagerank, setShowPagerank] = useState<boolean>(false);
   const [layout, setLayout] = useState<LayoutType>("forceatlas2");
   const [geneInfoForDisplay, setGeneInfoForDisplay] = useState<GeneInfo>();
+  const [hoveredNodes, setHoveredNodes] = useState<HoveredNodes | null>(null);
 
+  const handleOnEnterNode = (hoveredNodes: HoveredNodes) =>
+    setHoveredNodes(hoveredNodes);
+  const handleOnLeaveNode = () => setHoveredNodes(null);
   const handleGeneInfoUpdate = (geneInfo: GeneInfo | undefined) => {
     if (geneInfo) {
       setGeneInfoForDisplay(geneInfo);
@@ -94,6 +98,9 @@ const GeneNetworkPage = () => {
             showPagerank={showPagerank}
             layout={layout}
             onClick={handleGeneInfoUpdate}
+            onEnterNode={handleOnEnterNode}
+            onLeaveNode={handleOnLeaveNode}
+            hoveredNodes={hoveredNodes}
           />
         </div>
         <div className={"flex flex-col gap-6"}>

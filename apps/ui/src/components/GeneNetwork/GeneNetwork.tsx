@@ -10,10 +10,13 @@ import OrthologyGraphLoader from "../OrthologyGraphLoader";
 import Graph from "graphology";
 import GraphReducers from "../GraphReducers";
 import DragNDrop from "../DragNDrop";
-import { LayoutType } from "../../types";
+import { HoveredNodes, LayoutType } from "../../types";
 import GeneInfoDisplayTrigger, {
   GeneInfoDisplayTriggerProps,
 } from "../GeneInfoDisplayTrigger";
+import GeneHoverEvent, {
+  GeneHoverEventProps,
+} from "../GeneHoverEvent/GeneHoverEvent";
 
 interface GeneNetworkProps {
   geneid: string;
@@ -27,6 +30,9 @@ interface GeneNetworkProps {
   showPagerank?: boolean;
   layout?: LayoutType;
   onClick: GeneInfoDisplayTriggerProps["onClick"];
+  onEnterNode: GeneHoverEventProps["onEnterNode"];
+  onLeaveNode: GeneHoverEventProps["onLeaveNode"];
+  hoveredNodes: HoveredNodes | null;
 }
 export const GeneNetwork = ({
   geneid,
@@ -40,6 +46,9 @@ export const GeneNetwork = ({
   showPagerank = false,
   layout = "forceatlas2",
   onClick,
+  onEnterNode,
+  onLeaveNode,
+  hoveredNodes,
 }: GeneNetworkProps) => {
   const sigmaSettings = {
     renderEdgeLabels: true,
@@ -59,9 +68,11 @@ export const GeneNetwork = ({
           hiddenEdges={hiddenEdges}
           showLinkcom={showLinkcom}
           showPagerank={showPagerank}
+          hoveredNodes={hoveredNodes}
         />
       </ControlsContainer>
       <DragNDrop />
+      <GeneHoverEvent onEnterNode={onEnterNode} onLeaveNode={onLeaveNode} />
       <GeneInfoDisplayTrigger onClick={onClick} />
       <ControlsContainer position={"bottom-right"}>
         <SearchControl style={{ width: "200px" }} />

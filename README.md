@@ -50,3 +50,22 @@ e.g.
 ```shell
 pnpm run pandoc:proposal
 ```
+
+### Docker
+
+*Requirements*:
+ * Docker
+ * Docker compose
+
+To run a production build in Docker you use the following commands.
+```shell
+docker volume create he_caddy_data
+docker compose up -d --build
+```
+This will start a production server on port 8000. To change the port set the `HOMOLOGY_EXPLORER_PORT` environment
+variable.
+
+e.g.
+```shell
+echo "HOMOLOGY_EXPLORER_PORT=8888" > .env
+```

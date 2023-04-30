@@ -24,35 +24,83 @@ This research aims to close the gap between biomedical researchers and the gene 
 
 ## Problem Statement
 
-Although a database has been compiled to catalogue and rank relationships between genes predicted by a variety of different models, there is not an easily accessible way for researchers to access this data. This leads us to the first and main problem: 
+Although data have been compiled to catalogue and rank relationships between genes predicted by a variety of different models, there is not an easily accessible way for researchers to access this data. This leads us to the first and main problem: 
 
-> Improve accessibility to gene homology network.
+> Provide an easily accessible visual interface allowing genetic researchers to intuitively explore the gene homology network. 
 
 To solve this problem, the team has decided to design a web application to serve network visualization and analysis of the network data in a way that allows users to explore the gene homology network with focus and ease. 
 
-Some additional problem constraints are as follows:
+Some additional problem constraints were as follows:
 
-- The web application should be designed such that it can be hosted by DIOPT, the research organization which compiled these data. This means it needs to be a production-grade application which can handle multiple concurrent users without crashing. This standard of development raises the bar above that of simply a minimum viable product. 
-- The web application should be responsive and allow for users to search for and drill into various different genes, as well as tailor the results based on parameterizations of the various network operations.
+- The application should be easily hostable so that it can be run easily and independently by researchers or hosted on the web.
+- The application should to be designed to a production-grade standard such that the application could support a moderate amount of concurrent users. 
+- The application should provide an interactive and reactive user interface and allow for users to both search for and drill into various different genes, as well as tailor their results based on parameterizations of the various network operations.
+
+## Project Execution Roadmap
 
 # Methods
 
-The schematic below outlines the web application design architecture. 
+The `Homology Explorer` application is an answer to the problem statement above. The sections below outline the technical methodology applied to design and build a prototype of this application. 
 
-For portability, the application is packaged as a `docker-compose` image which can be hosted on a container registry and run as a standalone app service. The image consists of two containers:
+## Homology Data
 
-- The backend application programming interface (API) container runs the database and implements the `FastAPI` python framework to manage database access serialize, validate, and apply network and filtering analyses to the data.
-- The frontend user interface (UI) container runs the visualization application by implementing the `Sigma.js` and `Graphology` network frameworks through a javascript `React` framework.
+The source of the homology network data consist of three static `.tsv` tables. The table below outlines the attributes for each table listing the datatype to the left of the attribute name and either `pk` or `fk` to designate fields that are primary keys (to uniquely identify records) and foreign keys (to relate attributes across the tables).
+
+| `OrthologPairs.tsv` | `GeneInfo.tsv` | `Species.tsv` |
+|---------------------|----------------|---------------|
+| `int` opb_id `pk`   | `int` geneid `pk` | `int` taxonomyid `pk` |
+| `int` geneid1 `fk`  | `str` symbol     | `str` common_name |
+| `int` geneid2 `fk`  | `str` description| `str` genus       |
+| `int` species1      | `int` speciesid `fk` | `str` species     |
+| `int` species2      | `str` locus_tag  |                   |
+| `int` score         | `str` species_specific_geneid |      |
+| `bool` best_score   | `str` species_specific_geneid_type | |
+| `int` best_score_rev| `str` chromosome   |                 |
+| `str` confidence    | `str` map_location |                 |
+|                     | `str` gene_type    |                 |
+
+Some notes on each table and its attributes:
+
+- `OrthologPairs.tsv` :: 11,099,012 records
+   - This table contains the _edge_ data for the network.
+   - For a given directed edge uniquely identified by `opb_id`, `geneid1` and `geneid2` correspond to the source and target nodes and the `score` corresponds to the edge weight. 
+   - The `score` attribute denotes the number of prediction algorithms that predict an homologous relationship from a source gene to a target gene. `best_score` indicates whether a given directed edge has superior weight compared to its inverse edge (directed instead from the _target_ to the _source_). `confidence` is a category derived from `score`.
+- `GeneInfo.tsv` :: 371,760 records
+   - This table contains the _node_ data of attributes associated with a given gene.
+   - The `GeneInfo.geneid` field relates to the `OrthologPairs.geneid*` while the `symbol` and `description` help to colloquially identify a given gene.
+   - `chromosome` and `gene_type` are additional descriptive attributes for the gene, while the `map_location` is a legacy methodology for identifying different genes. 
+- `Species.tsv` :: 10 records
+   - This table contains taxonomy information for the species to which the genes in our database belong. 
+   - The `Species.taxonomyid` field relates to the `GeneInfo.speciesid` field to provide a given species' common and scientific/latin names.
+
+## Web Application Design
+
+At its core, the `Homology Explorer` application aims to serve network data visualizations to users. An application is designed consisting of four key components to accomplish this task, as overviewed below:
+
+- **Pre-processing the source data** converts the static `.tsv` files into a Duck database format by using the `duckdb` python library. This stage joins and permutes the data to a new static form that will be easily accessible by the web application. 
+- **Containerization** of the application as a `docker-compose` image allows the app to easily be run either locally, or as an app service connected to a container registry. The image consists of two containers running the main web application operations:
+   - The backend **application programming interface** (API) container runs the database and implements the python `FastAPI` object relational model (ORM) framework to aynchronously manage database access, serialize, validate, and apply network and filtering analyses to the data.
+   - The frontend **user interface** (UI) container runs the visualization application by implementing the `Sigma.js` and `Graphology` network frameworks through a javascript `React` framework.
+
+The schematic below outlines the described web application architecture.
 
 ```mermaid
 flowchart LR
 
-    subgraph dock[Docker Compose]
+    subgraph db[Data Pre-Processing]
+        direction TB
+        tsv([::Raw::\nOrthologPairs.tsv\nGeneInfo.tsv\nSpecies.tsv])
+        dbb[[::Python::\ndbBuilder.py\nduckdb]]
 
+        tsv-->dbb
+    end
+
+    subgraph dock[Homology Explorer via Docker Compose]
+        
         subgraph api[API Container]
-            duck[(duck.db\nSQL Database)]
-            py[[::Python::\nFastApi\nSQLAlchemy\npydantic\nnetworkx\nlinkcom\nduckdb-engine]]
 
+            duck[(::SQL::\nHomology Database\nduck.db)]
+            py[[::Python::\nFastApi\nSQLAlchemy\npydantic\nnetworkx\nlinkcom\nduckdb-engine]]
             duck--->py
         end
 
@@ -61,14 +109,13 @@ flowchart LR
         end
 
         direction LR
+        dbb--manually executed as needed-->duck;
         py<--http://127.0.0.1:8000-->js;
     end
 
     direction TB
     js--http://127.0.0.1:5173-->u((Users))
 ```
-
-The code for this project is available on [Github](https://github.com/jogoodma/homology-explorer/tree/main). The tree structure below outlines the general directory structure of the app. Files and node modules not included, but will be revisited at various points throughout the report in more detail.
 
 ```
 homology-explorer
@@ -86,23 +133,15 @@ homology-explorer
 └── docs
 ```
 
+The tree structure above outlines the directory structure of the app and will be revisited at various points throughout the report in more detail. The code for this project is available on [Github](https://github.com/jogoodma/homology-explorer/tree/main). The subsequent sections outline the technical implementation of the above described web application design in such a way as to satisfy the constraints set out by the problem statement.
 
+## Database Construction
 
-The sections below outline the methods used to develop the web application and implement the network analysis tools.
+The source data have a fixed schema and are relational so managing them through a SQL database is a natural design choice^[cite some stuff from database class]. Of the myriad flavors of SQL to choose from, the `Homology Explorer` uses Duck Database^[cite duckdb.com]. Duck database is a lightweight SQL database similar to SQLite. Because the dataset  however, it is more performant and provides many more features than SQLite. It also has good documentation and a rich python API. 
 
-## Application Programming Interface
+TODO: Discuss a couple more features of Duck DB when internet is back
 
-This section discusses the database warehousing of the gene homology network data, and the application programming interface (API) used to serve these data.
-
-### Database
-
-The original network data consist of three `.tsv` tables provided by DIOPT:
-
-- `OrthologPairs.tsv`: this table contains the _edge_ data of predicted links between genes
-- `GeneInfo.tsv`: this table contains the _node_ data of attributes associated with a given gene
-- `Species.tsv`: this table relates the `species_id` field to a species' common and scientific/latin names.
-
-To construct the database, these tables are first extracted from the `tar.gz` file and the `duckdb` package is leveraged by the `dbBuilder.py` file to create the `duck.db`.
+To construct the database, these tables are first extracted from the `tar.gz` file. Next the `duckdb` python library is used by `dbBuilder.py` file to create the application's database: `duck.db`.
 
 ```
 data
@@ -113,52 +152,53 @@ data
 └── duck.db
 ```
 
-Each `.tsv` file is loaded into the database as a table. However, the tables are not called by the API. Instead, a variety of views are used to query data from the tables into formats expected by the various `FastAPI` models. In general, SQL is leveraged in the pre-processing stage to address computationally intensive tasks such as join operations.
+Each `.tsv` file is loaded to the database as a table. However, the tables themselves are not exposed to the web application. Instead, a variety of views query data from the tables into formats expected by the API object relational models. This is advantageous from an application performance standpoint since initializing the data into the ORM formats sometimes requires computationally intensive `JOIN` operations for which SQL is optimized.
 
-An explanation of the tables and views are below:
+Below are described the various tables and views created by the `dbBuilder.py`:
 
 **_Tables_**
 
-- **tblSpecies**
-  - Original table relating `species_id` to common and scientific names.
-- **tblGeneInfo**
-  - Original table of attributes for each `geneid` (node).
 - **tblOrthologPairs**
   - Original table of attributes for each `opb_id` (edge).
-  - Also identifies `geneid1` and `geneid` genes as the source and target nodes of the edge.
+- **tblGeneInfo**
+  - Original table of attributes for each `geneid` (node).
+- **tblSpecies**
+  - Original table relating `species_id` to common and scientific names.
 
 **_Views_**
 
 - **evwGeneFrequency**
   - View aggregates `tblOrthologPairs` to count the frequency of each `geneid`.
 - **evwSymbolSearch**
-  - View joins to `tblGeneInfo` the `tblSpecies.common_name` and `evwGeneFrequency.frequency` to engineer additional features.
-  - This table is used for queries related to UI dynamic search results.
+  - View joins to `tblGeneInfo` the `tblSpecies.common_name` and `evwGeneFrequency.frequency` for queries related to UI dynamic search results.
 - **evwGeneInfo**
-  - View joins to `tblGeneInfo` the `tblSpecies` attributes to provide a richer result for queries accessing node information.
+  - View joins to `tblGeneInfo` the `tblSpecies` attributes to provide a enrich queries accessing node attributes.
 - **evwOrthologPairs**
-  - View adds attribute `homolog_type` as binary classification of a given homolog as a ortholog or a paralog.
+  - View adds edge attribute `homolog_type` as binary classification of a given homolog as either an _ortholog_ (inter-species) or a _paralog_ (intra-species).
 - **evwGeneNeighborEdges** & **evwGeneNeighborEdgesAttr**
   - Views are called together to serialize the edge attributes from `tblOrthologPairs` as a nested dictionary below the `key`, `source`, and `target`.
-  - These views also only select edges which are the `best_score`.
+  - These views _only_ select edges which are the `best_score`.
 - **evwGeneNeighborEdgelist**
-  - View called to serialize the edge information from `tblOrthologPairs` into an edgelist format readable by `networkx`.
+  - View called to serialize the edge attributes from `tblOrthologPairs` into an edgelist format readable by `networkx`.
 - **evwGeneNeighborNodes** & **evwGeneNeighborNodesAttr**
   - Views are called together to serialize the node attributes from `tblGeneInfo` as a nested dictionary below the `key`.
-  - The `evwGeneNeighborNodesAttr` view also joins the `tblSpecies` attribtues to `tblGeneInfo` to enrich the attribute output.
+  - The `evwGeneNeighborNodesAttr` view also joins the `tblSpecies` attributes to `tblGeneInfo` to enrich the attribute output.
 
-The `dbBuilder.py` script constructs this `duck.db` database using the DuckDB python API. Once constructed, it is then embedded the API application at `apps/api/app/duck.db` where it is accessed by `FastAPI` as needed.
+The `dbBuilder.py` script constructs this `duck.db` database using the DuckDB python API. Once constructed, it is then embedded the API service at `apps/api/app/duck.db` where it is accessed by the web application as needed.
 
-### `FastAPI`
+## Application Programming Interface
 
-In order for web application users to efficiently access the newly created orthology database, an API can be used to broker, transform, and validate data between the database and the UI. Python is the preferred language for this API because it allows us to easily use the `networkx` library to analyze network data in real-time.
+An application programming interface (API) can be used to efficiently broker, transform, and validate data between the database and the UI by managing the database requests made by the UI as the user interacts with the application. Python is the preferred language for this API because the application relies on the extensive `networkx` python library to compute network analyses. Keeping the API semantics within the same language as the main computational library maintains a level of desirable level of simplicity. 
 
-`FastAPI` is a popular python web API framework focused on high performance and easy development. We selected the framework for our web application backend because:
-- The API runs asynchronously which allows it to handle multiple concurrent users and calls performantly^[https://www.techempower.com/benchmarks/#section=data-r21&hw=ph&test=query&l=zijzen-35r&d=b&f=0-0-6bk-0-0-0-b8jk-0-1ekg-4fti4g-0-0-0-0&c=d] 
-- The API is in python, which is useful since we will need to leverage the `networkx` python library. This simplifies the API by keeping it all within 1 lanuage. 
-- There is good documentation and it is a relatively easy framework to learn and implement. For example, this application is largely based off this official tutorial^[https://fastapi.tiangolo.com/tutorial/sql-databases/] from the `FastAPI` documentation.
+`FastAPI` is a popular python RESTful^[cite REST] API web framework focused on high performance^[https://www.techempower.com/benchmarks/#section=data-r21&hw=ph&test=query&l=zijzen-35r&d=b&f=0-0-6bk-0-0-0-b8jk-0-1ekg-4fti4g-0-0-0-0&c=d] and easy development^[cite FastAPI]. We selected the framework for our web application backend because:
+- `FastAPI` can run asynchronously through an ASGI^[https://asgi.readthedocs.io/en/latest/] (Asynchronous Server Gateway Interface) which allows it to efficiently enqueue, await, and handle API calls from multiple concurrent users. It also boosts performance for API calls requiring multiple SQL queries to construct the response body. 
+- `FastAPI` supports object relational modelling through the `SQLAlchemy` library to mix the database queries seamlessly with the `networkx` python library. 
+- `FastAPI` supports datatype validation through the `types` and `pydantic` libraries. This ensures the API is sending an appropriate valid response to a requester, and helps determine if the request is even valid in the first place. 
+- `FastAPI` also supports several methods for implementing a cache-aside framework which can help increase performance for APIs with high throughput. Since that is an expected use-case scenario for this application, this version has *not* been developed with cacheing. This may be an advantageous feature one day in the future if the application use-case ever expands. 
+- `FastAPI` has the Swagger Docs interface tool enabled by default which makes developing the API much easier by providing an easy way to test different API requests, responses, and ORM schemas.
+- There is good documentation and it is a relatively easy framework to learn and implement. For example, this API application is largely inspired by this official tutorial^[https://fastapi.tiangolo.com/tutorial/sql-databases/] from the `FastAPI` documentation.
 
-Below is an example directory tree of the `FastAPI` service embedded with the `duck.db`.
+Below is an example directory structure of the `FastAPI` API service embedded with the `duck.db` database.
 
 ```
 apps/api
@@ -175,56 +215,49 @@ apps/api
 ```
 
 - **database.py**
-   - This file handles session connections to the database
+   - This file handles ORM session connections to the database with `SQLAlchemy`.
 - **models.py**
-   - This file structures the SQL tables into an object relational model (ORM)
+   - This file structures the SQL tables into an object relational model (ORM) with `SQLAlchemy`.
    - Once instantiated as an ORM object, the tables are easy to manipulate using other python libraries. 
 - **schemas.py**
-   - This file enforces data types and structural representations of ORM objects
-   - Both objects used for posts and responses can be validated according to these schema
+   - This file enforces data types and structural representations of ORM objects with `pydantic`.
+   - Both objects used for posts and responses are validated according to these schema.
 - **crud.py**
-   - This file contains functions for parsing, analyzing, and transforming ORM objects
-   - Also contains capability for interacting with the database via the API using CRUD operations 
+   - This file parses, analyzes, and transforms ORM objects with `SQLAlchemy` and `networkx`.
 - **main.py**
-   - This file packages the functions and CRUD operations with the ORM models and serves the requests through HTTP API calls. 
+   - This file functionalizes the `crud.py` operations and serves the requests through HTTP API calls with `FastAPI`
    - It also validates POST and GET operations and constrains inputs/outputs according to design specifications, and assigns query and path parameters to HTTP routes. 
 
-The interface works more or less as follows for each of the API endpoints:
+This API is run through the `uvicorn`^[cite Uvicorn] ASGI as recommended by the `FastAPI` documentation^[cite]and works, more or less, as follows for each of the API endpoints:
 
-- The API is turned on via `uvicorn` ASGI^[https://asgi.readthedocs.io/en/latest/] (Asynchronous Server Gateway Interface) 
-- Database connection is made when a user makes a request
-- A user sends an HTTP request to the open port to match the query and path parameters specified by the available API endpoints in `main.py`. 
-- If a valid endpoint is called, then the endpoint 
-   - validates the query/path parameters by type for GET calls and by schema for POST calls
-   - executes it's selection of CRUD operations by calling on the ORM models connected to the database
-   - serializes an output or returns error code
-   - validates the output of the CRUD operations by schema
-   - returns HTTP response body
+- The UI sends an HTTP request with the query and path parameters specified by one of the available API endpoints in `main.py`. 
+- If a valid endpoint is called, the endpoint then:
+   - _validates the request_ body schema and the query and path parameter datatypes.
+   - _executes_ CRUD operations by transforming the ORM models connected to the database.
+   - _serializes_ a response to a particular output format.
+   - _validates the response_ datatypes according to a given output schema.
+   - _returns_ the HTTP response body to the requester.
 
-And that's it! The API endpoints all vary somewhat depending on their intended purpose, but follow this general pattern of operations. Some API calls only involve one database CRUD call, while some are composed of three or four. 
+And that's it! The API endpoints all vary somewhat depending on their intended purpose, but follow this generalized order of operations. Some API endpoints only involve one database query while others are composed of several database queries. In the case of this API, all of the endpoints are designed to help a user explore the network of genes stored by the gene homology database. These endpoints are discussed individually at length in the sections below.
 
-### API Endpoints
-
-In the case of this API, all of the endpoints are designed to help a user explore the network of genes as defined by the DIOPT database. These endpoints are discussed individually at length below.
-
-#### General Information
+### Information and Search
 
 GET Calls:
 - `/search/gene/symbol/{symbol}/`
 - `/geneinfo/gene/{gene_id}/`
 - `/orthologpairs/gene/{gene_id}/`
 
-These endpoints query basic information from the database tables. The symbol search is used to populate search results for the dynamic gene search option at the beginning of the UI. The other two endpoints return node or edge data for a single requests gene. The edge data returns a list of all edges attached to the requested node (gene).
+These endpoints query basic information from views of the database tables. The `/search/gene/symbol/` endpoint is used to populate search results for the dynamic search option at the beginning of the UI. The other two endpoints return either the node attributes or a list of edges attached to the single requested gene.
 
-#### Multigene Requests
+### Multigene Requests
 
 POST Calls:
 - `/geneinfo/multigene/`
 - `/orthologpairs/multigene/`
 
-These endpoints require the user to post a list of `geneid`s which are then parsed using and `in` SQL comparative instead of an `=` as used in the case of the single `geneid` calls in the general information endpoints. In this way, the multigene endpoints is able to provide node and edge info as above but instead for a list of genes. 
+These endpoints require the user to post the request body as a list of `geneid`s. The endpoint parses the list by changing the comparative of the SQL `WHERE` clause from `=` (as used in the `/.../gene/` GET endpoints) to `IN`. In this way, the multigene endpoints are able to provide node and edge info in a similar manner to the single gene endpoints, but for a list of genes instead. 
 
-#### The Gene Neighborhood
+### The Gene Neighborhood
 
 GET Calls:
 - `/geneneighboredges/gene/{gene_id}/`
@@ -234,37 +267,33 @@ POST Calls:
 - `/geneneighboredges/multigene/`
 - `/geneneighbornodes/multigene/`
 
-These `geneneighbor*` endpoints are composed of two CRUD operations. The first CRUD operation for each endpoint computes the *gene neighborhood* to build a list of all the distinct first degree neighbors of the requested gene or genes. This operation can be parameterized by an upper pr lower bound to constrain the neighbors to be only those first degree neighbors with weights constrained by the bounds - this acts as a way to filter a neighborhood's edges by weight. 
+These `geneneighbor*` endpoints are composed of two CRUD operations. The first CRUD operation for each endpoint computes the *gene neighborhood*, a list of all the distinct first degree neighbors of the requested gene or genes. This operation can be parameterized by an upper or lower bound to constrain the neighbors to only those first degree neighbors whose weights are constrained by the bounded interval. This provides a way to filter a neighborhood's edges by weight. 
 
-By calling a commonly parameterized initialization function, the gene neighborhood allows easily for multiple different API calls to reference the same list of edges. This both makes the syntax easily accessible to users and allows for the same subgraph to be easily requeried for a variety of different information. 
+By calling a commonly parameterized initialization function the gene neighborhood allows for multiple different API calls to reference the same subgraph of nodes. This makes these kinds of calls easier for developers to implement by allowing the same subgraph to be easily re-queried for a variety of different information. 
 
 The second CRUD operation then fetches either:
-1. Nodes, and the gene information is returned for each node in the first degree neighborhood of the gene or genes. Or,
-2. Edges, and a list of homolog edges are returned for each edge between each node pair in the 1st degree neighborhood of the requested gene or genes' neighborhood. 
+1. Nodes - and then returns gene information for each node in the gene neighborhood of the requested gene or genes; or,
+2. Edges - and then returns a list of homolog edges for each edge between each node pair within the gene neighborhood of the requested gene or genes. 
 
 TODO: Update `crud.get_GeneNeighborEdgelist` to take as arguments the weight_lb and weight_ub
 
 The gene neighborhood represents the closest related genes to those queried as defined by various homology prediction algorithms. 
 
-#### Network Analysis
+### Network Analysis
 
 POST Calls:
 - `/geneneighboredges/multigene/{analysis}`
 - `/geneneighbornodes/multigene/{analysis}`
 
-Network analysis endpoints are constructed in a manner similar to the multigene gene neighborhood endpoints. The endpoints operates as follows
+A network analysis endpoint is available for computing network attributes on either nodes or edges while the requested network analysis is passed to the endpoint as a path parameter string. Additional query parameters can also be used to toggle the output of the analysis by tuning various hyperparameters. Network analysis endpoints are constructed in a manner similar to the multigene gene neighborhood endpoints and operate as follows:
 
-1. The MultiGeneNeighborhood is called and the node or edge info are queried for the neighborhood
-2. Next, the neighborhood is serialized to an edgelist format which is then passed to a `networkx` call.
-   - This step converts the edgelist to a `nx.Graph()` object, performs a network analysis of some kind, and returns an edgelist or nodelist with the calculated attribute.
-3. The newly calculated attribute from step 2 is appended to the node or edge info calculated in step 1 to return a new edge or node list along with all the attributes (original and calculated) for edge object of the list. 
+1. The MultiGene Neighborhood query is called and the resultant edge information are serialized to an edgelist format - a list of 3-dimensional tuples composed of the source and target genes and weight for a given edge.
+2. The edgelist is converted to an `nx.Graph()` object upon which is run a `networkx` function of some kind. This returns an edgelist or nodelist with the newly calculated network analysis attribute.
+3. The newly calculated attribute from step 2 is appended to the node or edge attributes for the gene neighborhood determined in step 1. This returns a new list of edges or nodes along with all the attributes (original and calculated) for each object of the list. 
 
-For network analysis calls related to either the nodes or the edges, this framework allows for the actual network CRUD operations themselves to be easily added to the API. This can be done easily and swiftly by:
-1. passing the edgelist of the neighborhood to instantiate it as an `nx.Graph` object
-2. running the network analysis
-3. serializing the output such that the newly created attribute can be appended to the original node or edge attribute list. 
+This framework is advantageous since the only difference between each network analysis is the CRUD operation performing the `networkx` function called in step 2. These CRUD operations are quite simple to construct, and then it is just a matter of making the path parameter available as a request to the network analysis endpoint. 
 
-For example, the network CRUD operation for the `geneneighbornodes/multigene/PageRank/` call consists of a mere 8 lines:
+For example, the network CRUD operation for the `geneneighbornodes/multigene/PageRank/` call only consists of 8 lines:
 
 ```python
 def get_Pagerank(db: Session, edgelist: list, alpha: float):
@@ -308,8 +337,6 @@ def get_Linkcom(db: Session, edgelist: list, threshold: float):
     
     return newedgeattr
 ```
-
-Query parameters can also be used to toggle the output of the analysis by tuning various hyperparameters. 
 
 
 ## User Interface

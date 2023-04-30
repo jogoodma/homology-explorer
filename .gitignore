@@ -3,6 +3,7 @@
 *.gexf
 *.tsv
 *.db
+*.wal 
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

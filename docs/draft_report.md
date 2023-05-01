@@ -46,18 +46,9 @@ The `Homology Explorer` application is an answer to the problem statement above.
 
 The source of the homology network data consist of three static `.tsv` tables. The table below outlines the attributes for each table listing the datatype to the left of the attribute name and either `pk` or `fk` to designate fields that are primary keys (to uniquely identify records) and foreign keys (to relate attributes across the tables).
 
-| `OrthologPairs.tsv` | `GeneInfo.tsv` | `Species.tsv` |
-|---------------------|----------------|---------------|
-| `int` opb_id `pk`   | `int` geneid `pk` | `int` taxonomyid `pk` |
-| `int` geneid1 `fk`  | `str` symbol     | `str` common_name |
-| `int` geneid2 `fk`  | `str` description| `str` genus       |
-| `int` species1      | `int` speciesid `fk` | `str` species     |
-| `int` species2      | `str` locus_tag  |                   |
-| `int` score         | `str` species_specific_geneid |      |
-| `bool` best_score   | `str` species_specific_geneid_type | |
-| `int` best_score_rev| `str` chromosome   |                 |
-| `str` confidence    | `str` map_location |                 |
-|                     | `str` gene_type    |                 |
+![duckERD.png](./images/duckERD.png)
+
+**Figure XX** - Entity Relationship Diagram of the source data tables.
 
 Some notes on each table and its attributes:
 
@@ -77,50 +68,51 @@ Some notes on each table and its attributes:
 
 At its core, the `Homology Explorer` application aims to serve network data visualizations to users. An application is designed consisting of four key components to accomplish this task, as overviewed below:
 
-- **Pre-processing the source data** converts the static `.tsv` files into a Duck database format by using the `duckdb` python library. This stage joins and permutes the data to a new static form that will be easily accessible by the web application. 
-- **Containerization** of the application as a `docker-compose` image allows the app to easily be run either locally, or as an app service connected to a container registry. The image consists of two containers running the main web application operations:
-   - The backend **application programming interface** (API) container runs the database and implements the python `FastAPI` object relational model (ORM) framework to aynchronously manage database access, serialize, validate, and apply network and filtering analyses to the data.
-   - The frontend **user interface** (UI) container runs the visualization application by implementing the `Sigma.js` and `Graphology` network frameworks through a javascript `React` framework.
+- **Pre-processing the source data** converts the static `.tsv` files into a Duck database `.db` format. This stage joins and permutes the data to a new static form that will be easily accessible by the web application. 
+- A `Caddy` **Web Server** manages SSL encryption and routes HTTP traffic between the API and UI services, and the users.
+- The backend **Application Programming Interface** (API) service runs the database and implements the python `FastAPI` object relational model (ORM) framework to aynchronously manage database access, serialize, validate, and apply network and filtering analyses to the data.
+- The frontend **User Interface** (UI) service runs the visualization application by implementing the `Sigma.js` and `Graphology` network libraries through a javascript `React` framework.
 
 The schematic below outlines the described web application architecture.
 
 ```mermaid
 flowchart LR
+    cad<--http://127.0.0.1:8000-->u((Users))
 
-    subgraph db[Data Pre-Processing]
-        direction TB
-        tsv([::Raw::\nOrthologPairs.tsv\nGeneInfo.tsv\nSpecies.tsv])
-        dbb[[::Python::\ndbBuilder.py\nduckdb]]
+    subgraph dock[Homology Explorer Docker Container]
 
-        tsv-->dbb
-    end
-
-    subgraph dock[Homology Explorer via Docker Compose]
-        
-        subgraph api[API Container]
-
-            duck[(::SQL::\nHomology Database\nduck.db)]
-            py[[::Python::\nFastApi\nSQLAlchemy\npydantic\nnetworkx\nlinkcom\nduckdb-engine]]
-            duck--->py
+        subgraph web[Proxy Service]
+            cad[[::Caddy::\nWeb Server\nReverse Proxy]]
         end
 
-        subgraph ui[UI Container]
+        js<--http://127.0.0.1:4173-->cad;
+        py<--http://127.0.0.1:80-->cad;
+
+        subgraph ui[UI Service]
             js[[::Node.JS 18::\npnpm\nReact\nVite\nSigma\nGraphology\nChakra-UI\nEmotion]]
         end
 
-        direction LR
-        dbb--manually executed as needed-->duck;
-        py<--http://127.0.0.1:8000-->js;
-    end
+        subgraph api[API Service]
+            
+            subgraph db[Stage 1: Build Database]
+                tsv([::Raw::\nOrthologPairs.tsv\nGeneInfo.tsv\nSpecies.tsv])
+                dbb[[::Python::\ndbBuilder.py\nduckdb]]                
+                tsv-->dbb
+            end
 
-    direction TB
-    js--http://127.0.0.1:5173-->u((Users))
+            subgraph fastapi[Stage 2: Build API]
+                duck[(::SQL::\nHomology Database\nduck.db)]
+                py[[::Python::\nFastApi\nSQLAlchemy\npydantic\nnetworkx\nlinkcom\nduckdb-engine]]
+                duck-->py
+            end
+            dbb-->duck;
+        end
+    end
 ```
 
 ```
 homology-explorer
 ├── apps
-│   ├── docker-compose.yml
 │   ├── api
 │   │   ├── app
 │   │   └── Dockerfile
@@ -130,18 +122,20 @@ homology-explorer
 │       ├── src
 │       └── Dockerfile
 ├── data
-└── docs
+├── docs
+├── Caddyfile
+├── docker-compose.yml
+├── pnpm-lock.yaml
+├── poetry.lock
+└── pyproject.toml
+
 ```
 
-The tree structure above outlines the directory structure of the app and will be revisited at various points throughout the report in more detail. The code for this project is available on [Github](https://github.com/jogoodma/homology-explorer/tree/main). The subsequent sections outline the technical implementation of the above described web application design in such a way as to satisfy the constraints set out by the problem statement.
+The tree above outlines the general directory structure of the app and will be revisited at various points throughout the report in more detail. The code for this project is available on [Github](https://github.com/jogoodma/homology-explorer/tree/main). The subsequent sections outline the technical implementation of the above described web application design in such a way as to satisfy the constraints set out by the problem statement.
 
 ## Database Construction
 
-The source data have a fixed schema and are relational so managing them through a SQL database is a natural design choice^[cite some stuff from database class]. Of the myriad flavors of SQL to choose from, the `Homology Explorer` uses Duck Database^[cite duckdb.com]. Duck database is a lightweight SQL database similar to SQLite. Because the dataset  however, it is more performant and provides many more features than SQLite. It also has good documentation and a rich python API. 
-
-TODO: Discuss a couple more features of Duck DB when internet is back
-
-To construct the database, these tables are first extracted from the `tar.gz` file. Next the `duckdb` python library is used by `dbBuilder.py` file to create the application's database: `duck.db`.
+The source data have a fixed schema and are relational so managing them through a SQL database is a natural design choice^[cite some stuff from database class]. Of the myriad flavors of SQL to choose from, the `Homology Explorer` uses Duck Database^[https://duckdb.org/]. Duck database is a lightweight SQL database similar to SQLite. Because the dataset  however, it is more performant and provides many more features than SQLite. It also has good documentation and a rich python API. To construct the database, these tables are first extracted from the `tar.gz` file. Next the `duckdb` python library is used by `dbBuilder.py` file to create the application database: `duck.db`.
 
 ```
 data
@@ -190,7 +184,7 @@ The `dbBuilder.py` script constructs this `duck.db` database using the DuckDB py
 
 An application programming interface (API) can be used to efficiently broker, transform, and validate data between the database and the UI by managing the database requests made by the UI as the user interacts with the application. Python is the preferred language for this API because the application relies on the extensive `networkx` python library to compute network analyses. Keeping the API semantics within the same language as the main computational library maintains a level of desirable level of simplicity. 
 
-`FastAPI` is a popular python RESTful^[cite REST] API web framework focused on high performance^[https://www.techempower.com/benchmarks/#section=data-r21&hw=ph&test=query&l=zijzen-35r&d=b&f=0-0-6bk-0-0-0-b8jk-0-1ekg-4fti4g-0-0-0-0&c=d] and easy development^[cite FastAPI]. We selected the framework for our web application backend because:
+`FastAPI` is a popular python RESTful API web framework focused on high performance and easy development^[https://fastapi.tiangolo.com/]. We selected the framework for our web application backend because:
 - `FastAPI` can run asynchronously through an ASGI^[https://asgi.readthedocs.io/en/latest/] (Asynchronous Server Gateway Interface) which allows it to efficiently enqueue, await, and handle API calls from multiple concurrent users. It also boosts performance for API calls requiring multiple SQL queries to construct the response body. 
 - `FastAPI` supports object relational modelling through the `SQLAlchemy` library to mix the database queries seamlessly with the `networkx` python library. 
 - `FastAPI` supports datatype validation through the `types` and `pydantic` libraries. This ensures the API is sending an appropriate valid response to a requester, and helps determine if the request is even valid in the first place. 

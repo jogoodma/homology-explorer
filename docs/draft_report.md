@@ -20,7 +20,7 @@ EG mRNA techniques, etc.
 
 Gene homology allows researchers to compare genetic traits, both between and within species^[https://bio.libretexts.org/Bookshelves/Microbiology/Microbiology_(Boundless)/07%3A_Microbial_Genetics/7.13%3A_Bioinformatics/7.13C%3A_Homologs_Orthologs_and_Paralogs]. Although there are many methods for predicting homologous relationships between genes, recent related works^[DIOPT] have compiled a unified database cataloguing these relationships. While this is extremely useful for researchers, the tabular format of the database obscures the network structure inherent in the data - whereby edges are predictions of relationships between genes, and the genes themselves are nodes.
 
-This research aims to close the gap between biomedical researchers and the gene homology database by visualizing the gene homology network as an interactive, searchable web application capable of exploring orthologous relationships of individual genes, of lists multiple genes, and of their respective gene neighborhoods. To enhance the researchers understanding of these relationships, we also aim to provide network analysis tools via the UI to perform network operations of centrality measurement and link community detection.
+This research aims to close the gap between biomedical researchers and the gene homology database by visualizing the gene homology network as an interactive, searchable web application capable of exploring orthologous and paralogous relationships of individual genes, of lists multiple genes, and of their respective gene neighborhoods. To enhance the researchers understanding of these relationships, we also aim to provide network analysis tools via the UI to perform network operations of centrality measurement and link community detection.
 
 ## Problem Statement
 
@@ -341,7 +341,34 @@ def get_Linkcom(db: Session, edgelist: list, threshold: float):
 
 ## User Interface
 
+### Core Dependencies
+
+The user interface for the Homology Explorer is primarily written in Typescript with the following libraries providing
+the core functionality:
+
+* React - View layer responsible for controlling the overall layout, the graph components, user interactivity, and managing application state
+* react-sigma - Utility library for bridging functionality between React and Sigma.js
+* Sigma.js - Graph visualization library
+* Graphology - Graph library for representing and working with graph data structures.
+ 
+A list of all dependencies can be found in the [UI package.json file](https://github.com/jogoodma/homology-explorer/blob/docker/apps/ui/package.json).
+
+### Sigma.js
+
+Sigma.js was chosen over other web visualization libraries (e.g. CytoscapeJS and Vega) for its use of
+Canvas vs SVG and its tight integration with Graphology. Canvas provides better performance over SVG when the number
+of objects displayed / manipulated is large. 
+
 ### Dynamic Search
+
+The landing page of the Homology Explorer is our simple dynamic search page. This page has a simplistic single
+input field that allows a user to enter a gene symbol. As the user types, an autocomplete box appears, showing them
+the available genes that match their query (Figure XX). Clicking the "View Network" box then takes the user to the primary
+network visualization.
+
+![Example of a dynamic search for BCL6](./images/dynamic_search_BCL6.png)
+
+**Figure XX** - Example of a dynamic search for BCL6.
 
 ### Visualization
 
@@ -349,12 +376,24 @@ def get_Linkcom(db: Session, edgelist: list, threshold: float):
 
 ## Example 1
 
+PTEN
+
 ## Example 2
 
+BCL6
+
 ## Example 3
+
+18w
 
 # Discussion
 
 ## Next Steps
 
 # References
+
+1. React, https://react.dev/
+2. Typescript, https://www.typescriptlang.org/
+3. react-sigma, https://sim51.github.io/react-sigma/
+4. sigma.js, https://www.sigmajs.org/
+5. Graphology, https://graphology.github.io/

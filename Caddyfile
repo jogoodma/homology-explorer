@@ -1,0 +1,8 @@
+:80
+
+# Use docker compose service names for hostnames
+handle_path /api/* {
+	reverse_proxy api:80
+}
+
+reverse_proxy ui:4173

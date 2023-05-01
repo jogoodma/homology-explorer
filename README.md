@@ -50,3 +50,47 @@ e.g.
 ```shell
 pnpm run pandoc:proposal
 ```
+
+### Docker
+
+*Requirements*:
+ * Docker
+ * Docker compose
+ * DIOPT data files (in the `data` directory):
+   * `Gene_Information.tsv`
+   * `Ortholog_Pair_Best.tsv`
+   * `Species.tsv`
+
+To run a production build in Docker use the following commands. 
+```shell
+docker volume create he_caddy_data
+docker compose up -d --build
+```
+The volume command is only required one time.
+This will build the database, the API server, the UI, and start a production server on port 8000.
+To change the port set the `HOMOLOGY_EXPLORER_PORT` environment
+variable.
+
+e.g.
+```shell
+echo "HOMOLOGY_EXPLORER_PORT=8888" >> .env
+```
+
+#### Docker container overview
+```mermaid
+flowchart LR
+    user(User) == "port 8000" ==> proxy(Caddy Server)
+    subgraph docker[Docker]
+        proxy == "/api/* on port 80" ==> api(FastAPI)
+        proxy == "port 4173" ==> UI(React App)
+        subgraph d1[Proxy service]
+            proxy
+        end
+        subgraph d2[UI service]
+            UI
+        end
+        subgraph d3[API service]
+            api ==> database[(DuckDB)]
+        end
+    end
+```

@@ -1,0 +1,30 @@
+version: "3.8"
+services:
+  proxy:
+    image: caddy:2.6.4-alpine
+    restart: unless-stopped
+    ports:
+      - "${HOMOLOGY_EXPLORER_PORT-8000}:80"
+    volumes:
+      - $PWD/Caddyfile:/etc/caddy/Caddyfile
+      - he_caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - api
+      - ui
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+  ui:
+    build:
+      context: .
+      dockerfile: apps/ui/Dockerfile
+
+networks:
+  frontend:
+
+volumes:
+  he_caddy_data:
+    external: true
+  caddy_config:

@@ -18,15 +18,15 @@ Evolutionary genomics is an important field of study for biomedical researchers,
 
 EG mRNA techniques, etc.
 
-Gene homology allows researchers to compare genetic traits, both between and within species^[https://bio.libretexts.org/Bookshelves/Microbiology/Microbiology_(Boundless)/07%3A_Microbial_Genetics/7.13%3A_Bioinformatics/7.13C%3A_Homologs_Orthologs_and_Paralogs]. Although there are many methods for predicting homologous relationships between genes, recent related works^[DIOPT] have compiled a unified database cataloguing these relationships. While this is extremely useful for researchers, the tabular format of the database obscures the network structure inherent in the data - whereby edges are predictions of relationships between genes, and the genes themselves are nodes.
+Gene homology allows researchers to compare genetic traits, both between and within species^[https://bio.libretexts.org/Bookshelves/Microbiology/Microbiology_(Boundless)/07%3A_Microbial_Genetics/7.13%3A_Bioinformatics/7.13C%3A_Homologs_Orthologs_and_Paralogs]. Although there are many methods for predicting homologous relationships between genes, recent related works^[Hu et. al] have compiled a unified database cataloguing these relationships. While this is extremely useful for researchers, the tabular format of the database obscures the network structure inherent in the data - whereby edges are predictions of relationships between genes, and the genes themselves are nodes.
 
 This research aims to close the gap between biomedical researchers and the gene homology database by visualizing the gene homology network as an interactive, searchable web application capable of exploring orthologous and paralogous relationships of individual genes, of lists multiple genes, and of their respective gene neighborhoods. To enhance the researchers understanding of these relationships, we also aim to provide network analysis tools via the UI to perform network operations of centrality measurement and link community detection.
 
 ## Problem Statement
 
-Although data have been compiled to catalogue and rank relationships between genes predicted by a variety of different models, there is not an easily accessible way for researchers to access this data. This leads us to the first and main problem: 
+Although data have been compiled to catalogue and rank relationships between genes predicted by a variety of different models, there is not an easily accessible way for researchers to access this data. Previously published attempts at providing a solution have either focused on a very limited set of species^[Tulpan et. al] or a limited set of methods for determining homology^[Mustafin et. al; Nevers et. al]. This leads us to the first and main problem: 
 
-> Provide an easily accessible visual interface allowing genetic researchers to intuitively explore the gene homology network. 
+> Provide an easily accessible visual interface allowing model organism genetic researchers to intuitively explore the gene homology network. 
 
 To solve this problem, the team has decided to design a web application to serve network visualization and analysis of the network data in a way that allows users to explore the gene homology network with focus and ease. 
 
@@ -44,7 +44,23 @@ The `Homology Explorer` application is an answer to the problem statement above.
 
 ## Homology Data
 
-The source of the homology network data consist of three static `.tsv` tables. The table below outlines the attributes for each table listing the datatype to the left of the attribute name and either `pk` or `fk` to designate fields that are primary keys (to uniquely identify records) and foreign keys (to relate attributes across the tables).
+The source of the homology network data consist of three static `.tsv` tables that were obtained from the DIOPT research group^[Hu et. al].
+
+Orthology and paraology calls for the following model organism species were included in the Homology Explorer tool from the DIOPT dataset.
+
+**Model Organism Species**
+- Arabidopsis thaliana (Thale cress)
+- Schizosaccharomyces pombe (Fission yeast)
+- Saccharomyces cerevisiae (Yeast)
+- Caenorhabditis elegans (Worm)
+- Drosophila melanogaster (Fly)
+- Danio rerio (Zebrafish)
+- Xenopus tropicalis (Western clawed frog)
+- Rattus norvegicus (Rat)
+- Mus musculus (Mouse)
+- Homo sapiens (Human)
+
+The table below outlines the attributes for each table listing the datatype to the left of the attribute name and either `pk` or `fk` to designate fields that are primary keys (to uniquely identify records) and foreign keys (to relate attributes across the tables).
 
 ![duckERD.png](./images/duckERD.png)
 
@@ -351,43 +367,68 @@ A list of all dependencies can be found in the [UI package.json file](https://gi
 
 Sigma.js was chosen over other web visualization libraries (e.g. CytoscapeJS and Vega) for its use of
 Canvas vs SVG and its tight integration with Graphology. Canvas provides better performance over SVG when the number
-of objects displayed / manipulated is large. 
+of objects displayed is large. 
 
 ### Dynamic Search
 
-The landing page of the Homology Explorer is our simple dynamic search page. This page has a simplistic single
+The landing page of the Homology Explorer is our simple dynamic search page. This page has a single
 input field that allows a user to enter a gene symbol. As the user types, an autocomplete box appears, showing them
-the available genes that match their query (Figure XX). Clicking the "View Network" box then takes the user to the primary
-network visualization.
+the available genes that match their query (Figure XX). Clicking the "View Network" box then takes the user to the
+primary network visualization.
 
 ![Example of a dynamic search for BCL6](./images/dynamic_search_BCL6.png)
 
-**Figure XX** - Example of a dynamic search for BCL6.
+**Figure XX** - Example of a gene search for BCL6.
 
 ### Visualization
+
+The network visualization is controlled by React components that manage the application views and state. The `GeneNetwork`
+component takes the requested gene ID, the application state, and event handlers and creates the network visualization
+via the react-sigma bindings for the Sigma.js library. The Graphology.js library was used to implement the
+graph filtering logic provided by the application.
 
 # Results
 
 ## Example 1
 
 PTEN
+![PTEN gene network](./images/pten_network.png)
 
 ## Example 2
 
 BCL6
+![BCL6 gene network](./images/bcl6_network.png)
 
 ## Example 3
 
 18w
+![18w network before filtering by score](./images/18w_pre_filtered_network.png)
+![18w network after filtering by score](./images/18w_post_filtered_network.png)
 
 # Discussion
 
 ## Next Steps
 
+* Design improvements
+* Collect and iterate over domain expert feedback
+*  
+
 # References
 
-1. React, https://react.dev/
-2. Typescript, https://www.typescriptlang.org/
-3. react-sigma, https://sim51.github.io/react-sigma/
-4. sigma.js, https://www.sigmajs.org/
-5. Graphology, https://graphology.github.io/
+React, https://react.dev/
+
+Typescript, https://www.typescriptlang.org/
+
+react-sigma, https://sim51.github.io/react-sigma/
+
+sigma.js, https://www.sigmajs.org/
+
+Graphology, https://graphology.github.io/
+
+Tulpan D, Leger S. The Plant Orthology Browser: An Orthology and Gene-Order Visualizer for Plant Comparative Genomics. Plant Genome. 2017 Mar;10(1). doi: 10.3835/plantgenome2016.08.0078. PMID: 28464063.
+
+Mustafin ZS, Lashin SA, Matushkin YG, Gunbin KV, Afonnikov DA. Orthoscape: a cytoscape application for grouping and visualization KEGG based gene networks by taxonomy and homology principles. BMC Bioinformatics. 2017 Jan 27;18(Suppl 1):1427. doi: 10.1186/s12859-016-1427-5. PMID: 28466792; PMCID: PMC5333177.
+
+Nevers Y, Kress A, Defosset A, Ripp R, Linard B, Thompson JD, Poch O, Lecompte O. OrthoInspector 3.0: open portal for comparative genomics. Nucleic Acids Res. 2019 Jan 8;47(D1):D411-D418. doi: 10.1093/nar/gky1068. PMID: 30380106; PMCID: PMC6323921.
+
+Hu Y, Flockhart I, Vinayagam A, Bergwitz C, Berger B, Perrimon N, Mohr SE. An integrative approach to ortholog prediction for disease-focused and other functional studies. BMC Bioinformatics. 2011 Aug 31;12:357. doi: 10.1186/1471-2105-12-357. PMID: 21880147; PMCID: PMC3179972.

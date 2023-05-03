@@ -407,8 +407,9 @@ additional clicks and sorting through dozens of genes.
 
 In Figure XX, the gene homology network for the Human BCL6 gene is shown. BCL6 is a gene known to be involved in B-cell 
 lymphoma^[BCL6]. BCL6 shows homology to a small cluster of genes with high confidence as indicated by the thick edges
-of blue and cyan and low confidence orthology calls to 4 D. melanogaster genes (highlighted in red). These 4 genes
-all have symbols with CG# indicating that their function is not known or that they are not well studied. The graph also
+of blue and cyan and low confidence orthology calls to 4 D. melanogaster genes whose node size has been accentuated by the 
+PageRank centrality analysis (highlighted in red). Additionally, thes 4 genes all have symbols with CG#, indicating
+that their function is not known or that they are not well studied. The graph also
 indicates that these genes have many connections to a cluster of human genes (yellow link edges) that are all 
 zinc finger type genes. This information could be used for additional experimentation to confirm zinc finger activity
 of the 4 D. melanogaster genes.

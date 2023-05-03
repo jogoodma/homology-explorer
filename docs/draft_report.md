@@ -15,7 +15,7 @@ ${toc}
 # Introduction
 
 In the field of human genetic research, model organisms play a crucial role in helping to decipher functional
-mechanisms, disease mechanisms, variant impact, gene therapy, and many other aspects of genes (Millburn, GH, et. al,; Bulaklak, K, et. al)
+mechanisms, disease mechanisms, variant impact, gene therapy, and many other aspects of genes (Millburn, GH, et. al; Bulaklak, K, et. al)
 Researchers in this field of study rely on previously published data in their organism of interest and also related
 organisms to discover as much information as possible. For example, a geneticist studying the KRAS gene in
 humans might look for studies on related genes in mice or rats before designing experiments or looking for drug
@@ -402,36 +402,40 @@ graph filtering logic provided by the application.
 
 # Results
 
+In this section, we cover three examples that demonstrate how the database, model, API, and view layers all come
+together to produce a network visualization tool that addresses our primary goals. Each example, shows a network for a single gene
+and what information is learned thanks to the interactive features of the tool, the network analysis algorithms, and 
+the data sources selected for this project.
+
 ## PTEN
 
 In Figure XX, the gene homology network for the Human PTEN gene is shown. PTEN is a tumor suppressor that when mutated
 results in a wide variety of cancers (PTEN, Alliance of Genome Resources). PTEN shows clear orthology to genes in other species (light orange edge colors)
-and a paralog TPTE. The paralog TPTE, shows strong homology to a cluster (purple edge color) of model organism genes
+and a paralog TPTE (highlighted). The paralog TPTE, shows strong homology to a cluster (purple edge color) of model organism genes
 and another human gene (TPTE2). There are also 5 other predominate link communities that are indicated. 
 In this example, we show that a connection that is 2-3 degrees away is clearly visible
-in a single presentation with the Linkcom analysis. Compared with the tabular view, which would have required several
+in a single visualization with the Linkcom analysis. Compared with the tabular view, this would have required several
 additional clicks and sorting through dozens of genes.
 
 
 ![PTEN gene network](./images/pten_network.png)
 **Figure XX** - Gene homology network of PTEN. PTEN and its human paralog (TPTE) are highlighted in red.
 
-## Example 2
+## BCL6
 
 In Figure XX, the gene homology network for the Human BCL6 gene is shown. BCL6 is a gene known to be involved in B-cell 
 lymphoma (BCL6, Alliance of Genome resources). BCL6 shows homology to a small cluster of genes with high confidence as indicated by the thick edges
-of blue and cyan and low confidence orthology calls to 4 *D. melanogaster* genes whose node size has been accentuated by the 
-PageRank centrality analysis (highlighted in red). Additionally, thes 4 genes all have symbols with CG#, indicating
+of blue and cyan and low confidence orthology calls to 4 *D. melanogaster* genes. The node size of those genes has been accentuated by the 
+PageRank centrality analysis (highlighted in red). Additionally, these 4 genes all have symbols with CG#, indicating
 that their function is not known or that they are not well studied. The graph also
 indicates that these genes have many connections to a cluster of human genes (yellow link edges) that are all 
 zinc finger type genes. This information could be used for additional experimentation to confirm zinc finger activity
 of the 4 *D. melanogaster* genes.
 
-
 ![BCL6 gene network](./images/bcl6_network.png)
 **Figure XX** - Gene homology network of BCL6. BCL6 and a cluster of 4 *D. melanogaster* genes are highlighted in red. The unnamed genes are accentuated by the PageRank analysis and are involved in a community of human zinc finger genes indicated by the yellow edges.
 
-## Example 3
+## 18w
 
 In Figure XX, the gene homology network for 18w in *D. melanogaster* is shown. 18w is a gene that contributes to multiple processes including ovarian follicle cell migration, antibacterial humoral response and ventral cord development (18w, Alliance of Genome Resources).
 In part A, you see the entirety of the complex network that 18w is associated with. In part b, the same network is shown,
@@ -441,7 +445,7 @@ to remove complexity and allow researches to focus on high value data easily.
 ![18w network before filtering by score](./images/18w_pre_filtered_network.png)
 ![18w network after filtering by score](./images/18w_post_filtered_network.png)
 **Figure XX A and B** - Gene homology network of 18w in *D. melanogaster*. Figure XXA displays a complex network with
-many interconnections. Figure XXB displays the same network, but with all homology scores of less than 4 removed.
+many interconnections. Figure XXB displays the same network, but with homology scores of less than 4 removed.
 
 # Discussion
 

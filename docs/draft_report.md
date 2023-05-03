@@ -24,6 +24,19 @@ speciation event (Koonin EV, et. al). In other words, a gene in one species that
 related to a gene in another species over an evolutionary time period. _Paralogs_, genes that are the result of a
 duplication event within a species, can also be used for this same purpose.
 
+```mermaid
+flowchart LR
+  subgraph Species 1
+    G1[(Ancestral Gene)]--Duplication Event--->G4([Paralogous Gene])
+  end
+  subgraph Species 2
+    G2(Orthologous Gene)--Duplication Event-->G3([Paralogous Gene])
+  end
+  G1--Speciation Event-->G2
+```
+
+**Fig XX** - Diagram illustrating the difference between orthologous and paralogous genetic relationships as the result of evolutionary speciation and duplication events.
+
 Although there are many methods for predicting homologous relationships between genes, recent related works
 (Hu et. al) have compiled a unified database cataloguing these relationships. While this is extremely useful for
 researchers, the tabular format of the database obscures the network structure inherent in the data - whereby edges
@@ -45,11 +58,10 @@ To solve this problem, the team has decided to design a web application to serve
 
 Some additional problem constraints were as follows:
 
-- The application should be easily hostable so that it can be run easily and independently by researchers or hosted on the web.
-- The application should to be designed to a production-grade standard such that the application could support a moderate amount of concurrent users. 
-- The application should provide an interactive and reactive user interface and allow for users to both search for and drill into various different genes, as well as tailor their results based on parameterizations of the various network operations.
-
-## Project Execution Roadmap
+- The application should be easily hostable, so that it can be run turn-key and independently by researchers or hosted on the web.
+- The application should be designed to a production-grade standard such that the application could support a moderate amount of concurrent users. 
+- The application should provide an interactive and reactive user interface and allow for users to both search for and drill into various different genes and their surrounding neighborhoods.
+- Users should be able to easily execute a variety of network analysis methods and graph configurations while maintaining the ability to constrain their results through parameterization of the various network operations.
 
 # Methods
 
@@ -59,7 +71,7 @@ The `Homology Explorer` application is an answer to the problem statement above.
 
 The source of the homology network data consist of three static `.tsv` tables that were obtained from the DIOPT research group (Hu et. al).
 
-Orthology and paraology calls for the following model organism species were included in the Homology Explorer tool from the DIOPT dataset.
+Orthology and paralogy calls for the following model organism species were included in the Homology Explorer tool from the DIOPT dataset.
 
 **Model Organism Species**
 - Arabidopsis thaliana (Thale cress)
@@ -97,12 +109,12 @@ Some notes on each table and its attributes:
 
 At its core, the `Homology Explorer` application aims to serve network data visualizations to users. An application is designed consisting of four key components to accomplish this task, as overviewed below:
 
-- **Pre-processing the source data** converts the static `.tsv` files into a Duck database `.db` format. This stage joins and permutes the data to a new static form that will be easily accessible by the web application. 
-- A `Caddy` **Web Server** manages SSL encryption and routes HTTP traffic between the API and UI services, and the users.
-- The backend **Application Programming Interface** (API) service runs the database and implements the python `FastAPI` object relational model (ORM) framework to aynchronously manage database access, serialize, validate, and apply network and filtering analyses to the data.
-- The frontend **User Interface** (UI) service runs the visualization application by implementing the `Sigma.js` and `Graphology` network libraries through a javascript `React` framework.
+- **Pre-processing the source data** converts the `.tsv` files into a `DuckDB`^[https://duckdb.org/why_duckdb] database format. This stage joins and permutes the data to a form that is embeddable as a volume onto the web application. 
+- A `Caddy Server`^[https://caddyserver.com/docs/] **Proxy Server** manages SSL encryption and routes HTTP traffic between the API and UI services, and the users.
+- The backend **Application Programming Interface** (API) service accesses the database through a `SQLAlchemy`^[https://www.sqlalchemy.org/] object relational model (ORM) and implements the python `FastAPI`^[https://fastapi.tiangolo.com/] framework to aynchronously manage database access, validate, serialize, and apply CRUD (Create Read Update Delete) operations and `networkx`^[https://networkx.org/] network analytics to the data.
+- The frontend **User Interface** (UI) service runs the visualization application by implementing the `Sigma.js`^[https://www.sigmajs.org/] and `Graphology`^[https://graphology.github.io/] network libraries through a javascript `React`^[https://react.dev/] framework.
 
-The schematic below outlines the described web application architecture.
+The schematic below outlines the described web application architecture. The Homology Explorer is containerized as a Docker Compose^[https://docs.docker.com/compose/] application made up of three Docker^[https://docs.docker.com/] containers for the API, UI, and Proxy services. 
 
 ```mermaid
 flowchart LR
@@ -139,6 +151,8 @@ flowchart LR
     end
 ```
 
+**Fig XX** - Docker compose application consisting of containers running services for the database build script and API, the UI, and the Proxy server. 
+
 ```
 homology-explorer
 ├── apps
@@ -160,11 +174,24 @@ homology-explorer
 
 ```
 
-The tree above outlines the general directory structure of the app and will be revisited at various points throughout the report in more detail. The code for this project is available on [Github](https://github.com/jogoodma/homology-explorer/tree/main). The subsequent sections outline the technical implementation of the above described web application design in such a way as to satisfy the constraints set out by the problem statement.
+The tree above outlines the general directory structure of the Homology Explorer application and will be revisited in greater detail throughout the report. The code for this project is available on Github^[https://github.com/jogoodma/homology-explorer/tree/main]. The subsequent sections outline the technical implementation of the above described web application design in such a way as to satisfy the constraints set out by the problem statement.
 
-## Database Construction
+## Proxy Server
 
-The source data have a fixed schema and are relational so managing them through a SQL database is a natural design choice^[cite some stuff from database class]. Of the myriad flavors of SQL to choose from, the `Homology Explorer` uses Duck Database^[https://duckdb.org/]. Duck database is a lightweight SQL database similar to SQLite. Because the dataset  however, it is more performant and provides many more features than SQLite. It also has good documentation and a rich python API. To construct the database, these tables are first extracted from the `tar.gz` file. Next the `duckdb` python library is used by `dbBuilder.py` file to create the application database: `duck.db`.
+A proxy server ia an application which controls traffic within networked systems and between the internet. These services are often embedded within larger applications and serve multiple other roles like encryption, authentication, cacheing, and load balancing. 
+
+The Homology Explorer uses a simple out-of-the-box proxy server solution called `Caddy` because it is easy to implement on small projects without many modifications and is modestly secure with the default settings. Since web hosting is not the feature of this report, this section will be left deliberately sparse for brevity. 
+
+## Application Programming Interface
+
+An application programming interface (API) can be used to efficiently broker, transform, and validate data between the database and the UI by managing the database requests made by the UI as the user interacts with the application. The API Docker container has a multi-stage build process:
+
+1. Stage 1 parses the provided `.tsv` files into the `duck.db` format and loads it as a container volume.
+2. Stage 2 runs the API service connected to the database volume. 
+
+### Stage 1: Build Database
+
+The source data have a fixed schema and are relational so managing them through a SQL database is a natural design choice. Of the myriad flavors of SQL to choose from, the Homology Explorer uses `DuckDB`. `DuckDB` is a lightweight SQL database similar to SQLite. Because the dataset  however, it is more performant and provides many more features than SQLite. It also has good documentation and a rich python API. To construct the database, these tables are first extracted from the `tar.gz` file. Next the `duckdb` python library is used by `dbBuilder.py` file to create the application database: `duck.db`.
 
 ```
 data
@@ -175,7 +202,7 @@ data
 └── duck.db
 ```
 
-Each `.tsv` file is loaded to the database as a table. However, the tables themselves are not exposed to the web application. Instead, a variety of views query data from the tables into formats expected by the API object relational models. This is advantageous from an application performance standpoint since initializing the data into the ORM formats sometimes requires computationally intensive `JOIN` operations for which SQL is optimized.
+Each `.tsv` file is loaded to the database as a table. However, the tables themselves are not exposed to the web application. Instead, a variety of views query data from the tables into formats expected by the API object relational models. This is advantageous from an application performance standpoint since initializing the data into the ORM formats sometimes requires computationally intensive join operations for which SQL is optimized.
 
 Below are described the various tables and views created by the `dbBuilder.py`:
 
@@ -209,19 +236,21 @@ Below are described the various tables and views created by the `dbBuilder.py`:
 
 The `dbBuilder.py` script constructs this `duck.db` database using the DuckDB python API. Once constructed, it is then embedded the API service at `apps/api/app/duck.db` where it is accessed by the web application as needed.
 
-## Application Programming Interface
+### Stage 2: Asynchronous Object Relational Model
 
-An application programming interface (API) can be used to efficiently broker, transform, and validate data between the database and the UI by managing the database requests made by the UI as the user interacts with the application. Python is the preferred language for this API because the application relies on the extensive `networkx` python library to compute network analyses. Keeping the API semantics within the same language as the main computational library maintains a level of desirable level of simplicity. 
+Python is the preferred language for this API because the application relies on the extensive `networkx` python library to compute network analyses. Keeping the API semantics within the same language as the main computational library maintains a level of desirable level of simplicity. The second stage of the API Docker container build implements the python `FastAPI` framework the API service for the Homology Explorer. 
 
-`FastAPI` is a popular python RESTful API web framework focused on high performance and easy development^[https://fastapi.tiangolo.com/]. We selected the framework for our web application backend because:
-- `FastAPI` can run asynchronously through an ASGI^[https://asgi.readthedocs.io/en/latest/] (Asynchronous Server Gateway Interface) which allows it to efficiently enqueue, await, and handle API calls from multiple concurrent users. It also boosts performance for API calls requiring multiple SQL queries to construct the response body. 
+`FastAPI` is a popular python RESTful API web framework focused on high performance and quick development. We selected the framework for our web application backend because of these features which the Homology Explorer leverages:
+
+- `FastAPI` can run asynchronously through an ASGI^[https://asgi.readthedocs.io/en/latest/] (Asynchronous Server Gateway Interface) like `Uvicorn`^[https://www.uvicorn.org/] which allows it to efficiently enqueue, await, and handle API calls from multiple concurrent users. It also boosts performance for API calls requiring multiple SQL queries to construct the response body. 
 - `FastAPI` supports object relational modelling through the `SQLAlchemy` library to mix the database queries seamlessly with the `networkx` python library. 
-- `FastAPI` supports datatype validation through the `types` and `pydantic` libraries. This ensures the API is sending an appropriate valid response to a requester, and helps determine if the request is even valid in the first place. 
-- `FastAPI` also supports several methods for implementing a cache-aside framework which can help increase performance for APIs with high throughput. Since that is an expected use-case scenario for this application, this version has *not* been developed with cacheing. This may be an advantageous feature one day in the future if the application use-case ever expands. 
+- `FastAPI` supports datatype validation through the `types` and `pydantic`^[https://pydantic.dev/] libraries. This ensures the API is sending an appropriate valid response to a requester, and helps determine if the request is even valid in the first place. 
 - `FastAPI` has the Swagger Docs interface tool enabled by default which makes developing the API much easier by providing an easy way to test different API requests, responses, and ORM schemas.
 - There is good documentation and it is a relatively easy framework to learn and implement. For example, this API application is largely inspired by this official tutorial^[https://fastapi.tiangolo.com/tutorial/sql-databases/] from the `FastAPI` documentation.
 
-Below is an example directory structure of the `FastAPI` API service embedded with the `duck.db` database.
+`FastAPI` also supports several methods for implementing a cache-aside framework, which can help increase performance for high I/O applications, or parallelization of computationally intensive tasks. Since these are not currently part of an expected use-case scenario for this application, this version has *not* been developed with these features. However, its worth noting these may be advantageous features one day in the future if the application use-case ever expands to serve a larger audience (cacheing) or users want to perform analyses on larger and larger graphs (parallelization). 
+
+Below is an example directory structure of the `FastAPI` API service and a summary of the different file roles.
 
 ```
 apps/api
@@ -229,7 +258,6 @@ apps/api
 │   ├── __init__.py
 │   ├── crud.py
 │   ├── database.py
-│   ├── duck.db
 │   ├── main.py
 │   ├── models.py
 │   └── schemas.py
@@ -240,7 +268,7 @@ apps/api
 - **database.py**
    - This file handles ORM session connections to the database with `SQLAlchemy`.
 - **models.py**
-   - This file structures the SQL tables into an object relational model (ORM) with `SQLAlchemy`.
+   - This file structures the SQL tables into an object relational model with `SQLAlchemy`.
    - Once instantiated as an ORM object, the tables are easy to manipulate using other python libraries. 
 - **schemas.py**
    - This file enforces data types and structural representations of ORM objects with `pydantic`.
@@ -251,19 +279,19 @@ apps/api
    - This file functionalizes the `crud.py` operations and serves the requests through HTTP API calls with `FastAPI`
    - It also validates POST and GET operations and constrains inputs/outputs according to design specifications, and assigns query and path parameters to HTTP routes. 
 
-This API is run through the `uvicorn`^[cite Uvicorn] ASGI as recommended by the `FastAPI` documentation^[cite]and works, more or less, as follows for each of the API endpoints:
+This API is run through the `Uvicorn` ASGI as recommended by the `FastAPI` documentation and works more or less as follows for each of the API endpoints:
 
 - The UI sends an HTTP request with the query and path parameters specified by one of the available API endpoints in `main.py`. 
 - If a valid endpoint is called, the endpoint then:
-   - _validates the request_ body schema and the query and path parameter datatypes.
-   - _executes_ CRUD operations by transforming the ORM models connected to the database.
-   - _serializes_ a response to a particular output format.
-   - _validates the response_ datatypes according to a given output schema.
-   - _returns_ the HTTP response body to the requester.
+   - __Validates the *Request*__ body schema and the query and path parameter datatypes.
+   - __Executes__ CRUD operations by transforming the ORM models connected to the database.
+   - __Serializes__ a response to a particular output format.
+   - __Validates the *Response*__ datatypes according to a given output schema.
+   - __Returns__ the HTTP response body to the requester.
 
 And that's it! The API endpoints all vary somewhat depending on their intended purpose, but follow this generalized order of operations. Some API endpoints only involve one database query while others are composed of several database queries. In the case of this API, all of the endpoints are designed to help a user explore the network of genes stored by the gene homology database. These endpoints are discussed individually at length in the sections below.
 
-### Information and Search
+#### Information and Search
 
 GET Calls:
 - `/search/gene/symbol/{symbol}/`
@@ -272,7 +300,7 @@ GET Calls:
 
 These endpoints query basic information from views of the database tables. The `/search/gene/symbol/` endpoint is used to populate search results for the dynamic search option at the beginning of the UI. The other two endpoints return either the node attributes or a list of edges attached to the single requested gene.
 
-### Multigene Requests
+#### Multigene Requests
 
 POST Calls:
 - `/geneinfo/multigene/`
@@ -280,7 +308,7 @@ POST Calls:
 
 These endpoints require the user to post the request body as a list of `geneid`s. The endpoint parses the list by changing the comparative of the SQL `WHERE` clause from `=` (as used in the `/.../gene/` GET endpoints) to `IN`. In this way, the multigene endpoints are able to provide node and edge info in a similar manner to the single gene endpoints, but for a list of genes instead. 
 
-### The Gene Neighborhood
+#### The Gene Neighborhood
 
 GET Calls:
 - `/geneneighboredges/gene/{gene_id}/`
@@ -302,7 +330,7 @@ TODO: Update `crud.get_GeneNeighborEdgelist` to take as arguments the weight_lb 
 
 The gene neighborhood represents the closest related genes to those queried as defined by various homology prediction algorithms. 
 
-### Network Analysis
+#### Network Analysis
 
 POST Calls:
 - `/geneneighboredges/multigene/{analysis}`
@@ -314,7 +342,7 @@ A network analysis endpoint is available for computing network attributes on eit
 2. The edgelist is converted to an `nx.Graph()` object upon which is run a `networkx` function of some kind. This returns an edgelist or nodelist with the newly calculated network analysis attribute.
 3. The newly calculated attribute from step 2 is appended to the node or edge attributes for the gene neighborhood determined in step 1. This returns a new list of edges or nodes along with all the attributes (original and calculated) for each object of the list. 
 
-This framework is advantageous since the only difference between each network analysis is the CRUD operation performing the `networkx` function called in step 2. These CRUD operations are quite simple to construct, and then it is just a matter of making the path parameter available as a request to the network analysis endpoint. 
+This framework is advantageous for later development since the only difference between each network analysis is the CRUD operation performing the `networkx` function called in step 2. These CRUD operations are quite simple to construct, and then it is just a matter of making the path parameter available as a request to the network analysis endpoint. 
 
 For example, the network CRUD operation for the `geneneighbornodes/multigene/PageRank/` call only consists of 8 lines:
 
@@ -361,7 +389,6 @@ def get_Linkcom(db: Session, edgelist: list, threshold: float):
     return newedgeattr
 ```
 
-
 ## User Interface
 
 ### Core Dependencies
@@ -374,7 +401,7 @@ the core functionality:
 * Sigma.js - Graph visualization library
 * Graphology - Graph library for representing and working with graph data structures.
  
-A list of all dependencies can be found in the [UI package.json file](https://github.com/jogoodma/homology-explorer/blob/docker/apps/ui/package.json).
+A list of all dependencies can be found in the UI package.json file^[https://github.com/jogoodma/homology-explorer/blob/docker/apps/ui/package.json].
 
 ### Sigma.js
 
@@ -449,11 +476,51 @@ many interconnections. Figure XXB displays the same network, but with homology s
 
 # Discussion
 
+Recall that the core mission behind developing the Homology Explorer application is to:
+
+> Provide an easily accessible visual interface allowing model organism genetic researchers to intuitively explore the gene homology network. 
+
+Other key constraints of the application design include that the application be easily hostable, be built to a production-grade standard of quality, and have a reactive user interface capable of executing a variety of network analysis operations. 
+
+The Homology Explorer is a minimum viable product which accomplishes both the core mission and the constraints through a variety of means. Despite this, the application is far from perfect and, in its present state, there is more work to be done to get the application to being completely production-ready. The outcomes, limitations, and future of the Homology Explorer application are discussed in the sections below. 
+
+## Outcomes
+
+Containerization of the application allows it to be run with one line of code because all of the dependencies are taken care of during the container build process. Additionally, the Proxy, API, UI services are all implemented with tools known to provide high performance and security while being scalable and also maintainable through leveraging a rich community and documentation. They were meticulously selected for this project due to their distinguishing attributes relevant to this project. 
+
+In terms of network analysis, the application distills the large gene homology graph to a network visualization of the subgraph composed of all the edges between all the nodes (genes) in the first-degree neighborhood of the requested gene or genes. Implementing this universal graph definition on all of the queries related to network discovery enables the UI to use the same API request parameterizations for separate API calls. Additionally, adding new python network analysis operations is relatively simple because the code for a new network operation component only consists of three components:
+
+1. Instantiate an `nx.Graph` object from an edgelist, IE `[(source,target,weight),(s2,t2,w2),...]`
+2. Run the network operation on the graph
+3. Serialize the new attribute results to a `graphology` nodelist or edgelist, IE
+   - for nodes: `{ { node: geneid, attributes: {...} }, ... }`
+   - for edges: `{ { source: geneid1, target: geneid2, attributes: {...} }, ... }`
+
+Writing a new CRUD operation following the outline above and adding it to either the node or edge analysis API endpoints is all it takes to implement a new network operation. This is a powerful characteristic because it will both streamline future development of more core network analysis features and enable users to implement their own network analyses in this web framework. 
+
+The network visualizations are fast, responsive, and intuitive for new users. There is layout flexibility to view the network in a variety of configurations that also allows for users to zoom, pan, and move nodes as they see fit. The navigational search feature in the visualization enables users to easily find the gene they are looking for and the gene info presents a nice high level summary of the gene functions. The ability to constrain the network by species enables researchers to explore paralogs, orthologs, or a mix of both, and the ability to constrain the network by edge score (the number of predictive algorithms that predict a given edge...) further allows researchers to focus without distraction on the most gene neighborhood network structures. 
+
+## Limitations
+
+Although the Homology Explorer accomplishes the initial project goals to a large degree, there are several limitations with the application which prevent it from being the best gene network application that it could be. Probably the largest design limitation is a result of design choices due to the large size of the entire gene homology network. Visualizing this entire network and running network analyses on it wholistically would be prohibitively computationally expensive to do so effectively in this web setting. A separate, more static visualization approach ought to be taken for a more comprehensive network-wide discovery and analysis. 
+
+The Gene Neighborhood subgraph visualization concept was implemented as a means of circumventing the issue of large network size. However, the visualization currently only visualizes the neighborhood for a single gene. Although API endpoints are in place for querying the larger neighborhood centered around multiple genes, this feature has not yet been implemented in the UI. This results in an opposite problem - where visualizing the entire network would provide far too much graph context to be useful, the single gene neighborhood may, in certain cases, be providing *too little* context to the user. This is because the current network analysis endpoints only operate on the geneneighborhood provided to them. Since this application is running the analysis on a subgraph of the gene homology network, any edges that are removed on account of one of the nodes *not* belonging to the given subgraph will bias the analysis depending on the surrounding structural features that are omitted. A consequence of this is that depending on the particular neighborhood one is observing, one might see inconsistent results between similar neighborhood analyses which share the same nodes.  
+- currently a limited number of network analysis options - only 1 community detection algorithm and 1 centrality algorithm. 
+- no "global" network analysis options to analyze wholistic subgraph characteristics like average degree or shortest path algorithms. 
+- the gene search sorts results alphabetically - improve this to more relevant search method
+- it would be useful to display more edge information, in particular highlighting which homology prediction algorithms predicted a given edge.
+- 
+
+
+
 ## Next Steps
 
-* Design improvements
-* Collect and iterate over domain expert feedback
-*  
+- Design improvements
+- implement "multigene" neighborhood querying - user chooses a subset of genes to get the larger neighborhood for. 
+   - implement "ballooning" - user has option to expand gene neighborhood off of a node
+   - implement n-degree neighborhood toggling, whereby the user can set the gene neighborhood consist of neighbors from either the first-degree or the nth-degree
+- Collect and iterate over domain expert feedback
+- 
 
 # References
 

@@ -365,16 +365,16 @@ A list of all dependencies can be found in the [UI package.json file](https://gi
 
 ### Sigma.js
 
-Sigma.js was chosen over other web visualization libraries (e.g. CytoscapeJS and Vega) for its use of
-Canvas vs SVG and its tight integration with Graphology. Canvas provides better performance over SVG when the number
-of objects displayed is large. 
+Sigma.js was chosen over other web based network visualization libraries (e.g. CytoscapeJS and Vega) for its use of
+Canvas vs SVG and its tight integration with Graphology (a JS graph library). Canvas provides better performance over SVG when the number
+of objects displayed is large.
 
 ### Dynamic Search
 
 The landing page of the Homology Explorer is our simple dynamic search page. This page has a single
-input field that allows a user to enter a gene symbol. As the user types, an autocomplete box appears, showing them
-the available genes that match their query (Figure XX). Clicking the "View Network" box then takes the user to the
-primary network visualization.
+input field that allows a user to enter a gene symbol. As the user types, a query is sent to the gene symbol
+query API endpoint, an autocomplete box appears, and then the results from the query are displayed
+(Figure XX). Clicking the "View Network" box then takes the user to the primary network visualization.
 
 ![Example of a dynamic search for BCL6](./images/dynamic_search_BCL6.png)
 
@@ -389,15 +389,33 @@ graph filtering logic provided by the application.
 
 # Results
 
-## Example 1
+## PTEN
 
-PTEN
+In Figure XX, the gene homology network for the Human PTEN gene is shown. PTEN is a tumor suppressor that when mutated
+results in a wide variety of cancers^[PTEN]. PTEN shows clear orthology to genes in other species (light orange edge colors)
+and a paralog TPTE. The paralog TPTE, shows strong homology to a cluster (purple edge color) of model organism genes
+and another human gene (TPTE2). There are also 5 other predominate link communities that are indicated. 
+In this example, we show that a connection that is 2-3 degrees away is clearly visible
+in a single presentation with the Linkcom analysis. Compared with the tabular view, which would have required several
+additional clicks and sorting through dozens of genes.
+
+
 ![PTEN gene network](./images/pten_network.png)
+**Figure XX** - Gene homology network of PTEN. PTEN and its human paralog (TPTE) are highlighted in red.
 
 ## Example 2
 
-BCL6
+In Figure XX, the gene homology network for the Human BCL6 gene is shown. BCL6 is a gene known to be involved in B-cell 
+lymphoma^[BCL6]. BCL6 shows homology to a small cluster of genes with high confidence as indicated by the thick edges
+of blue and cyan and low confidence orthology calls to 4 D. melanogaster genes (highlighted in red). These 4 genes
+all have symbols with CG# indicating that their function is not known or that they are not well studied. The graph also
+indicates that these genes have many connections to a cluster of human genes (yellow link edges) that are all 
+zinc finger type genes. This information could be used for additional experimentation to confirm zinc finger activity
+of the 4 D. melanogaster genes.
+
+
 ![BCL6 gene network](./images/bcl6_network.png)
+**Figure XX** - Gene homology network of BCL6. BCL6 and a cluster of 4 D. melanogaster genes are highlighted in red. The unnamed genes are accentuated by the PageRank analysis and are involved in a community of human zinc finger genes indicated by the yellow edges.
 
 ## Example 3
 
@@ -432,3 +450,7 @@ Mustafin ZS, Lashin SA, Matushkin YG, Gunbin KV, Afonnikov DA. Orthoscape: a cyt
 Nevers Y, Kress A, Defosset A, Ripp R, Linard B, Thompson JD, Poch O, Lecompte O. OrthoInspector 3.0: open portal for comparative genomics. Nucleic Acids Res. 2019 Jan 8;47(D1):D411-D418. doi: 10.1093/nar/gky1068. PMID: 30380106; PMCID: PMC6323921.
 
 Hu Y, Flockhart I, Vinayagam A, Bergwitz C, Berger B, Perrimon N, Mohr SE. An integrative approach to ortholog prediction for disease-focused and other functional studies. BMC Bioinformatics. 2011 Aug 31;12:357. doi: 10.1186/1471-2105-12-357. PMID: 21880147; PMCID: PMC3179972.
+
+PTEN, https://www.alliancegenome.org/gene/HGNC:9588#disease-associations
+
+BCL6, https://www.alliancegenome.org/gene/HGNC:1001#disease-associations

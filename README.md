@@ -14,6 +14,8 @@ A tool for exploring orthology and paraology relationships in model organism spe
 - tex
 - node
 - pnpm
+- python
+- poetry
 
 Note: This repository uses pnpm to manage javascript dependencies. Using npm or yarn may cause
 issues due to the lock files not being used.

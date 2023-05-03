@@ -10,12 +10,21 @@ toc: true
 
 # Abstract
 
-`placeholder`
+Genetic homology between species is an important tool that researchers rely on to study human disease models
+in other species, gene function, metabolic pathways, the impact of genetic variants, and more. Existing tools
+to predict and model these relationships do not provide researchers a wholistic view of genetic homology,
+are difficult to efficiently navigate, or are lacking in the species or algorithms offered.
+The Gene Homology Explorer project aims to remedy this by creating, visualizing, and analyzing the network
+of homological gene relationships between species with a web application. Herein, we describe the data sources,
+data processing, modeling, network analysis methods, and application design used to address these needs. 
+To evaluate the utility of the tool, we discuss three example cases that highlight interesting 
+insights that this new application provides. Finally, we conclude with a summary of our project
+outcomes, current limitations of the Homology Explorer tool, and possible next steps for future work.
 
 # Introduction
 
 In the field of human genetic research, model organisms play a crucial role in helping to decipher functional
-mechanisms, disease mechanisms, variant impact, gene therapy, and many other aspects of genes (Millburn, GH, et. al; Bulaklak, K, et. al)
+mechanisms, disease mechanisms, variant impact, gene therapy, and many other aspects of genes (Millburn, GH, et. al; Bulaklak, K, et. al).
 Researchers in this field of study rely on previously published data in their organism of interest and also related
 organisms to discover as much information as possible. For example, a geneticist studying the KRAS gene in
 humans might look for studies on related genes in mice or rats before designing experiments or looking for drug
@@ -42,7 +51,7 @@ Although there are many methods for predicting homologous relationships between 
 researchers, the tabular format of the database obscures the network structure inherent in the data - whereby edges
 are predictions of relationships between genes, and the genes themselves are nodes.
 
-This research aims to close the gap between biomedical researchers and the gene homology database by visualizing the
+This research aims to close the gap between biomedical researchers and the gene homology information by visualizing the
 gene homology network as an interactive, searchable web application capable of exploring orthologous and paralogous
 relationships of individual genes, of lists multiple genes, and of their respective gene neighborhoods.
 To enhance the researchers understanding of these relationships, we also aim to provide network analysis tools via
@@ -70,8 +79,9 @@ The `Homology Explorer` application is an answer to the problem statement above.
 ## Homology Data
 
 The source of the homology network data consist of three static `.tsv` tables that were obtained from the DIOPT research group (Hu et. al).
+These static files contain the unified orthology and paralogy calls and meta information from over 17 homology prediction algorithms.
 
-Orthology and paralogy calls for the following model organism species were included in the Homology Explorer tool from the DIOPT dataset.
+Orthology and paralogy calls for the following model organism species were included in the Homology Explorer tool from the DIOPT dataset (v8.5).
 
 **Model Organism Species**
 - Arabidopsis thaliana (Thale cress)
@@ -409,47 +419,51 @@ def get_Linkcom(db: Session, edgelist: list, threshold: float):
 
 ## User Interface
 
+The final piece of the Homology Explorer application is the user interface (UI). The UI serves as the interface between the end user
+exploring the network data and the API and database layer. Our goal was to design a tool that addressed the points discussed previously
+in our _Problem Statement_.
+
 ### Core Dependencies
 
 The user interface for the Homology Explorer is primarily written in `Typescript`^[https://www.typescriptlang.org/] with the following libraries providing the core functionality:
 
-- `React` - View layer responsible for controlling the overall layout, the graph components, user interactivity, and managing application state
+- `React`^[https://react.dev] - View layer responsible for controlling the overall layout, the graph components, user interactivity, and managing application state
 - `react-sigma`^[https://sim51.github.io/react-sigma/] - Utility library for bridging functionality between `React` and `Sigma.js`
-- `Sigma.js` - Graph visualization library
-- `Graphology` - Graph library for representing and working with graph data structures.
+- `Sigma.js`^[https://www.sigmajs.org] - Graph visualization library
+- `Graphology.js`^[https://graphology.github.io/] - Graph library for representing and working with graph data structures.
  
 A list of all dependencies can be found in the UI package.json file^[https://github.com/jogoodma/homology-explorer/blob/docker/apps/ui/package.json].
 
 ### Sigma.js
 
-Sigma.js was chosen over other web based network visualization libraries (e.g. CytoscapeJS and Vega) for its use of Canvas vs SVG and its tight integration with Graphology (a JS graph library). Canvas provides better performance over SVG when the number of objects displayed is large.
+Sigma.js was chosen over other web based network visualization libraries (e.g. CytoscapeJS and Vega) for its use of Canvas vs SVG and its tight integration with Graphology (a JS graph library). Canvas was preferred because it provides better performance over SVG when the number of objects displayed is large.
 
 ### Dynamic Search
 
 The landing page of the Homology Explorer is our simple dynamic search page. This page has a single
-input field that allows a user to enter a gene symbol. As the user types, a query is sent to the gene symbol
-query API endpoint, an autocomplete box appears, and then the results from the query are displayed
-(Figure XX). Clicking the "View Network" box then takes the user to the primary network visualization.
+input field that allows a user to enter a gene symbol. As the user types, a REST query is sent to the gene symbol
+query API endpoint (refer to "GET Calls" under _Information and Search_), an autocomplete box appears, and then the results from the query are displayed
+(Figure 2). Clicking the "View Network" box then takes the user to the primary network visualization.
 
 ![Example of a dynamic search for BCL6](./images/dynamic_search_BCL6.png)
 
 ### Visualization
 
-The network visualization is controlled by React (React) components that manage the application views and state. The `GeneNetwork`
-component takes the requested gene ID, the application state, and event handlers and creates the network visualization
-via the react-sigma (react-sigma) bindings for the Sigma.js library (sigma.js). The Graphology.js (Graphology) library was used to implement the
-graph filtering logic provided by the application.
+The network visualization is controlled by `React` components that manage the application views and state. The `GeneNetwork`
+component takes the requested gene ID, the application state, event handlers, and creates the network visualization
+via the `react-sigma` bindings for the `Sigma.js` library. The `Graphology.js` library was used to implement the
+some interactivity and graph filtering logic provided by the application.
 
 # Results
 
-In this section, we cover three examples that demonstrate how the database, model, API, and view layers all come
+In this section, we discuss three examples that demonstrate how the database, model, API, and view layers all come
 together to produce a network visualization tool that addresses our primary goals. Each example, shows a network for a single gene
 and what information is learned thanks to the interactive features of the tool, the network analysis algorithms, and 
 the data sources selected for this project.
 
 ## PTEN
 
-In Figure XX, the gene homology network for the Human PTEN gene is shown. PTEN is a tumor suppressor that when mutated
+In Figure 3, the gene homology network for the Human PTEN gene is shown. PTEN is a tumor suppressor that when mutated
 results in a wide variety of cancers (PTEN, Alliance of Genome Resources). PTEN shows clear orthology to genes in other species (light orange edge colors)
 and a paralog TPTE (highlighted). The paralog TPTE, shows strong homology to a cluster (purple edge color) of model organism genes
 and another human gene (TPTE2). There are also 5 other predominate link communities that are indicated. 
@@ -461,7 +475,7 @@ additional clicks and sorting through dozens of genes.
 
 ## BCL6
 
-In Figure XX, the gene homology network for the Human BCL6 gene is shown. BCL6 is a gene known to be involved in B-cell 
+In Figure 4, the gene homology network for the Human BCL6 gene is shown. BCL6 is a gene known to be involved in B-cell 
 lymphoma (BCL6, Alliance of Genome resources). BCL6 shows homology to a small cluster of genes with high confidence as indicated by the thick edges
 of blue and cyan and low confidence orthology calls to 4 *D. melanogaster* genes. The node size of those genes has been accentuated by the 
 PageRank centrality analysis (highlighted in red). Additionally, these 4 genes all have symbols with CG#, indicating
@@ -474,14 +488,14 @@ of the 4 *D. melanogaster* genes.
 
 ## 18w
 
-In Figure XX, the gene homology network for 18w in *D. melanogaster* is shown. 18w is a gene that contributes to multiple processes including ovarian follicle cell migration, antibacterial humoral response and ventral cord development (18w, Alliance of Genome Resources).
-In part A, you see the entirety of the complex network that 18w is associated with. In part b, the same network is shown,
-but with homology calls with scores of less than 4 removed.  This demonstrates the ease with which the tool can be used
+In Figure 5, the gene homology network for 18w in *D. melanogaster* is shown. 18w is a gene that contributes to multiple processes including ovarian follicle cell migration, antibacterial humoral response and ventral cord development (18w, Alliance of Genome Resources).
+The figure shows the entirety of the complex network that 18w is associated with. In Figure 6, the same network is shown,
+but with homology calls with scores of less than 4 removed. This demonstrates the ease with which the tool can be used
 to remove complexity and allow researches to focus on high value data easily.
 
-![Gene homology network of 18w in *D. melanogaster*. Figure XXA displays a complex network with many interconnections.](./images/18w_pre_filtered_network.png)
+![Gene homology network of 18w in *D. melanogaster*.](./images/18w_pre_filtered_network.png)
 
-![Figure XXB displays the same 18w neighborhood network, but with homology scores of less than 4 removed.](./images/18w_post_filtered_network.png)
+![Gene homology network of 18w in *D. melanogaster* with homology scores of less than 4 removed.](./images/18w_post_filtered_network.png)
 
 # Discussion
 
@@ -527,7 +541,8 @@ Ultimately, the most critical next step is to collect feedback from theand itera
 
 # Acknowledgments
 
-The authors would like to thank all of the open source developers and researchers for their efforts. We also wish to thank the National Institutes of Health (NIH) for supporting the biological data resources that will be used for this project.
+The authors would like to thank all of the open source developers and researchers for their efforts. We also wish to thank the National Institutes of Health (NIH) for supporting the biological data resources that were used for this project and
+Dr. Yanhui Hu for providing us with the DIOPT data.
 
 # References
 

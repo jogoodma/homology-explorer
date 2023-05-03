@@ -15,8 +15,8 @@
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "pandoc:proposal": "pandoc --pdf-engine=pdflatex --toc -N -o docs/proposal.pdf docs/proposal.md --filter mermaid-filter",
-    "pandoc:draft_report": "pandoc --pdf-engine=pdflatex --toc -N -o docs/draft_report.pdf docs/draft_report.md --filter mermaid-filter",
-    "pandoc:final_report": "pandoc --pdf-engine=pdflatex --toc -N -o docs/final_report.pdf docs/final_report.md --filter mermaid-filter",
+    "pandoc:draft_report": "cd docs && pandoc --pdf-engine=pdflatex --toc -N -o draft_report.pdf draft_report.md --filter mermaid-filter",
+    "pandoc:final_report": "cd docs && pandoc --pdf-engine=pdflatex --toc -N -o final_report.pdf final_report.md --filter mermaid-filter",
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",

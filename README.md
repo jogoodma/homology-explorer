@@ -1,6 +1,6 @@
 # homology-explorer
 
-A tool for exploring orthology and paraology relationships in model organism species.
+A tool for exploring orthology and paralogy relationships in model organism species.
 
 [Demonstration Video](https://youtu.be/I-Q6B78EzIA)
 

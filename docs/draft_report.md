@@ -14,13 +14,26 @@ ${toc}
 
 # Introduction
 
-Evolutionary genomics is an important field of study for biomedical researchers, especially with recent advances in treatments based in gene therapy^[https://www.nature.com/articles/s41467-020-19505-2].
+In the field of human genetic research, model organisms play a crucial role in helping to decipher functional
+mechanisms, disease mechanisms, variant impact, gene therapy, and many other aspects of genes (Millburn, GH, et. al,; Bulaklak, K, et. al)
+Researchers in this field of study rely on previously published data in their organism of interest and also related
+organisms to discover as much information as possible. For example, a geneticist studying the KRAS gene in
+humans might look for studies on related genes in mice or rats before designing experiments or looking for drug
+targets. These related genes are called _orthologs_. Orthologs are homologous genes that are the result of a
+speciation event (Koonin EV, et. al). In other words, a gene in one species that is directly, but possibly distantly,
+related to a gene in another species over an evolutionary time period. _Paralogs_, genes that are the result of a
+duplication event within a species, can also be used for this same purpose.
 
-EG mRNA techniques, etc.
+Although there are many methods for predicting homologous relationships between genes, recent related works
+(Hu et. al) have compiled a unified database cataloguing these relationships. While this is extremely useful for
+researchers, the tabular format of the database obscures the network structure inherent in the data - whereby edges
+are predictions of relationships between genes, and the genes themselves are nodes.
 
-Gene homology allows researchers to compare genetic traits, both between and within species^[https://bio.libretexts.org/Bookshelves/Microbiology/Microbiology_(Boundless)/07%3A_Microbial_Genetics/7.13%3A_Bioinformatics/7.13C%3A_Homologs_Orthologs_and_Paralogs]. Although there are many methods for predicting homologous relationships between genes, recent related works (Hu et. al) have compiled a unified database cataloguing these relationships. While this is extremely useful for researchers, the tabular format of the database obscures the network structure inherent in the data - whereby edges are predictions of relationships between genes, and the genes themselves are nodes.
-
-This research aims to close the gap between biomedical researchers and the gene homology database by visualizing the gene homology network as an interactive, searchable web application capable of exploring orthologous and paralogous relationships of individual genes, of lists multiple genes, and of their respective gene neighborhoods. To enhance the researchers understanding of these relationships, we also aim to provide network analysis tools via the UI to perform network operations of centrality measurement and link community detection.
+This research aims to close the gap between biomedical researchers and the gene homology database by visualizing the
+gene homology network as an interactive, searchable web application capable of exploring orthologous and paralogous
+relationships of individual genes, of lists multiple genes, and of their respective gene neighborhoods.
+To enhance the researchers understanding of these relationships, we also aim to provide network analysis tools via
+the UI to perform network operations of centrality measurement and link community detection.
 
 ## Problem Statement
 
@@ -463,3 +476,9 @@ PTEN, https://www.alliancegenome.org/gene/HGNC:9588#disease-associations
 BCL6, https://www.alliancegenome.org/gene/HGNC:1001#disease-associations
 
 18w, https://www.alliancegenome.org/gene/FB:FBgn0004364#summary
+
+Koonin EV. Orthologs, paralogs, and evolutionary genomics. Annu Rev Genet. 2005;39:309-38. doi: 10.1146/annurev.genet.39.073003.114725. PMID: 16285863.
+
+Millburn GH, Crosby MA, Gramates LS, Tweedie S; FlyBase Consortium. FlyBase portals to human disease research using Drosophila models. Dis Model Mech. 2016 Mar;9(3):245-52. doi: 10.1242/dmm.023317. PMID: 26935103; PMCID: PMC4826978.
+
+Bulaklak K, Gersbach CA. The once and future gene therapy. Nat Commun. 2020 Nov 16;11(1):5820. doi: 10.1038/s41467-020-19505-2. PMID: 33199717; PMCID: PMC7670458.

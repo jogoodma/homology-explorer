@@ -18,13 +18,13 @@ Evolutionary genomics is an important field of study for biomedical researchers,
 
 EG mRNA techniques, etc.
 
-Gene homology allows researchers to compare genetic traits, both between and within species^[https://bio.libretexts.org/Bookshelves/Microbiology/Microbiology_(Boundless)/07%3A_Microbial_Genetics/7.13%3A_Bioinformatics/7.13C%3A_Homologs_Orthologs_and_Paralogs]. Although there are many methods for predicting homologous relationships between genes, recent related works^[Hu et. al] have compiled a unified database cataloguing these relationships. While this is extremely useful for researchers, the tabular format of the database obscures the network structure inherent in the data - whereby edges are predictions of relationships between genes, and the genes themselves are nodes.
+Gene homology allows researchers to compare genetic traits, both between and within species^[https://bio.libretexts.org/Bookshelves/Microbiology/Microbiology_(Boundless)/07%3A_Microbial_Genetics/7.13%3A_Bioinformatics/7.13C%3A_Homologs_Orthologs_and_Paralogs]. Although there are many methods for predicting homologous relationships between genes, recent related works (Hu et. al) have compiled a unified database cataloguing these relationships. While this is extremely useful for researchers, the tabular format of the database obscures the network structure inherent in the data - whereby edges are predictions of relationships between genes, and the genes themselves are nodes.
 
 This research aims to close the gap between biomedical researchers and the gene homology database by visualizing the gene homology network as an interactive, searchable web application capable of exploring orthologous and paralogous relationships of individual genes, of lists multiple genes, and of their respective gene neighborhoods. To enhance the researchers understanding of these relationships, we also aim to provide network analysis tools via the UI to perform network operations of centrality measurement and link community detection.
 
 ## Problem Statement
 
-Although data have been compiled to catalogue and rank relationships between genes predicted by a variety of different models, there is not an easily accessible way for researchers to access this data. Previously published attempts at providing a solution have either focused on a very limited set of species^[Tulpan et. al] or a limited set of methods for determining homology^[Mustafin et. al; Nevers et. al]. This leads us to the first and main problem: 
+Although data have been compiled to catalogue and rank relationships between genes predicted by a variety of different models, there is not an easily accessible way for researchers to access this data. Previously published attempts at providing a solution have either focused on a very limited set of species (Tulpan et. al) or a limited set of methods for determining homology (Mustafin et. al; Nevers et. al). This leads us to the first and main problem: 
 
 > Provide an easily accessible visual interface allowing model organism genetic researchers to intuitively explore the gene homology network. 
 
@@ -44,7 +44,7 @@ The `Homology Explorer` application is an answer to the problem statement above.
 
 ## Homology Data
 
-The source of the homology network data consist of three static `.tsv` tables that were obtained from the DIOPT research group^[Hu et. al].
+The source of the homology network data consist of three static `.tsv` tables that were obtained from the DIOPT research group (Hu et. al).
 
 Orthology and paraology calls for the following model organism species were included in the Homology Explorer tool from the DIOPT dataset.
 
@@ -382,9 +382,9 @@ query API endpoint, an autocomplete box appears, and then the results from the q
 
 ### Visualization
 
-The network visualization is controlled by React components that manage the application views and state. The `GeneNetwork`
+The network visualization is controlled by React (React) components that manage the application views and state. The `GeneNetwork`
 component takes the requested gene ID, the application state, and event handlers and creates the network visualization
-via the react-sigma bindings for the Sigma.js library. The Graphology.js library was used to implement the
+via the react-sigma (react-sigma) bindings for the Sigma.js library (sigma.js). The Graphology.js (Graphology) library was used to implement the
 graph filtering logic provided by the application.
 
 # Results
@@ -392,7 +392,7 @@ graph filtering logic provided by the application.
 ## PTEN
 
 In Figure XX, the gene homology network for the Human PTEN gene is shown. PTEN is a tumor suppressor that when mutated
-results in a wide variety of cancers^[PTEN]. PTEN shows clear orthology to genes in other species (light orange edge colors)
+results in a wide variety of cancers (PTEN, Alliance of Genome Resources). PTEN shows clear orthology to genes in other species (light orange edge colors)
 and a paralog TPTE. The paralog TPTE, shows strong homology to a cluster (purple edge color) of model organism genes
 and another human gene (TPTE2). There are also 5 other predominate link communities that are indicated. 
 In this example, we show that a connection that is 2-3 degrees away is clearly visible
@@ -406,7 +406,7 @@ additional clicks and sorting through dozens of genes.
 ## Example 2
 
 In Figure XX, the gene homology network for the Human BCL6 gene is shown. BCL6 is a gene known to be involved in B-cell 
-lymphoma^[BCL6]. BCL6 shows homology to a small cluster of genes with high confidence as indicated by the thick edges
+lymphoma (BCL6, Alliance of Genome resources). BCL6 shows homology to a small cluster of genes with high confidence as indicated by the thick edges
 of blue and cyan and low confidence orthology calls to 4 *D. melanogaster* genes whose node size has been accentuated by the 
 PageRank centrality analysis (highlighted in red). Additionally, thes 4 genes all have symbols with CG#, indicating
 that their function is not known or that they are not well studied. The graph also
@@ -420,7 +420,7 @@ of the 4 *D. melanogaster* genes.
 
 ## Example 3
 
-In Figure XX, the gene homology network for 18w in *D. melanogaster* is shown. 18w is a gene that contributes to multiple processes including ovarian follicle cell migration, antibacterial humoral response and ventral cord development^[18w].
+In Figure XX, the gene homology network for 18w in *D. melanogaster* is shown. 18w is a gene that contributes to multiple processes including ovarian follicle cell migration, antibacterial humoral response and ventral cord development (18w, Alliance of Genome Resources).
 In part A, you see the entirety of the complex network that 18w is associated with. In part b, the same network is shown,
 but with homology calls with scores of less than 4 removed.  This demonstrates the ease with which the tool can be used
 to remove complexity and allow researches to focus on high value data easily.

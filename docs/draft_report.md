@@ -420,9 +420,15 @@ of the 4 *D. melanogaster* genes.
 
 ## Example 3
 
-18w
+In Figure XX, the gene homology network for 18w in *D. melanogaster* is shown. 18w is a gene that contributes to multiple processes including ovarian follicle cell migration, antibacterial humoral response and ventral cord development^[18w].
+In part A, you see the entirety of the complex network that 18w is associated with. In part b, the same network is shown,
+but with homology calls with scores of less than 4 removed.  This demonstrates the ease with which the tool can be used
+to remove complexity and allow researches to focus on high value data easily.
+
 ![18w network before filtering by score](./images/18w_pre_filtered_network.png)
 ![18w network after filtering by score](./images/18w_post_filtered_network.png)
+**Figure XX A and B** - Gene homology network of 18w in *D. melanogaster*. Figure XXA displays a complex network with
+many interconnections. Figure XXB displays the same network, but with all homology scores of less than 4 removed.
 
 # Discussion
 
@@ -455,3 +461,5 @@ Hu Y, Flockhart I, Vinayagam A, Bergwitz C, Berger B, Perrimon N, Mohr SE. An in
 PTEN, https://www.alliancegenome.org/gene/HGNC:9588#disease-associations
 
 BCL6, https://www.alliancegenome.org/gene/HGNC:1001#disease-associations
+
+18w, https://www.alliancegenome.org/gene/FB:FBgn0004364#summary

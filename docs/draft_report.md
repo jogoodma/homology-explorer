@@ -541,8 +541,9 @@ Ultimately, the most critical next step is to collect feedback from theand itera
 
 # Acknowledgments
 
-The authors would like to thank all of the open source developers and researchers for their efforts. We also wish to thank the National Institutes of Health (NIH) for supporting the biological data resources that were used for this project and
-Dr. Yanhui Hu for providing us with the DIOPT data.
+The authors would like to thank all of the open source developers and researchers for their efforts. The model organism databases: FlyBase, MGD, RGD, SGD, WormBase, XenBase, ZFIN, PomBase,
+and the Alliance of Genome Resources. We also wish to thank the National Institutes of Health (NIH) for supporting the biological data resources that were used for this project and
+Dr. Yanhui Hu and DIOPT for providing us with the data.
 
 # References
 

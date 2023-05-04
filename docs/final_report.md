@@ -1,6 +1,6 @@
 ---
 title: Gene Homology Explorer
-subtitle: Final Report - Draft
+subtitle: Final Report 
 author: Josh Goodman & Mark Green
 date: Spring 2023
 geometry: "left=3cm,right=3cm,top=2cm,bottom=2cm"

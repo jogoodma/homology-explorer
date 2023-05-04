@@ -2,6 +2,8 @@
 
 A tool for exploring orthology and paralogy relationships in model organism species.
 
+![Gene Homology Network of PTEN](./docs/images/PTEN_README.png)
+
 [Demonstration Video](https://youtu.be/I-Q6B78EzIA)
 
 ## Getting Started

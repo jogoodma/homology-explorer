@@ -26,4 +26,3 @@ api
    - navigate to http://127.0.0.1:8000/docs in browser for the Swagger UI
 
 3. Or build `Dockerfile` image
-

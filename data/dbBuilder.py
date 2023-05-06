@@ -2,14 +2,14 @@
 import duckdb
 
 ### Initialize db connection
-con = duckdb.connect(database='duck.db')
-#con = duckdb.connect(database=':memory:')
+con = duckdb.connect(database="duck.db")
+# con = duckdb.connect(database=':memory:')
 
 ### TABLES ###
 
 # build db from .tsv sourcefiles
 
-#tblSpecies
+# tblSpecies
 con.execute(
     """
     DROP TABLE IF EXISTS tblSpecies;
@@ -33,7 +33,7 @@ con.execute(
     """
 )
 
-#tblOrthologPairs
+# tblOrthologPairs
 con.execute(
     """
     DROP TABLE IF EXISTS tblOrthologPairs;
@@ -49,7 +49,7 @@ con.execute(
 
 ### VIEWS ###
 
-#evwGeneFrequency
+# evwGeneFrequency
 con.execute(
     """
     DROP VIEW IF EXISTS evwGeneFrequency;
@@ -62,7 +62,7 @@ con.execute(
     """
 )
 
-#evwSymbolSearch
+# evwSymbolSearch
 con.execute(
     """
     DROP VIEW IF EXISTS evwSymbolSearch;
@@ -96,7 +96,7 @@ con.execute(
     """
 )
 
-#evwGeneInfo
+# evwGeneInfo
 con.execute(
     """
     DROP VIEW IF EXISTS evwGeneInfo;
@@ -121,7 +121,7 @@ con.execute(
     """
 )
 
-#evwOrthologPairs
+# evwOrthologPairs
 con.execute(
     """
     DROP VIEW IF EXISTS evwOrthologPairs;
@@ -142,7 +142,7 @@ con.execute(
     """
 )
 
-#evwGeneNeighborEdges
+# evwGeneNeighborEdges
 con.execute(
     """
     DROP VIEW IF EXISTS evwGeneNeighborEdges;
@@ -156,7 +156,7 @@ con.execute(
     """
 )
 
-#evwGeneNeighborEdgesAttr
+# evwGeneNeighborEdgesAttr
 con.execute(
     """
     DROP VIEW IF EXISTS evwGeneNeighborEdgesAttr;
@@ -169,7 +169,7 @@ con.execute(
     """
 )
 
-#evwGeneNeighborEdgelist
+# evwGeneNeighborEdgelist
 con.execute(
     """
     DROP VIEW IF EXISTS evwGeneNeighborEdgelist;
@@ -184,7 +184,7 @@ con.execute(
     """
 )
 
-#evwGeneNeighborNodes
+# evwGeneNeighborNodes
 con.execute(
     """
     DROP VIEW IF EXISTS evwGeneNeighborNodes;
@@ -195,7 +195,7 @@ con.execute(
     """
 )
 
-#evwGeneNeighborNodesAttr
+# evwGeneNeighborNodesAttr
 con.execute(
     """
     DROP VIEW IF EXISTS evwGeneNeighborNodesAttr;
@@ -215,4 +215,3 @@ con.execute(
             ON a.speciesid = b.taxonomyid;
     """
 )
-

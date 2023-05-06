@@ -21,7 +21,10 @@
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    "format:md": "prettier --write \"**/*.md\"",
+    "format:ts": "prettier --write \"**/*.{ts,tsx}\"",
+    "format:py": "poetry run black .",
+    "format": "pnpm run \"/^format:.*/\""
   },
   "keywords": [
     "network",

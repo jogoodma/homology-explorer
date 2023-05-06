@@ -2,7 +2,7 @@
 import duckdb
 
 ## Initialize db connection
-con = duckdb.connect(database='duck.db')
+con = duckdb.connect(database="duck.db")
 
 ## build db from .tsv sourcefiles
 con.execute(

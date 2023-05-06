@@ -8,10 +8,10 @@ class SymbolSearch(BaseModel):
     speciesid: int
     common_name: str
     frequency: int | None = None
-    
+
     class Config:
         orm_mode = True
-  
+
 
 # GeneInfo
 class GeneInfoBase(BaseModel):
@@ -23,15 +23,15 @@ class GeneInfoBase(BaseModel):
 
 
 class GeneInfo(GeneInfoBase):
-    genus:str
-    species:str
+    genus: str
+    species: str
     locus_tag: str
     species_specific_geneid: str
     species_specific_geneid_type: str
     chromosome: str
     map_location: str
     gene_type: str
-    
+
     class Config:
         orm_mode = True
 
@@ -51,7 +51,7 @@ class OrthologPairs(OrthologPairsBase):
     best_score_rev: str
     confidence: str
     homolog_type: str
-    
+
     class Config:
         orm_mode = True
 
@@ -63,7 +63,7 @@ class GeneNeighborEdgesBase(BaseModel):
 
 class GeneNeighborEdgesAttr(BaseModel):
     weight: int
-    
+
     class Config:
         orm_mode = True
 
@@ -72,7 +72,7 @@ class GeneNeighborEdges(GeneNeighborEdgesBase):
     source: int
     target: int
     attributes: GeneNeighborEdgesAttr | None = None
-    
+
     class Config:
         orm_mode = True
 
@@ -91,14 +91,14 @@ class GeneNeighborNodesAttr(BaseModel):
     species: str
     chromosome: str
     gene_type: str
-       
+
     class Config:
         orm_mode = True
 
 
 class GeneNeighborNodes(GeneNeighborNodesBase):
     attributes: GeneNeighborNodesAttr | None = None
-    
+
     class Config:
         orm_mode = True
 
@@ -106,5 +106,3 @@ class GeneNeighborNodes(GeneNeighborNodesBase):
 # Multigene Post Request format
 class GeneList(BaseModel):
     genes: list[int] | None = None
-
-

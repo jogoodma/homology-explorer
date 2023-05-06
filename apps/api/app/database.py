@@ -6,13 +6,8 @@ from sqlalchemy.orm import sessionmaker
 
 SQLALCHEMY_DATABASE_URL = "duckdb:///app/duck.db"
 
-engine = create_engine(
-    SQLALCHEMY_DATABASE_URL, connect_args={
-        "read_only": True
-    }
-)
+engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"read_only": True})
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
-

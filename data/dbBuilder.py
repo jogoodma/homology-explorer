@@ -77,7 +77,22 @@ con.execute(
         LEFT JOIN tblSpecies b
             ON a.speciesid = b.taxonomyid
         LEFT JOIN evwGeneFrequency c
+            ON a.geneid = c.geneid
+
+        UNION
+
+        SELECT 
+            a.geneid
+            , a.species_specific_geneid
+            , a.speciesid
+            , b.common_name
+            , c.frequency
+        FROM tblGeneInfo a
+        LEFT JOIN tblSpecies b
+            ON a.speciesid = b.taxonomyid
+        LEFT JOIN evwGeneFrequency c
             ON a.geneid = c.geneid;
+
     """
 )
 

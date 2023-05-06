@@ -13,6 +13,7 @@
     }
   ],
   "scripts": {
+    "api": "cd apps/api && poetry run uvicorn app.main:app",
     "preinstall": "npx only-allow pnpm",
     "pandoc:proposal": "pandoc --pdf-engine=pdflatex --toc -N -o docs/proposal.pdf docs/proposal.md --filter mermaid-filter",
     "pandoc:draft_report": "cd docs && pandoc --pdf-engine=pdflatex --toc -N -o draft_report.pdf draft_report.md --filter mermaid-filter",

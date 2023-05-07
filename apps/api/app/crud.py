@@ -1,8 +1,7 @@
 import linkcom
 import networkx as nx
 from sqlalchemy.orm import Session
-from sqlalchemy.sql.expression import label, func
-from sqlalchemy import nullslast
+from sqlalchemy.sql.expression import func
 
 from . import models
 

@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.sql.expression import label, func
 from sqlalchemy import nullslast
 
-from . import models, schemas
+from . import models
 
 
 ### Gene and Orthology Info ###

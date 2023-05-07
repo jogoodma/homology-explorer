@@ -8,9 +8,9 @@ con = duckdb.connect(database="duck.db")
 con.execute(
     """
     DROP TABLE IF EXISTS tblGeneInfo;
-    CREATE TABLE tblGeneInfo AS 
+    CREATE TABLE tblGeneInfo AS
         SELECT * FROM read_csv(
-            '../data/Gene_Information.tsv', delim='\t', 
+            '../data/Gene_Information.tsv', delim='\t',
             header=True, AUTO_DETECT=TRUE
         );
     """
@@ -19,9 +19,9 @@ con.execute(
 con.execute(
     """
     DROP TABLE IF EXISTS tblOrthologPairs;
-    CREATE TABLE tblOrthologPairs AS 
+    CREATE TABLE tblOrthologPairs AS
         SELECT * FROM read_csv(
-            '../data/Ortholog_Pair_Best.tsv', delim='\t', 
+            '../data/Ortholog_Pair_Best.tsv', delim='\t',
             header=True, AUTO_DETECT=TRUE
         );
     ALTER TABLE tblOrthologPairs

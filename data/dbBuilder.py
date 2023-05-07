@@ -13,7 +13,7 @@ con = duckdb.connect(database="duck.db")
 con.execute(
     """
     DROP TABLE IF EXISTS tblSpecies;
-    CREATE TABLE tblSpecies AS 
+    CREATE TABLE tblSpecies AS
         SELECT * FROM read_csv(
             'Species.tsv', delim='\t',
             header=True, AUTO_DETECT=TRUE
@@ -25,9 +25,9 @@ con.execute(
 con.execute(
     """
     DROP TABLE IF EXISTS tblGeneInfo;
-    CREATE TABLE tblGeneInfo AS 
+    CREATE TABLE tblGeneInfo AS
         SELECT * FROM read_csv(
-            'Gene_Information.tsv', delim='\t', 
+            'Gene_Information.tsv', delim='\t',
             header=True, AUTO_DETECT=TRUE
         );
     """
@@ -37,9 +37,9 @@ con.execute(
 con.execute(
     """
     DROP TABLE IF EXISTS tblOrthologPairs;
-    CREATE TABLE tblOrthologPairs AS 
+    CREATE TABLE tblOrthologPairs AS
         SELECT * FROM read_csv(
-            'Ortholog_Pair_Best.tsv', delim='\t', 
+            'Ortholog_Pair_Best.tsv', delim='\t',
             header=True, AUTO_DETECT=TRUE
         );
     ALTER TABLE tblOrthologPairs
@@ -53,10 +53,10 @@ con.execute(
 con.execute(
     """
     DROP VIEW IF EXISTS evwGeneFrequency;
-    CREATE VIEW evwGeneFrequency AS 
-       SELECT 
+    CREATE VIEW evwGeneFrequency AS
+       SELECT
         geneid1 AS 'geneid'
-        , COUNT(*) AS 'frequency' 
+        , COUNT(*) AS 'frequency'
        FROM tblOrthologPairs
        GROUP BY geneid1;
     """
@@ -66,8 +66,8 @@ con.execute(
 con.execute(
     """
     DROP VIEW IF EXISTS evwSymbolSearch;
-    CREATE VIEW evwSymbolSearch AS 
-        SELECT 
+    CREATE VIEW evwSymbolSearch AS
+        SELECT
             a.geneid
             , a.symbol
             , a.speciesid
@@ -100,8 +100,8 @@ con.execute(
 con.execute(
     """
     DROP VIEW IF EXISTS evwGeneInfo;
-    CREATE VIEW evwGeneInfo AS 
-        SELECT 
+    CREATE VIEW evwGeneInfo AS
+        SELECT
             a.geneid
             , a.symbol
             , a.description
@@ -125,7 +125,7 @@ con.execute(
 con.execute(
     """
     DROP VIEW IF EXISTS evwOrthologPairs;
-    CREATE VIEW evwOrthologPairs AS 
+    CREATE VIEW evwOrthologPairs AS
         SELECT
             opb_id
             , geneid1
@@ -136,7 +136,7 @@ con.execute(
             , best_score
             , best_score_rev
             , confidence
-            , CASE WHEN species1 = species2 
+            , CASE WHEN species1 = species2
                 THEN 'paralog' ELSE 'ortholog' END AS homolog_type
         FROM tblOrthologPairs;
     """
@@ -146,7 +146,7 @@ con.execute(
 con.execute(
     """
     DROP VIEW IF EXISTS evwGeneNeighborEdges;
-    CREATE VIEW evwGeneNeighborEdges AS 
+    CREATE VIEW evwGeneNeighborEdges AS
         SELECT
             opb_id AS 'key'
             , geneid1 AS 'source'
@@ -160,7 +160,7 @@ con.execute(
 con.execute(
     """
     DROP VIEW IF EXISTS evwGeneNeighborEdgesAttr;
-    CREATE VIEW evwGeneNeighborEdgesAttr AS 
+    CREATE VIEW evwGeneNeighborEdgesAttr AS
         SELECT
             opb_id AS 'key'
             , weight
@@ -188,7 +188,7 @@ con.execute(
 con.execute(
     """
     DROP VIEW IF EXISTS evwGeneNeighborNodes;
-    CREATE VIEW evwGeneNeighborNodes AS 
+    CREATE VIEW evwGeneNeighborNodes AS
         SELECT
             geneid AS 'key'
         FROM tblGeneInfo
@@ -199,7 +199,7 @@ con.execute(
 con.execute(
     """
     DROP VIEW IF EXISTS evwGeneNeighborNodesAttr;
-    CREATE VIEW evwGeneNeighborNodesAttr AS 
+    CREATE VIEW evwGeneNeighborNodesAttr AS
         SELECT
             a.geneid AS 'key'
             , a.symbol

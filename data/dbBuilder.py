@@ -81,7 +81,7 @@ con.execute(
 
         UNION
 
-        SELECT 
+        SELECT
             a.geneid
             , a.species_specific_geneid
             , a.speciesid

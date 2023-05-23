@@ -13,14 +13,21 @@
     }
   ],
   "scripts": {
+    "api": "cd apps/api && poetry run uvicorn app.main:app",
     "preinstall": "npx only-allow pnpm",
     "pandoc:proposal": "pandoc --pdf-engine=pdflatex --toc -N -o docs/proposal.pdf docs/proposal.md --filter mermaid-filter",
     "pandoc:draft_report": "cd docs && pandoc --pdf-engine=pdflatex --toc -N -o draft_report.pdf draft_report.md --filter mermaid-filter",
     "pandoc:final_report": "cd docs && pandoc --pdf-engine=pdflatex --toc -N -o final_report.pdf final_report.md --filter mermaid-filter",
     "build": "turbo run build",
     "dev": "turbo run dev",
-    "lint": "turbo run lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    "lint": "pnpm run \"/^lint:(js|py)/\"",
+    "lint:js": "turbo run lint",
+    "lint:py": "poetry run ruff .",
+    "lint:ruff-watch": "poetry run ruff check . --watch",
+    "format:md": "prettier --write \"**/*.md\"",
+    "format:ts": "prettier --write \"**/*.{ts,tsx}\"",
+    "format:py": "poetry run black .",
+    "format": "pnpm run \"/^format:.*/\""
   },
   "keywords": [
     "network",
@@ -34,7 +41,7 @@
   "devDependencies": {
     "eslint-config-custom": "workspace:*",
     "mermaid-filter": "^1.4.6",
-    "prettier": "latest",
+    "prettier": "2.8.8",
     "turbo": "^1.9.3"
   },
   "packageManager": "pnpm@7.28.0"

@@ -1,12 +1,13 @@
 {
-  "name": "sigmajs-demo",
+  "name": "homology-explorer-ui",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "lint": "eslint"
   },
   "dependencies": {
     "@chakra-ui/react": "^2.5.5",

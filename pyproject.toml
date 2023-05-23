@@ -41,6 +41,6 @@ include = '\.pyi?$'
 # 'extend-exclude' regex that excludes files or directories in addition to the defaults
 #extend-exclude = '''
 
-[too.ruff]
+[tool.ruff]
 #line-length = 88
 target-version = "py310"
